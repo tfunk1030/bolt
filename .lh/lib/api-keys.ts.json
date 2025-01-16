@@ -1,0 +1,18 @@
+{
+    "sourceFile": "lib/api-keys.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1736980289357,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1736980289357,
+            "name": "Commit-0",
+            "content": "'use server'\r\n\r\nexport const getTomorrowApiKey = () => {\r\n  return process.env.TOMORROW_API_KEY;\r\n};\r\n\r\nexport const getOpenWeatherApiKey = () => {\r\n  return process.env.OPENWEATHER_API_KEY;\r\n};\r\n\r\nexport const getMapsApiKey = () => {\r\n  return process.env.MAPS_API_KEY;\r\n};"
+        }
+    ]
+}
