@@ -2,12 +2,13 @@
 
 import { usePremium } from '@/lib/premium-context'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useShotCalc } from '@/lib/shot-calc-context'
 import { useEnvironmental } from '@/lib/hooks/use-environmental'
 import { useClubSettings } from '@/lib/club-settings-context'
 import { YardageModelEnhanced, SkillLevel } from '@/lib/yardage-model'
 import WindDirectionCompass from '@/components/wind-direction-compass'
+import { normalizeClubName } from '@/lib/utils/club-mapping'
 
 export default function WindCalcPage() {
   const { isPremium } = usePremium()
@@ -46,7 +47,7 @@ export default function WindCalcPage() {
     }
   }, [isPremium, router])
 
-  const calculateWindEffect = () => {
+  const calculateWindEffect = useCallback(() => {
     if (!conditions) return;
 
     console.log('Environment:', process.env.NODE_ENV);
@@ -60,34 +61,11 @@ export default function WindCalcPage() {
     }
 
     try {
-      // Debug: Log the yardage model instance and verify it's initialized
       console.log('YardageModel initialized:', !!yardageModel);
       console.log('YardageModel methods:', Object.keys(yardageModel));
-
-      // Map club name to yardage model format
-      const clubKey = recommendedClub.name
-        .toLowerCase()
-        .replace(/(\d)i$/, "$1-iron")
-        .replace(/^(\d)w$/, "$1-wood")
-        .replace(/^pw$/, "pitching-wedge")
-        .replace(/^gw$/, "gap-wedge")
-        .replace(/^sw$/, "sand-wedge")
-        .replace(/^lw$/, "lob-wedge")
-        .replace(/^7w$/, "7-wood")
-        .replace(/^2i$/, "2-iron")
-        .replace(/^3i$/, "3-iron")
-        .replace(/^4i$/, "4-iron")
-        .replace(/^5i$/, "5-iron")
-        .replace(/^6i$/, "6-iron")
-        .replace(/^7i$/, "7-iron")
-        .replace(/^8i$/, "8-iron")
-        .replace(/^9i$/, "9-iron")
-        .replace(/^3w$/, "3-wood")
-        .replace(/^4w$/, "4-wood")
-        .replace(/^5w$/, "5-wood")
-        .replace(/^6w$/, "6-wood")
-        .replace(/^7w$/, "7-wood")
-
+      
+      // Replace the old club mapping with the new utility
+      const clubKey = normalizeClubName(recommendedClub.name);
       console.log('Mapped Club Key:', clubKey);
 
       // Ensure yardage model is properly initialized
@@ -171,15 +149,14 @@ export default function WindCalcPage() {
         }
       })
     } catch (error) {
-      console.error('Error calculating wind effect in environment:', process.env.NODE_ENV, error);
-      return;
+      console.error('Error calculating wind effect:', error);
     }
 
     // Scroll to results
     setTimeout(() => {
       window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
     }, 100)
-  }
+  }, [conditions, targetYardage, windSpeed, windDirection])
 
   if (!isPremium) {
     return null
@@ -187,6 +164,7 @@ export default function WindCalcPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <title>Wind Calculator - Bolt Golf</title>
       <h1 className="text-3xl font-bold mb-8">Wind Calculator</h1>
 
       <div className="max-w-xl mx-auto space-y-6 bg-gray-800/50 backdrop-blur-sm p-6 rounded-lg border border-gray-700/50 shadow-xl">
@@ -194,15 +172,15 @@ export default function WindCalcPage() {
         <div className="flex flex-col items-center">
           <div className="text-sm font-medium text-gray-400 mb-2 bg-gray-900/50 px-4 py-2 rounded-full">
             <span>
-              <span className="inline-block w-3 h-3 bg-blue-500 rounded-full mr-1 shadow-lg shadow-blue-500/50"></span>
+              <span className="inline-block w-3 h-3 bg-blue-500 rounded-full mr-1 shadow-lg shadow-blue-500/50" aria-hidden="true"></span>
               Wind: {windDirection}°
             </span>
           </div>
-          <div className="text-sm text-gray-400 mb-4 opacity-75">
+          <div className="text-sm text-gray-400 mb-4 opacity-75" id="compass-instructions">
             Drag the blue handle to set wind direction
           </div>
           <div className="relative">
-            <div className="absolute inset-0 bg-blue-500/5 rounded-full blur-2xl"></div>
+            <div className="absolute inset-0 bg-blue-500/5 rounded-full blur-2xl" aria-hidden="true"></div>
             <WindDirectionCompass
               windDirection={windDirection}
               shotDirection={0}
@@ -213,36 +191,44 @@ export default function WindCalcPage() {
               }}
               size={280}
               lockShot={true}
+              aria-label="Wind direction compass"
+              aria-describedby="compass-instructions"
             />
           </div>
         </div>
 
         {/* Wind Speed Input */}
         <div className="bg-gray-900/30 p-4 rounded-lg border border-gray-700/50">
-          <div className="flex justify-between mb-1">
-            <label className="text-sm font-medium text-gray-400">Wind Speed</label>
+          <label htmlFor="wind-speed" className="flex justify-between mb-1">
+            <span className="text-sm font-medium text-gray-400">Wind Speed</span>
             <span className="text-sm font-medium text-blue-400">{windSpeed} mph</span>
-          </div>
+          </label>
           <input
+            id="wind-speed"
             type="range"
             min="0"
             max="30"
             value={windSpeed}
             onChange={(e) => setWindSpeed(Number(e.target.value))}
             className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+            aria-label="Wind speed in miles per hour"
           />
         </div>
 
         {/* Target Yardage Input */}
         <div className="bg-gray-900/30 p-4 rounded-lg border border-gray-700/50">
-          <label className="block text-sm font-medium text-gray-400 mb-1">Target Yardage</label>
+          <label htmlFor="target-yardage" className="block text-sm font-medium text-gray-400 mb-1">
+            Target Yardage
+          </label>
           <input
+            id="target-yardage"
             type="number"
             min="50"
             max="300"
             value={targetYardage}
             onChange={(e) => setTargetYardage(Number(e.target.value))}
             className="w-full px-3 py-2 bg-gray-800/50 rounded text-white border border-gray-700/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+            aria-label="Target distance in yards"
           />
         </div>
 
@@ -250,6 +236,7 @@ export default function WindCalcPage() {
         <button
           onClick={calculateWindEffect}
           className="w-full py-3 bg-blue-500 hover:bg-blue-600 rounded-lg text-white font-medium transition-all shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 active:transform active:scale-[0.98]"
+          aria-label="Calculate wind effect"
         >
           Calculate Wind Effect
         </button>

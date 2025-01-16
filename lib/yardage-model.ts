@@ -1,4 +1,5 @@
 import { type } from "os";
+import { normalizeClubName } from '@/lib/utils/club-mapping'
 
 export enum SkillLevel {
   BEGINNER = "beginner",      // High HCP (17+)
@@ -345,29 +346,7 @@ export class YardageModelEnhanced {
   }
 
   public getClubData(clubKey: string): ClubData | null {
-    // Remove spaces and convert to lowercase
-    const normalizedKey = clubKey.replace(/\s+/g, '').toLowerCase();
-    
-    // First try direct mapping
-    if (YardageModelEnhanced.CLUB_NAME_MAP[normalizedKey]) {
-      return YardageModelEnhanced.CLUB_DATABASE[YardageModelEnhanced.CLUB_NAME_MAP[normalizedKey]];
-    }
-    
-    // Then try regex replacements
-    const mappedKey = normalizedKey
-      .replace(/(\d)i$/, "$1-iron")
-      .replace(/(\d)w$/, "$1-wood")
-      .replace(/^pw$/, "pitching-wedge")
-      .replace(/^gw$/, "gap-wedge")
-      .replace(/^aw$/, "gap-wedge")
-      .replace(/^sw$/, "sand-wedge")
-      .replace(/^lw$/, "lob-wedge")
-      .replace(/^(\d+)$/, "$1-iron") // Handle bare numbers as irons
-      .replace(/driver/i, "driver")
-      .replace(/wood/i, "-wood")
-      .replace(/iron/i, "-iron")
-      .replace(/wedge/i, "-wedge");
-
-    return YardageModelEnhanced.CLUB_DATABASE[mappedKey] || null;
+    const normalizedKey = normalizeClubName(clubKey);
+    return YardageModelEnhanced.CLUB_DATABASE[normalizedKey] || null;
   }
 }

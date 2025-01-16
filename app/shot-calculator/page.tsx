@@ -14,6 +14,7 @@ import {
   Mountain, 
   Gauge
 } from 'lucide-react'
+import { normalizeClubName } from '@/lib/utils/club-mapping'
 
 function convertDistance(value: number, unit: 'meters' | 'yards'): number {
   return unit === 'meters' ? value * 0.9144 : value
@@ -43,33 +44,18 @@ export default function ShotCalculatorPage() {
     }
 
     try {
-      // Debug: Log the yardage model instance and verify it's initialized
       console.log('YardageModel initialized:', !!yardageModel);
       console.log('YardageModel methods:', Object.keys(yardageModel));
       
-      let clubKey = recommendedClub.name.toLowerCase();
-      
-      const clubMapping: Record<string, string> = {
-        'pw': 'pitching-wedge',
-        'gw': 'gap-wedge',
-        'sw': 'sand-wedge',
-        'lw': 'lob-wedge',
-        '3w': '3-wood',
-        '5w': '5-wood',
-        '7w': '7-wood',
-        '2i': '2-iron',
-        '3i': '3-iron',
-        '4i': '4-iron',
-        '5i': '5-iron',
-        '6i': '6-iron',
-        '7i': '7-iron',
-        '8i': '8-iron',
-        '9i': '9-iron',
-      };
-
-      clubKey = clubMapping[clubKey] || clubKey;
-
+      const clubKey = normalizeClubName(recommendedClub.name);
       console.log('Mapped Club Key:', clubKey);
+      
+      const clubData = yardageModel.getClubData(clubKey);
+      console.log('Club Data Found:', !!clubData, 'for key:', clubKey);
+      if (!clubData) {
+        console.error('No club data found for:', clubKey, 'in environment:', process.env.NODE_ENV);
+        return null;
+      }
 
       // Ensure yardage model is properly initialized
       if (!yardageModel.getClubData || !yardageModel.set_ball_model) {
@@ -108,14 +94,6 @@ export default function ShotCalculatorPage() {
         targetYardage,
         result
       });
-
-      const clubData = yardageModel.getClubData(clubKey)
-      console.log('Post-calculation club data:', clubData);
-      
-      if (!clubData) {
-        console.error('No club data found for:', clubKey, 'in environment:', process.env.NODE_ENV);
-        return null;
-      }
 
       return {
         result,
