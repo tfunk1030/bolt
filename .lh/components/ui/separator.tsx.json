@@ -1,0 +1,18 @@
+{
+    "sourceFile": "components/ui/separator.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1736989289695,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1736989289695,
+            "name": "Commit-0",
+            "content": "import * as React from \"react\"\r\nimport * as SeparatorPrimitive from \"@radix-ui/react-separator\"\r\nimport { cn } from \"@/lib/utils\"\r\n\r\nconst Separator = React.forwardRef<\r\n  React.ElementRef<typeof SeparatorPrimitive.Root>,\r\n  React.ComponentPropsWithoutRef<typeof SeparatorPrimitive.Root>\r\n>(\r\n  (\r\n    { className, orientation = \"horizontal\", decorative = true, ...props },\r\n    ref\r\n  ) => (\r\n    <SeparatorPrimitive.Root\r\n      ref={ref}\r\n      decorative={decorative}\r\n      orientation={orientation}\r\n      className={cn(\r\n        \"shrink-0 bg-border\",\r\n        orientation === \"horizontal\" ? \"h-[1px] w-full\" : \"h-full w-[1px]\",\r\n        className\r\n      )}\r\n      {...props}\r\n    />\r\n  )\r\n)\r\nSeparator.displayName = SeparatorPrimitive.Root.displayName\r\n\r\nexport { Separator } "
+        }
+    ]
+}

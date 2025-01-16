@@ -1,0 +1,18 @@
+{
+    "sourceFile": "app/globals.css",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1736990531837,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1736990531837,
+            "name": "Commit-0",
+            "content": "@tailwind base;\n@tailwind components;\n@tailwind utilities;\n\n@layer base {\n  :root {\n    --background: 0 0% 100%;\n    --foreground: 222.2 84% 4.9%;\n\n    --card: 0 0% 100%;\n    --card-foreground: 222.2 84% 4.9%;\n \n    --popover: 0 0% 100%;\n    --popover-foreground: 222.2 84% 4.9%;\n \n    --primary: 222.2 47.4% 11.2%;\n    --primary-foreground: 210 40% 98%;\n \n    --secondary: 210 40% 96.1%;\n    --secondary-foreground: 222.2 47.4% 11.2%;\n \n    --muted: 210 40% 96.1%;\n    --muted-foreground: 215.4 16.3% 46.9%;\n \n    --accent: 210 40% 96.1%;\n    --accent-foreground: 222.2 47.4% 11.2%;\n \n    --destructive: 0 84.2% 60.2%;\n    --destructive-foreground: 210 40% 98%;\n\n    --border: 214.3 31.8% 91.4%;\n    --input: 214.3 31.8% 91.4%;\n    --ring: 222.2 84% 4.9%;\n \n    --radius: 0.5rem;\n  }\n \n  .dark {\n    --background: 222.2 84% 4.9%;\n    --foreground: 210 40% 98%;\n \n    --card: 222.2 84% 4.9%;\n    --card-foreground: 210 40% 98%;\n \n    --popover: 222.2 84% 4.9%;\n    --popover-foreground: 210 40% 98%;\n \n    --primary: 210 40% 98%;\n    --primary-foreground: 222.2 47.4% 11.2%;\n \n    --secondary: 217.2 32.6% 17.5%;\n    --secondary-foreground: 210 40% 98%;\n \n    --muted: 217.2 32.6% 17.5%;\n    --muted-foreground: 215 20.2% 65.1%;\n \n    --accent: 217.2 32.6% 17.5%;\n    --accent-foreground: 210 40% 98%;\n \n    --destructive: 0 62.8% 30.6%;\n    --destructive-foreground: 210 40% 98%;\n \n    --border: 217.2 32.6% 17.5%;\n    --input: 217.2 32.6% 17.5%;\n    --ring: 212.7 26.8% 83.9%;\n  }\n}\n \n@layer base {\n  * {\n    @apply border-border;\n  }\n  body {\n    @apply bg-background text-foreground;\n  }\n}\n\n/* Grid Layout Styles */\n.react-grid-item {\n  transition: all 200ms ease;\n  transition-property: left, top, width, height;\n}\n\n.react-grid-item.react-grid-placeholder {\n  background: rgba(0, 0, 0, 0.1);\n  border: 2px dashed #666;\n  border-radius: 8px;\n  opacity: 0.5;\n}\n\n.react-grid-item:hover {\n  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);\n}\n\n/* Moderate Widget Scaling */\n.widget-moderate svg,\n.widget-moderate canvas {\n  width: 100%;\n  height: 100%;\n  object-fit: contain;\n}\n\n.widget-moderate {\n  font-size: calc(12px + 0.2vw);\n}\n\n.widget-moderate .text-xs {\n  font-size: 0.85em;\n}\n\n.widget-moderate .text-sm {\n  font-size: 0.95em;\n}\n\n.widget-moderate .text-base {\n  font-size: 1em;\n}\n\n.widget-moderate .text-lg {\n  font-size: 1.1em;\n}\n\n.widget-moderate .text-xl {\n  font-size: 1.2em;\n}\n\n/* Mobile vertical slider styles */\n.wind-direction-slider,\n.shot-direction-slider {\n  writing-mode: vertical-lr;\n  direction: rtl;\n  width: 8px;\n  height: 200px;\n  background: #374151;\n  appearance: none;\n  cursor: pointer;\n}\n\n/* Thumb styles for vertical sliders */\n.wind-direction-slider::-webkit-slider-thumb,\n.shot-direction-slider::-webkit-slider-thumb {\n  -webkit-appearance: none;\n  appearance: none;\n  width: 16px;\n  height: 16px;\n  background: #60a5fa;\n  border-radius: 50%;\n  cursor: pointer;\n}\n\n.wind-direction-slider::-moz-range-thumb,\n.shot-direction-slider::-moz-range-thumb {\n  width: 16px;\n  height: 16px;\n  background: #60a5fa;\n  border: none;\n  border-radius: 50%;\n  cursor: pointer;\n}\n"
+        }
+    ]
+}
