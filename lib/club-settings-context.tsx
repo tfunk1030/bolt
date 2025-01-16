@@ -12,19 +12,21 @@ interface ClubSettingsContextType {
 }
 
 const defaultClubs: ClubData[] = [
-  { name: "Driver", normalYardage: 230, loft: 10.5 },
-  { name: "3-Wood", normalYardage: 215, loft: 15 },
-  { name: "5-Wood", normalYardage: 200, loft: 18 },
-  { name: "4-Iron", normalYardage: 180, loft: 21 },
-  { name: "5-Iron", normalYardage: 170, loft: 24 },
-  { name: "6-Iron", normalYardage: 160, loft: 27 },
-  { name: "7-Iron", normalYardage: 150, loft: 31 },
-  { name: "8-Iron", normalYardage: 140, loft: 35 },
-  { name: "9-Iron", normalYardage: 130, loft: 39 },
-  { name: "PW", normalYardage: 120, loft: 43 },
-  { name: "GW", normalYardage: 110, loft: 48 },
-  { name: "SW", normalYardage: 100, loft: 54 },
-  { name: "LW", normalYardage: 90, loft: 58 }
+  { name: "Driver", normalYardage: 300, loft: 10 },
+  { name: "3-Wood", normalYardage: 260, loft: 15 },
+  { name: "5-Wood", normalYardage: 240, loft: 18 },
+  { name: "2-Iron", normalYardage: 245, loft: 17 },
+  { name: "3-Iron", normalYardage: 235, loft: 19 },
+  { name: "4-Iron", normalYardage: 220, loft: 22 },
+  { name: "5-Iron", normalYardage: 205, loft: 26 },
+  { name: "6-Iron", normalYardage: 190, loft: 30 },
+  { name: "7-Iron", normalYardage: 180, loft: 34 },
+  { name: "8-Iron", normalYardage: 165, loft: 38 },
+  { name: "9-Iron", normalYardage: 150, loft: 42 },
+  { name: "PW", normalYardage: 138, loft: 46 },
+  { name: "GW", normalYardage: 124, loft: 50 },
+  { name: "SW", normalYardage: 112, loft: 54 },
+  { name: "LW", normalYardage: 95, loft: 60 }
 ]
 
 export const ClubSettingsContext = createContext<ClubSettingsContextType | null>(null);
@@ -57,9 +59,13 @@ export function ClubSettingsProvider({ children }: { children: React.ReactNode }
     return defaultClub?.loft || 0
   }
 
+  const sortClubs = (clubs: ClubData[]): ClubData[] => {
+    return [...clubs].sort((a, b) => b.normalYardage - a.normalYardage)
+  }
+
   const addClub = useCallback((club: ClubData) => {
     setClubs(prev => {
-      const newClubs = [...prev, club]
+      const newClubs = sortClubs([...prev, club])
       localStorage.setItem('clubSettings', JSON.stringify(newClubs))
       return newClubs
     })
@@ -69,8 +75,9 @@ export function ClubSettingsProvider({ children }: { children: React.ReactNode }
     setClubs(prev => {
       const newClubs = [...prev]
       newClubs[index] = club
-      localStorage.setItem('clubSettings', JSON.stringify(newClubs))
-      return newClubs
+      const sortedClubs = sortClubs(newClubs)
+      localStorage.setItem('clubSettings', JSON.stringify(sortedClubs))
+      return sortedClubs
     })
   }, [])
 

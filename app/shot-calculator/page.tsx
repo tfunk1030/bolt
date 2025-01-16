@@ -244,7 +244,7 @@ export default function ShotCalculatorPage() {
               </div>
             </div>
             <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-400">Playing Distance</div>
+              <div className="text-sm text-gray-400">Play's Like</div>
               <div className="text-lg font-bold">
                 {formatDistance(targetYardage * (targetYardage / shotData.result.carry_distance))}
               </div>
@@ -253,20 +253,71 @@ export default function ShotCalculatorPage() {
         </div>
       )}
 
-      {/* Recommended Club */}
+      {/* Recommended Clubs */}
       {shotData?.recommendedClub && (
         <div className="bg-gray-800 rounded-xl p-6">
-          <h2 className="text-lg font-semibold mb-4">Recommended Club</h2>
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-400">Club</span>
-              <span className="text-lg font-bold">{shotData.recommendedClub.name}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-400">Normal Carry</span>
-              <span>{formatDistance(shotData.recommendedClub.normalYardage)}</span>
-            </div>
-          </div>
+          <h2 className="text-lg font-semibold mb-4">Recommended Clubs</h2>
+          
+          {/* Calculate the "plays like" distance */}
+          {(() => {
+            const playsLikeDistance = targetYardage * (targetYardage / shotData.result.carry_distance)
+            
+            // Find the club that matches the plays-like distance exactly (if any)
+            const exactClub = getRecommendedClub(playsLikeDistance)
+            const isExactMatch = exactClub?.normalYardage === Math.round(playsLikeDistance)
+            
+            return isExactMatch ? (
+              // Show only the exact matching club
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">Perfect Club</span>
+                  <span className="text-lg font-bold">{exactClub.name}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Normal Carry</span>
+                  <span>{formatDistance(exactClub.normalYardage)}</span>
+                </div>
+              </div>
+            ) : (
+              // Show +/- 7 yard options when no exact match
+              <div className="space-y-4">
+                {/* Longer Club */}
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400">Longer Option</span>
+                    <span className="text-lg font-bold">
+                      {getRecommendedClub(playsLikeDistance + 7)?.name || shotData.recommendedClub.name}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Normal Carry</span>
+                    <span>
+                      {formatDistance(getRecommendedClub(playsLikeDistance + 7)?.normalYardage || shotData.recommendedClub.normalYardage)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Divider */}
+                <div className="border-t border-gray-700 my-4"></div>
+
+                {/* Shorter Club */}
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400">Shorter Option</span>
+                    <span className="text-lg font-bold">
+                      {getRecommendedClub(playsLikeDistance)?.name || shotData.recommendedClub.name}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Normal Carry</span>
+                    <span>
+                      {formatDistance(getRecommendedClub(playsLikeDistance)?.normalYardage || shotData.recommendedClub.normalYardage)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )
+          })()}
         </div>
       )}
     </div>

@@ -204,7 +204,7 @@ export default function SettingsPage() {
               value={newClub.normalYardage}
               onChange={(e) => setNewClub({ ...newClub, normalYardage: parseInt(e.target.value) || 0 })}
               className="w-full bg-gray-700 rounded-lg px-3 py-2 text-white"
-              placeholder={`e.g., ${settings.distanceUnit === 'yards' ? '250' : '230'}`}
+              placeholder={`e.g., ${settings.distanceUnit === 'yards' ? '300' : '274'}`}
             />
           </div>
           <div>
@@ -214,7 +214,7 @@ export default function SettingsPage() {
               value={newClub.loft}
               onChange={(e) => setNewClub({ ...newClub, loft: parseInt(e.target.value) || 0 })}
               className="w-full bg-gray-700 rounded-lg px-3 py-2 text-white"
-              placeholder="e.g., 10.5"
+              placeholder="e.g., 10"
             />
           </div>
           <button

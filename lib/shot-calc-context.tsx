@@ -73,7 +73,7 @@ export function ShotCalcProvider({ children }: { children: React.ReactNode }) {
   }): ShotResult => {
     return yardageModel.calculate_adjusted_yardage(
       params.targetYardage,
-      params.skillLevel || SkillLevel.INTERMEDIATE,
+      params.skillLevel || SkillLevel.PROFESSIONAL,
       params.club
     )
   }
