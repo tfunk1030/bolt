@@ -32,6 +32,7 @@ export default function ShotCalculatorPage() {
   const calculateShot = useCallback(() => {
     if (!conditions) return null
 
+    console.log('Environment:', process.env.NODE_ENV);
     console.log('Target Yardage:', targetYardage);
     const recommendedClub = getRecommendedClub(targetYardage)
     console.log('Recommended Club:', recommendedClub);
@@ -42,15 +43,14 @@ export default function ShotCalculatorPage() {
     }
 
     try {
-      // Debug: Log the yardage model instance
-      console.log('YardageModel:', yardageModel);
+      // Debug: Log the yardage model instance and verify it's initialized
+      console.log('YardageModel initialized:', !!yardageModel);
+      console.log('YardageModel methods:', Object.keys(yardageModel));
       
-      // Map to exact club names used by the model
       let clubKey = recommendedClub.name.toLowerCase();
       
-      // Create a mapping object for exact matches
       const clubMapping: Record<string, string> = {
-        'pw': 'pitchingwedge',  // Try without hyphens
+        'pw': 'pitchingwedge',
         'gw': 'gapwedge',
         'sw': 'sandwedge',
         'lw': 'lobwedge',
@@ -71,7 +71,17 @@ export default function ShotCalculatorPage() {
 
       console.log('Mapped Club Key:', clubKey);
       
-      // Debug: Try to get club data before calculations
+      // Verify the yardage model is working before proceeding
+      if (typeof yardageModel.getClubData !== 'function') {
+        console.error('YardageModel.getClubData is not a function');
+        return null;
+      }
+
+      if (typeof yardageModel.set_ball_model !== 'function') {
+        console.error('YardageModel.set_ball_model is not a function');
+        return null;
+      }
+
       const preClubData = yardageModel.getClubData(clubKey);
       console.log('Pre-calculation club data:', preClubData);
 
@@ -79,7 +89,7 @@ export default function ShotCalculatorPage() {
       yardageModel.set_conditions(
         conditions.temperature,
         conditions.altitude,
-        0, 0,  // No wind
+        0, 0,
         conditions.pressure,
         conditions.humidity
       )
@@ -91,7 +101,7 @@ export default function ShotCalculatorPage() {
       )
 
       if (!result) {
-        console.log('No result from calculation');
+        console.error('No result from calculation - verify yardage model is working in production');
         return null;
       }
 
@@ -105,7 +115,7 @@ export default function ShotCalculatorPage() {
       console.log('Post-calculation club data:', clubData);
       
       if (!clubData) {
-        console.log('No club data found for:', clubKey);
+        console.error('No club data found for:', clubKey, 'in environment:', process.env.NODE_ENV);
         return null;
       }
 
@@ -115,7 +125,7 @@ export default function ShotCalculatorPage() {
         recommendedClub
       }
     } catch (error) {
-      console.error('Error calculating shot:', error);
+      console.error('Error calculating shot in environment:', process.env.NODE_ENV, error);
       return null;
     }
   }, [conditions, targetYardage, getRecommendedClub])
