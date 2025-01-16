@@ -9,13 +9,19 @@ export interface ClubData {
 
 export const clubData: ClubData[] = [
   { name: "Driver", ballSpeed: 171, launchAngle: 10.4, spinRate: 2545, carry: 282 },
-  { name: "3-Wood", ballSpeed: 158, launchAngle: 11.2, spinRate: 3275, carry: 255 },
-  { name: "5-Wood", ballSpeed: 148, launchAngle: 12.8, spinRate: 3850, carry: 235 },
-  { name: "4-Iron", ballSpeed: 139, launchAngle: 14.2, spinRate: 4800, carry: 208 },
-  { name: "5-Iron", ballSpeed: 133, launchAngle: 15.0, spinRate: 5400, carry: 195 },
-  { name: "6-Iron", ballSpeed: 127, launchAngle: 15.6, spinRate: 6200, carry: 183 },
-  { name: "7-Iron", ballSpeed: 123, launchAngle: 16.1, spinRate: 7123, carry: 176 },
-  { name: "8-Iron", ballSpeed: 118, launchAngle: 17.8, spinRate: 7700, carry: 165 },
-  { name: "9-Iron", ballSpeed: 113, launchAngle: 19.2, spinRate: 8300, carry: 154 },
-  { name: "PW", ballSpeed: 108, launchAngle: 21.5, spinRate: 9000, carry: 140 },
+  { name: "3-Wood", ballSpeed: 162, launchAngle: 9.3, spinRate: 3663, carry: 249 },
+  { name: "5-Wood", ballSpeed: 156, launchAngle: 9.7, spinRate: 4322, carry: 236 },
+  { name: "Hybrid", ballSpeed: 149, launchAngle: 10.2, spinRate: 4587, carry: 231 },
+  { name: "3-Iron", ballSpeed: 145, launchAngle: 10.3, spinRate: 4404, carry: 218 },
+  { name: "4-Iron", ballSpeed: 140, launchAngle: 10.8, spinRate: 4782, carry: 209 },
+  { name: "5-Iron", ballSpeed: 135, launchAngle: 11.9, spinRate: 5280, carry: 199 },
+  { name: "6-Iron", ballSpeed: 130, launchAngle: 14.0, spinRate: 6204, carry: 188 },
+  { name: "7-Iron", ballSpeed: 123, launchAngle: 16.1, spinRate: 7124, carry: 176 },
+  { name: "8-Iron", ballSpeed: 118, launchAngle: 17.8, spinRate: 8078, carry: 164 },
+  { name: "9-Iron", ballSpeed: 112, launchAngle: 20.0, spinRate: 8793, carry: 152 },
+  { name: "PW", ballSpeed: 104, launchAngle: 23.7, spinRate: 9316, carry: 142 },
+  // Extrapolated wedges with 12-yard gaps
+  { name: "GW", ballSpeed: 101, launchAngle: 24.5, spinRate: 9600, carry: 130 },
+  { name: "SW", ballSpeed: 98, launchAngle: 25.3, spinRate: 9900, carry: 118 },
+  { name: "LW", ballSpeed: 95, launchAngle: 26.1, spinRate: 10200, carry: 106 }
 ];

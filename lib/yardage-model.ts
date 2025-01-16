@@ -48,9 +48,9 @@ export class YardageModelEnhanced {
     "8-iron": { name: "8-Iron", ball_speed: 118, launch_angle: 17.8, spin_rate: 8078, max_height: 33, land_angle: 51, spin_decay: 0.13 },
     "9-iron": { name: "9-Iron", ball_speed: 112, launch_angle: 20.0, spin_rate: 8793, max_height: 32, land_angle: 52, spin_decay: 0.14 },
     "pitching-wedge": { name: "PW", ball_speed: 104, launch_angle: 23.7, spin_rate: 9316, max_height: 32, land_angle: 52, spin_decay: 0.15 },
-    "gap-wedge": { name: "GW", ball_speed: 98, launch_angle: 26.5, spin_rate: 9800, max_height: 31, land_angle: 53, spin_decay: 0.16 },
-    "sand-wedge": { name: "SW", ball_speed: 93, launch_angle: 29.8, spin_rate: 10200, max_height: 30, land_angle: 54, spin_decay: 0.17 },
-    "lob-wedge": { name: "LW", ball_speed: 88, launch_angle: 32.0, spin_rate: 10500, max_height: 29, land_angle: 55, spin_decay: 0.18 }
+    "gap-wedge": { name: "GW", ball_speed: 101, launch_angle: 24.5, spin_rate: 9600, max_height: 32, land_angle: 53, spin_decay: 0.155 },
+    "sand-wedge": { name: "SW", ball_speed: 98, launch_angle: 25.3, spin_rate: 9900, max_height: 32, land_angle: 54, spin_decay: 0.17 },
+    "lob-wedge": { name: "LW", ball_speed: 95, launch_angle: 26.1, spin_rate: 10200, max_height: 32, land_angle: 55, spin_decay: 0.18 }
   }
 
   // Altitude effects

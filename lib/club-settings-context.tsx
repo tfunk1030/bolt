@@ -11,22 +11,22 @@ interface ClubSettingsContextType {
   getRecommendedClub: (targetYardage: number) => ClubData | null
 }
 
-const defaultClubs: ClubData[] = [
-  { name: "Driver", normalYardage: 300, loft: 10 },
-  { name: "3-Wood", normalYardage: 260, loft: 15 },
-  { name: "5-Wood", normalYardage: 240, loft: 18 },
-  { name: "2-Iron", normalYardage: 245, loft: 17 },
-  { name: "3-Iron", normalYardage: 235, loft: 19 },
-  { name: "4-Iron", normalYardage: 220, loft: 22 },
-  { name: "5-Iron", normalYardage: 205, loft: 26 },
-  { name: "6-Iron", normalYardage: 190, loft: 30 },
-  { name: "7-Iron", normalYardage: 180, loft: 34 },
-  { name: "8-Iron", normalYardage: 165, loft: 38 },
-  { name: "9-Iron", normalYardage: 150, loft: 42 },
-  { name: "PW", normalYardage: 138, loft: 46 },
-  { name: "GW", normalYardage: 124, loft: 50 },
-  { name: "SW", normalYardage: 112, loft: 54 },
-  { name: "LW", normalYardage: 95, loft: 60 }
+const DEFAULT_CLUBS: ClubData[] = [
+  { name: "Driver", normalYardage: 282, loft: 9.5 },
+  { name: "3-Wood", normalYardage: 249, loft: 15 },
+  { name: "5-Wood", normalYardage: 236, loft: 18 },
+  { name: "Hybrid", normalYardage: 231, loft: 20 },
+  { name: "3-Iron", normalYardage: 218, loft: 21 },
+  { name: "4-Iron", normalYardage: 209, loft: 24 },
+  { name: "5-Iron", normalYardage: 199, loft: 27 },
+  { name: "6-Iron", normalYardage: 188, loft: 30 },
+  { name: "7-Iron", normalYardage: 176, loft: 34 },
+  { name: "8-Iron", normalYardage: 164, loft: 38 },
+  { name: "9-Iron", normalYardage: 152, loft: 42 },
+  { name: "PW", normalYardage: 142, loft: 46 },
+  { name: "GW", normalYardage: 130, loft: 50 },
+  { name: "SW", normalYardage: 118, loft: 54 },
+  { name: "LW", normalYardage: 106, loft: 58 }
 ]
 
 export const ClubSettingsContext = createContext<ClubSettingsContextType | null>(null);
@@ -46,16 +46,16 @@ export function ClubSettingsProvider({ children }: { children: React.ReactNode }
           }))
         } catch (e) {
           console.error('Error parsing saved club settings:', e)
-          return defaultClubs
+          return DEFAULT_CLUBS
         }
       }
     }
-    return defaultClubs
+    return DEFAULT_CLUBS
   })
 
   // Helper function to get default loft based on club name
   function getDefaultLoft(clubName: string): number {
-    const defaultClub = defaultClubs.find(club => club.name === clubName)
+    const defaultClub = DEFAULT_CLUBS.find(club => club.name === clubName)
     return defaultClub?.loft || 0
   }
 
