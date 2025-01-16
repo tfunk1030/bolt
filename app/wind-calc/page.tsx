@@ -49,85 +49,131 @@ export default function WindCalcPage() {
   const calculateWindEffect = () => {
     if (!conditions) return;
 
+    console.log('Environment:', process.env.NODE_ENV);
+    console.log('Target Yardage:', targetYardage);
     const recommendedClub = getRecommendedClub(targetYardage)
-    if (!recommendedClub) return;
+    console.log('Recommended Club:', recommendedClub);
 
-    // Map club name to yardage model format
-    const clubKey = recommendedClub.name.replace(/(\d)i$/, "$1-iron")
-      .replace(/^(\d)W$/, "$1-wood")
-      .replace(/^PW$/, "pitching-wedge")
-      .replace(/^GW$/, "gap-wedge")
-      .replace(/^SW$/, "sand-wedge")
-      .replace(/^LW$/, "lob-wedge")
-      .replace(/^7W$/, "7-wood")
-      .replace(/^2i$/, "2-iron")
-      .replace(/^3i$/, "3-iron")
-      .replace(/^4i$/, "4-iron")
-      .replace(/^5i$/, "5-iron")
-      .replace(/^6i$/, "6-iron")
-      .replace(/^7i$/, "7-iron")
-      .replace(/^8i$/, "8-iron")
-      .replace(/^9i$/, "9-iron")
-      .replace(/^3w$/, "3-wood")
-      .replace(/^4w$/, "4-wood")
-      .replace(/^5w$/, "5-wood")
-      .replace(/^6w$/, "6-wood")
-      .replace(/^7w$/, "7-wood")
-      .toLowerCase()
+    if (!recommendedClub) {
+      console.log('No recommended club found');
+      return;
+    }
 
-    // Set ball model (using mid_range as default)
-    yardageModel.set_ball_model("tour_premium")
+    try {
+      // Debug: Log the yardage model instance and verify it's initialized
+      console.log('YardageModel initialized:', !!yardageModel);
+      console.log('YardageModel methods:', Object.keys(yardageModel));
 
-    // First calculate environmental effects without wind
-    yardageModel.set_conditions(
-      conditions.temperature,
-      conditions.altitude,
-      0,  // No wind
-      0,  // No wind direction
-      conditions.pressure,
-      conditions.humidity
-    )
+      // Map club name to yardage model format
+      const clubKey = recommendedClub.name
+        .toLowerCase()
+        .replace(/(\d)i$/, "$1-iron")
+        .replace(/^(\d)w$/, "$1-wood")
+        .replace(/^pw$/, "pitching-wedge")
+        .replace(/^gw$/, "gap-wedge")
+        .replace(/^sw$/, "sand-wedge")
+        .replace(/^lw$/, "lob-wedge")
+        .replace(/^7w$/, "7-wood")
+        .replace(/^2i$/, "2-iron")
+        .replace(/^3i$/, "3-iron")
+        .replace(/^4i$/, "4-iron")
+        .replace(/^5i$/, "5-iron")
+        .replace(/^6i$/, "6-iron")
+        .replace(/^7i$/, "7-iron")
+        .replace(/^8i$/, "8-iron")
+        .replace(/^9i$/, "9-iron")
+        .replace(/^3w$/, "3-wood")
+        .replace(/^4w$/, "4-wood")
+        .replace(/^5w$/, "5-wood")
+        .replace(/^6w$/, "6-wood")
+        .replace(/^7w$/, "7-wood")
 
-    const envResult = yardageModel.calculate_adjusted_yardage(
-      targetYardage,
-      SkillLevel.PROFESSIONAL, // Use consistent skill level
-      clubKey
-    )
+      console.log('Mapped Club Key:', clubKey);
 
-    // Then calculate with wind added
-    yardageModel.set_conditions(
-      conditions.temperature,
-      conditions.altitude,
-      windSpeed,
-      windDirection,
-      conditions.pressure,
-      conditions.humidity
-    )
-
-    const windResult = yardageModel.calculate_adjusted_yardage(
-      targetYardage,
-      SkillLevel.PROFESSIONAL,
-      clubKey
-    )
-
-    // Calculate how much shorter/longer to play the shot
-    const envEffect = -(envResult.carry_distance - targetYardage); // Negative if conditions help (play it shorter)
-    const windEffect = -(windResult.carry_distance - envResult.carry_distance); // Negative if wind helps (play it shorter)
-    const totalEffect = envEffect + windEffect;
-    
-    setResult({
-      environmentalEffect: envEffect,
-      windEffect: windEffect,
-      lateralEffect: windResult.lateral_movement,
-      totalDistance: targetYardage + totalEffect,
-      recommendedClub: recommendedClub.name,
-      clubData: {
-        name: recommendedClub.name,
-        normalCarry: recommendedClub.normalYardage,
-        adjustedCarry: windResult.carry_distance,
-        lateral: windResult.lateral_movement
+      // Ensure yardage model is properly initialized
+      if (!yardageModel.getClubData || !yardageModel.set_ball_model) {
+        console.error('YardageModel not properly initialized');
+        return;
       }
-    })
+
+      // Try to get initial club data
+      const preClubData = yardageModel.getClubData(clubKey);
+      console.log('Pre-calculation club data:', preClubData);
+
+      // Set ball model (using tour_premium as default)
+      yardageModel.set_ball_model("tour_premium")
+
+      // First calculate environmental effects without wind
+      yardageModel.set_conditions(
+        conditions.temperature,
+        conditions.altitude,
+        0,  // No wind
+        0,  // No wind direction
+        conditions.pressure,
+        conditions.humidity
+      )
+
+      const envResult = yardageModel.calculate_adjusted_yardage(
+        targetYardage,
+        SkillLevel.PROFESSIONAL,
+        clubKey
+      )
+
+      if (!envResult) {
+        console.error('No environmental result from calculation in environment:', process.env.NODE_ENV);
+        return;
+      }
+
+      // Then calculate with wind added
+      yardageModel.set_conditions(
+        conditions.temperature,
+        conditions.altitude,
+        windSpeed,
+        windDirection,
+        conditions.pressure,
+        conditions.humidity
+      )
+
+      const windResult = yardageModel.calculate_adjusted_yardage(
+        targetYardage,
+        SkillLevel.PROFESSIONAL,
+        clubKey
+      )
+
+      if (!windResult) {
+        console.error('No wind result from calculation in environment:', process.env.NODE_ENV);
+        return;
+      }
+
+      console.log('Calculations:', {
+        clubKey,
+        targetYardage,
+        envResult,
+        windResult
+      });
+
+      // Calculate effects
+      const envEffect = -(envResult.carry_distance - targetYardage)
+      const windEffect = -(windResult.carry_distance - envResult.carry_distance)
+      const lateralEffect = windResult.lateral_movement
+
+      setResult({
+        environmentalEffect: envEffect,
+        windEffect: windEffect,
+        lateralEffect: lateralEffect,
+        totalDistance: targetYardage + envEffect + windEffect,
+        recommendedClub: recommendedClub.name,
+        clubData: {
+          name: recommendedClub.name,
+          normalCarry: recommendedClub.normalYardage,
+          adjustedCarry: windResult.carry_distance,
+          lateral: lateralEffect
+        }
+      })
+    } catch (error) {
+      console.error('Error calculating wind effect in environment:', process.env.NODE_ENV, error);
+      return;
+    }
 
     // Scroll to results
     setTimeout(() => {

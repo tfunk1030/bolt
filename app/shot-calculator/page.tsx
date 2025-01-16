@@ -50,41 +50,38 @@ export default function ShotCalculatorPage() {
       let clubKey = recommendedClub.name.toLowerCase();
       
       const clubMapping: Record<string, string> = {
-        'pw': 'pitchingwedge',
-        'gw': 'gapwedge',
-        'sw': 'sandwedge',
-        'lw': 'lobwedge',
-        '3w': '3wood',
-        '5w': '5wood',
-        '7w': '7wood',
-        '2i': '2iron',
-        '3i': '3iron',
-        '4i': '4iron',
-        '5i': '5iron',
-        '6i': '6iron',
-        '7i': '7iron',
-        '8i': '8iron',
-        '9i': '9iron',
+        'pw': 'pitching-wedge',
+        'gw': 'gap-wedge',
+        'sw': 'sand-wedge',
+        'lw': 'lob-wedge',
+        '3w': '3-wood',
+        '5w': '5-wood',
+        '7w': '7-wood',
+        '2i': '2-iron',
+        '3i': '3-iron',
+        '4i': '4-iron',
+        '5i': '5-iron',
+        '6i': '6-iron',
+        '7i': '7-iron',
+        '8i': '8-iron',
+        '9i': '9-iron',
       };
 
       clubKey = clubMapping[clubKey] || clubKey;
 
       console.log('Mapped Club Key:', clubKey);
-      
-      // Verify the yardage model is working before proceeding
-      if (typeof yardageModel.getClubData !== 'function') {
-        console.error('YardageModel.getClubData is not a function');
+
+      // Ensure yardage model is properly initialized
+      if (!yardageModel.getClubData || !yardageModel.set_ball_model) {
+        console.error('YardageModel not properly initialized');
         return null;
       }
 
-      if (typeof yardageModel.set_ball_model !== 'function') {
-        console.error('YardageModel.set_ball_model is not a function');
-        return null;
-      }
-
+      // Try to get initial club data
       const preClubData = yardageModel.getClubData(clubKey);
       console.log('Pre-calculation club data:', preClubData);
 
+      // Set up the model
       yardageModel.set_ball_model("tour_premium")
       yardageModel.set_conditions(
         conditions.temperature,
@@ -94,6 +91,7 @@ export default function ShotCalculatorPage() {
         conditions.humidity
       )
 
+      // Calculate the shot
       const result = yardageModel.calculate_adjusted_yardage(
         targetYardage,
         SkillLevel.PROFESSIONAL,
@@ -101,7 +99,7 @@ export default function ShotCalculatorPage() {
       )
 
       if (!result) {
-        console.error('No result from calculation - verify yardage model is working in production');
+        console.error('No result from calculation in environment:', process.env.NODE_ENV);
         return null;
       }
 
