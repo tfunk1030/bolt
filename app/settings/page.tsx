@@ -5,13 +5,18 @@ import { useClubSettings } from '@/lib/club-settings-context'
 import { usePremium } from '@/lib/premium-context'
 import { useSettings } from '@/lib/settings-context'
 import { Plus, Edit2, Trash2, Lock, Ruler, Thermometer, Mountain } from 'lucide-react'
+import { ClubData } from '@/lib/types'
 
 export default function SettingsPage() {
   const { clubs, addClub, updateClub, removeClub } = useClubSettings()
   const { isPremium, setShowUpgradeModal } = usePremium()
   const { settings, updateSettings, convertDistance } = useSettings()
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
-  const [newClub, setNewClub] = useState({ name: '', normalYardage: 0, loft: 0 })
+  const [newClub, setNewClub] = useState<ClubData>({
+    name: '',
+    normalYardage: 0,
+    loft: 0
+  })
 
   const handleSave = (index: number | null) => {
     if (index === null) {
@@ -39,7 +44,11 @@ export default function SettingsPage() {
       ? convertDistance(club.normalYardage, 'meters')
       : club.normalYardage
 
-    setNewClub({ ...club, normalYardage })
+    setNewClub({ 
+      ...club, 
+      normalYardage,
+      loft: club.loft || 0 // Provide a default value if loft is missing
+    })
     setEditingIndex(index)
   }
 
@@ -49,6 +58,19 @@ export default function SettingsPage() {
       setEditingIndex(null)
       setNewClub({ name: '', normalYardage: 0, loft: 0 })
     }
+  }
+
+  const handleClubUpdate = (club: ClubData, index: number) => {
+    const normalYardage = settings.distanceUnit === 'meters' 
+      ? convertDistance(club.normalYardage, 'meters') 
+      : club.normalYardage
+
+    setNewClub({ 
+      name: club.name,
+      normalYardage,
+      loft: club.loft
+    })
+    setEditingIndex(index)
   }
 
   return (

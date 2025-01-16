@@ -1,39 +1,30 @@
 'use client'
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
-
-interface ClubData {
-  name: string
-  normalYardage: number
-}
+import { ClubData } from '@/lib/types'
 
 interface ClubSettingsContextType {
   clubs: ClubData[]
   addClub: (club: ClubData) => void
   updateClub: (index: number, club: ClubData) => void
   removeClub: (index: number) => void
-  getRecommendedClub: (targetYardage: number) => RecommendedClub | null
-}
-
-interface RecommendedClub {
-  name: string
-  normalYardage: number
+  getRecommendedClub: (targetYardage: number) => ClubData | null
 }
 
 const defaultClubs: ClubData[] = [
-  { name: 'Driver', normalYardage: 295 },
-  { name: '3W', normalYardage: 260 },
-  { name: '5W', normalYardage: 240 },
-  { name: '4i', normalYardage: 220 },
-  { name: '5i', normalYardage: 205 },
-  { name: '6i', normalYardage: 190 },
-  { name: '7i', normalYardage: 178 },
-  { name: '8i', normalYardage: 165 },
-  { name: '9i', normalYardage: 152 },
-  { name: 'PW', normalYardage: 138 },
-  { name: 'GW', normalYardage: 126 },
-  { name: 'SW', normalYardage: 114 },
-  { name: 'LW', normalYardage: 95 },
+  { name: "Driver", normalYardage: 230, loft: 10.5 },
+  { name: "3-Wood", normalYardage: 215, loft: 15 },
+  { name: "5-Wood", normalYardage: 200, loft: 18 },
+  { name: "4-Iron", normalYardage: 180, loft: 21 },
+  { name: "5-Iron", normalYardage: 170, loft: 24 },
+  { name: "6-Iron", normalYardage: 160, loft: 27 },
+  { name: "7-Iron", normalYardage: 150, loft: 31 },
+  { name: "8-Iron", normalYardage: 140, loft: 35 },
+  { name: "9-Iron", normalYardage: 130, loft: 39 },
+  { name: "PW", normalYardage: 120, loft: 43 },
+  { name: "GW", normalYardage: 110, loft: 48 },
+  { name: "SW", normalYardage: 100, loft: 54 },
+  { name: "LW", normalYardage: 90, loft: 58 }
 ]
 
 export const ClubSettingsContext = createContext<ClubSettingsContextType | null>(null);
@@ -44,7 +35,13 @@ export function ClubSettingsProvider({ children }: { children: React.ReactNode }
       const saved = localStorage.getItem('clubSettings')
       if (saved) {
         try {
-          return JSON.parse(saved)
+          const parsedClubs = JSON.parse(saved)
+          // Ensure all clubs have loft property
+          return parsedClubs.map((club: Partial<ClubData>) => ({
+            name: club.name || '',
+            normalYardage: club.normalYardage || 0,
+            loft: club.loft || getDefaultLoft(club.name || '') || 0
+          }))
         } catch (e) {
           console.error('Error parsing saved club settings:', e)
           return defaultClubs
@@ -53,6 +50,12 @@ export function ClubSettingsProvider({ children }: { children: React.ReactNode }
     }
     return defaultClubs
   })
+
+  // Helper function to get default loft based on club name
+  function getDefaultLoft(clubName: string): number {
+    const defaultClub = defaultClubs.find(club => club.name === clubName)
+    return defaultClub?.loft || 0
+  }
 
   const addClub = useCallback((club: ClubData) => {
     setClubs(prev => {
@@ -79,55 +82,25 @@ export function ClubSettingsProvider({ children }: { children: React.ReactNode }
     })
   }, [])
 
-  const getRecommendedClub = useCallback((targetYardage: number): RecommendedClub | null => {
-    console.log('Finding club for yardage:', targetYardage)
-    console.log('Available clubs:', clubs)
+  const getRecommendedClub = useCallback((targetYardage: number): ClubData | null => {
+    if (!clubs.length) return null
 
-    // Create ranges based on user's configured clubs
-    const clubRanges = clubs
-      .filter(club => club.normalYardage > 0)
-      .map(club => ({
-        name: club.name,
-        normalYardage: club.normalYardage,
-        range: [
-          Math.round(club.normalYardage * 0.9),
-          Math.round(club.normalYardage * 1.1)
-        ] as [number, number]
-      }))
-      .sort((a, b) => b.normalYardage - a.normalYardage)
+    let closestClub = clubs[0]
+    let minDiff = Math.abs(clubs[0].normalYardage - targetYardage)
 
-    console.log('Club ranges:', clubRanges)
-
-    // Find the first club where the target is within its range
-    const recommendedClub = clubRanges.find(club => 
-      targetYardage >= club.range[0] && targetYardage <= club.range[1]
-    )
-
-    if (recommendedClub) {
-      console.log('Found club in range:', recommendedClub)
-      return {
-        name: recommendedClub.name,
-        normalYardage: recommendedClub.normalYardage
+    for (const club of clubs) {
+      const diff = Math.abs(club.normalYardage - targetYardage)
+      if (diff < minDiff) {
+        minDiff = diff
+        closestClub = club
       }
     }
 
-    // If no exact match, find the closest club
-    const closestClub = clubRanges.reduce((closest, club) => {
-      const currentDiff = Math.abs(targetYardage - club.normalYardage)
-      const closestDiff = closest ? Math.abs(targetYardage - closest.normalYardage) : Infinity
-      return currentDiff < closestDiff ? club : closest
-    }, null as typeof clubRanges[0] | null)
-
-    if (closestClub) {
-      console.log('Found closest club:', closestClub)
-      return {
-        name: closestClub.name,
-        normalYardage: closestClub.normalYardage
-      }
+    return {
+      name: closestClub.name,
+      normalYardage: closestClub.normalYardage,
+      loft: closestClub.loft
     }
-
-    console.log('No suitable club found')
-    return null
   }, [clubs])
 
   const value: ClubSettingsContextType = {
