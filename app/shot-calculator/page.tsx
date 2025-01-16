@@ -41,38 +41,82 @@ export default function ShotCalculatorPage() {
       return null;
     }
 
-    const clubKey = recommendedClub.name.toLowerCase()
-    yardageModel.set_ball_model("tour_premium")
-    yardageModel.set_conditions(
-      conditions.temperature,
-      conditions.altitude,
-      0, 0,  // No wind
-      conditions.pressure,
-      conditions.humidity
-    )
+    try {
+      // Debug: Log the yardage model instance
+      console.log('YardageModel:', yardageModel);
+      
+      // Map to exact club names used by the model
+      let clubKey = recommendedClub.name.toLowerCase();
+      
+      // Create a mapping object for exact matches
+      const clubMapping: Record<string, string> = {
+        'pw': 'pitchingwedge',  // Try without hyphens
+        'gw': 'gapwedge',
+        'sw': 'sandwedge',
+        'lw': 'lobwedge',
+        '3w': '3wood',
+        '5w': '5wood',
+        '7w': '7wood',
+        '2i': '2iron',
+        '3i': '3iron',
+        '4i': '4iron',
+        '5i': '5iron',
+        '6i': '6iron',
+        '7i': '7iron',
+        '8i': '8iron',
+        '9i': '9iron',
+      };
 
-    const result = yardageModel.calculate_adjusted_yardage(
-      targetYardage,
-      SkillLevel.PROFESSIONAL,
-      clubKey
-    )
+      clubKey = clubMapping[clubKey] || clubKey;
 
-    console.log('Shot Calculation:', {
-      clubKey,
-      targetYardage,
-      result
-    });
+      console.log('Mapped Club Key:', clubKey);
+      
+      // Debug: Try to get club data before calculations
+      const preClubData = yardageModel.getClubData(clubKey);
+      console.log('Pre-calculation club data:', preClubData);
 
-    const clubData = yardageModel.getClubData(clubKey)
-    if (!clubData) {
-      console.log('No club data found for:', clubKey);
+      yardageModel.set_ball_model("tour_premium")
+      yardageModel.set_conditions(
+        conditions.temperature,
+        conditions.altitude,
+        0, 0,  // No wind
+        conditions.pressure,
+        conditions.humidity
+      )
+
+      const result = yardageModel.calculate_adjusted_yardage(
+        targetYardage,
+        SkillLevel.PROFESSIONAL,
+        clubKey
+      )
+
+      if (!result) {
+        console.log('No result from calculation');
+        return null;
+      }
+
+      console.log('Shot Calculation:', {
+        clubKey,
+        targetYardage,
+        result
+      });
+
+      const clubData = yardageModel.getClubData(clubKey)
+      console.log('Post-calculation club data:', clubData);
+      
+      if (!clubData) {
+        console.log('No club data found for:', clubKey);
+        return null;
+      }
+
+      return {
+        result,
+        clubData,
+        recommendedClub
+      }
+    } catch (error) {
+      console.error('Error calculating shot:', error);
       return null;
-    }
-
-    return {
-      result,
-      clubData,
-      recommendedClub
     }
   }, [conditions, targetYardage, getRecommendedClub])
 
@@ -94,6 +138,20 @@ export default function ShotCalculatorPage() {
       })
     }
   }, [conditions, shotData, targetYardage, setShotCalcData, lastUpdate])
+
+  // Add error boundary for the component
+  useEffect(() => {
+    const handleError = (error: Error) => {
+      console.error('Shot calculator error:', error);
+    };
+
+    const handleErrorEvent = (event: ErrorEvent) => {
+      console.error('Shot calculator error:', event.error);
+    };
+
+    window.addEventListener('error', handleErrorEvent);
+    return () => window.removeEventListener('error', handleErrorEvent);
+  }, []);
 
   if (!conditions) {
     return (
