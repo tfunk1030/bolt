@@ -31,13 +31,25 @@ export interface ClubData {
 }
 
 export class YardageModelEnhanced {
-  // PGA Tour average club data
+  // PGA Tour average club data (2023)
   private static CLUB_DATABASE: Record<string, ClubData> = {
     "driver": { name: "Driver", ball_speed: 171, launch_angle: 10.4, spin_rate: 2545, max_height: 35, land_angle: 39, spin_decay: 0.08 },
     "3-wood": { name: "3-Wood", ball_speed: 162, launch_angle: 9.3, spin_rate: 3663, max_height: 32, land_angle: 44, spin_decay: 0.09 },
+    "5-wood": { name: "5-Wood", ball_speed: 156, launch_angle: 9.7, spin_rate: 4322, max_height: 33, land_angle: 48, spin_decay: 0.095 },
+    "7-wood": { name: "7-Wood", ball_speed: 152, launch_angle: 11.2, spin_rate: 4750, max_height: 34, land_angle: 50, spin_decay: 0.098 },
+    "hybrid": { name: "Hybrid", ball_speed: 149, launch_angle: 10.2, spin_rate: 4587, max_height: 31, land_angle: 49, spin_decay: 0.10 },
+    "2-iron": { name: "2-Iron", ball_speed: 148, launch_angle: 9.8, spin_rate: 4100, max_height: 29, land_angle: 47, spin_decay: 0.095 },
+    "3-iron": { name: "3-Iron", ball_speed: 145, launch_angle: 10.3, spin_rate: 4404, max_height: 30, land_angle: 48, spin_decay: 0.10 },
+    "4-iron": { name: "4-Iron", ball_speed: 140, launch_angle: 10.8, spin_rate: 4782, max_height: 31, land_angle: 49, spin_decay: 0.105 },
     "5-iron": { name: "5-Iron", ball_speed: 135, launch_angle: 11.9, spin_rate: 5280, max_height: 33, land_angle: 50, spin_decay: 0.11 },
+    "6-iron": { name: "6-Iron", ball_speed: 130, launch_angle: 14.0, spin_rate: 6204, max_height: 32, land_angle: 50, spin_decay: 0.115 },
     "7-iron": { name: "7-Iron", ball_speed: 123, launch_angle: 16.1, spin_rate: 7124, max_height: 34, land_angle: 51, spin_decay: 0.12 },
-    "pitching-wedge": { name: "Pitching Wedge", ball_speed: 104, launch_angle: 23.7, spin_rate: 9316, max_height: 32, land_angle: 52, spin_decay: 0.15 }
+    "8-iron": { name: "8-Iron", ball_speed: 118, launch_angle: 17.8, spin_rate: 8078, max_height: 33, land_angle: 51, spin_decay: 0.13 },
+    "9-iron": { name: "9-Iron", ball_speed: 112, launch_angle: 20.0, spin_rate: 8793, max_height: 32, land_angle: 52, spin_decay: 0.14 },
+    "pitching-wedge": { name: "PW", ball_speed: 104, launch_angle: 23.7, spin_rate: 9316, max_height: 32, land_angle: 52, spin_decay: 0.15 },
+    "gap-wedge": { name: "GW", ball_speed: 98, launch_angle: 26.5, spin_rate: 9800, max_height: 31, land_angle: 53, spin_decay: 0.16 },
+    "sand-wedge": { name: "SW", ball_speed: 93, launch_angle: 29.8, spin_rate: 10200, max_height: 30, land_angle: 54, spin_decay: 0.17 },
+    "lob-wedge": { name: "LW", ball_speed: 88, launch_angle: 32.0, spin_rate: 10500, max_height: 29, land_angle: 55, spin_decay: 0.18 }
   }
 
   // Altitude effects
@@ -89,13 +101,72 @@ export class YardageModelEnhanced {
   private static SPIN_DECAY_RATES: Record<string, number> = {
     "driver": 0.08,
     "3-wood": 0.09,
+    "5-wood": 0.095,
+    "7-wood": 0.098,
+    "hybrid": 0.10,
+    "2-iron": 0.095,
+    "3-iron": 0.10,
+    "4-iron": 0.105,
     "5-iron": 0.11,
+    "6-iron": 0.115,
     "7-iron": 0.12,
-    "pitching-wedge": 0.15
+    "8-iron": 0.13,
+    "9-iron": 0.14,
+    "pitching-wedge": 0.15,
+    "gap-wedge": 0.155,
+    "sand-wedge": 0.16,
+    "lob-wedge": 0.165
+  }
+
+  // Map user club names to database keys
+  private static CLUB_NAME_MAP: Record<string, string> = {
+    // Woods
+    "driver": "driver",
+    "d": "driver",
+    "3w": "3-wood",
+    "3wood": "3-wood",
+    "5w": "5-wood",
+    "5wood": "5-wood",
+    "7w": "7-wood",
+    "7wood": "7-wood",
+    
+    // Hybrid
+    "hybrid": "hybrid",
+    "h": "hybrid",
+    "3h": "hybrid",
+    
+    // Irons
+    "2i": "2-iron",
+    "2iron": "2-iron",
+    "3i": "3-iron",
+    "3iron": "3-iron",
+    "4i": "4-iron",
+    "4iron": "4-iron",
+    "5i": "5-iron",
+    "5iron": "5-iron",
+    "6i": "6-iron",
+    "6iron": "6-iron",
+    "7i": "7-iron",
+    "7iron": "7-iron",
+    "8i": "8-iron",
+    "8iron": "8-iron",
+    "9i": "9-iron",
+    "9iron": "9-iron",
+    
+    // Wedges
+    "pw": "pitching-wedge",
+    "pitchingwedge": "pitching-wedge",
+    "gw": "gap-wedge",
+    "gapwedge": "gap-wedge",
+    "aw": "gap-wedge",
+    "sw": "sand-wedge",
+    "sandwedge": "sand-wedge",
+    "lw": "lob-wedge",
+    "lobwedge": "lob-wedge"
   }
 
   private static STANDARD_CONDITIONS = {
-    TEMPERATURE: 59, // °F (15°C)
+    TEMPERATURE: 70, // °F (15°C)
     PRESSURE: 1013.25, // hPa
     DENSITY: 1.225, // kg/m³
     HUMIDITY: 50 // %
@@ -186,12 +257,15 @@ export class YardageModelEnhanced {
   }
 
   calculate_adjusted_yardage(target_yardage: number, skill_level: SkillLevel, club: string): ShotResult {
-    const club_lower = club.toLowerCase()
-    if (!(club_lower in YardageModelEnhanced.CLUB_DATABASE)) {
+    // Normalize club name to lowercase
+    const normalizedClub = club.toLowerCase()
+    const club_key = YardageModelEnhanced.CLUB_NAME_MAP[normalizedClub] || normalizedClub
+    
+    if (!(club_key in YardageModelEnhanced.CLUB_DATABASE)) {
       throw new Error(`Unknown club: ${club}`)
     }
 
-    const club_data = YardageModelEnhanced.CLUB_DATABASE[club_lower]
+    const club_data = YardageModelEnhanced.CLUB_DATABASE[club_key]
     const ball = YardageModelEnhanced.BALL_MODELS[this.ball_model]
     
     let adjusted_yardage = target_yardage
@@ -215,23 +289,21 @@ export class YardageModelEnhanced {
       
       const densityRatio = currentDensity / YardageModelEnhanced.STANDARD_CONDITIONS.DENSITY;
       
-      // Density effect on distance (approximately -1% per 1% increase in density)
-      const densityEffect = (1 - densityRatio);
+      // Density effect (inverted - higher density means shorter distance)
+      const densityEffect = -(densityRatio - 1);  // Note the negative sign
       
       // Temperature effect on ball compression
-      const tempEffect = (this.temperature - YardageModelEnhanced.STANDARD_CONDITIONS.TEMPERATURE) * 0.0008;
+      const tempEffect = (this.temperature - YardageModelEnhanced.STANDARD_CONDITIONS.TEMPERATURE) * 0.0015;
       
-      // Combined effect (weighted average)
-      const combinedEffect = (2 * densityEffect + tempEffect) / 3;
-      
-      adjusted_yardage *= (1 + combinedEffect);
+      // Multiply effects
+      adjusted_yardage *= (1 + tempEffect) * (1 + densityEffect);
     }
     
     // Altitude effects
     if (this.altitude !== null) {
       const altitude_effect = this._calculate_altitude_effect(this.altitude)
       const initial_spin = club_data.spin_rate * ball.spin_factor
-      const average_spin = this._calculate_spin_decay(club_lower, initial_spin, flight_time)
+      const average_spin = this._calculate_spin_decay(club_key, initial_spin, flight_time)
       adjusted_yardage *= altitude_effect
     }
     
@@ -270,5 +342,32 @@ export class YardageModelEnhanced {
       carry_distance: Math.round(adjusted_yardage * 10) / 10,
       lateral_movement: Math.round(lateral_movement * 10) / 10
     }
+  }
+
+  public getClubData(clubKey: string): ClubData | null {
+    // Remove spaces and convert to lowercase
+    const normalizedKey = clubKey.replace(/\s+/g, '').toLowerCase();
+    
+    // First try direct mapping
+    if (YardageModelEnhanced.CLUB_NAME_MAP[normalizedKey]) {
+      return YardageModelEnhanced.CLUB_DATABASE[YardageModelEnhanced.CLUB_NAME_MAP[normalizedKey]];
+    }
+    
+    // Then try regex replacements
+    const mappedKey = normalizedKey
+      .replace(/(\d)i$/, "$1-iron")
+      .replace(/(\d)w$/, "$1-wood")
+      .replace(/^pw$/, "pitching-wedge")
+      .replace(/^gw$/, "gap-wedge")
+      .replace(/^aw$/, "gap-wedge")
+      .replace(/^sw$/, "sand-wedge")
+      .replace(/^lw$/, "lob-wedge")
+      .replace(/^(\d+)$/, "$1-iron") // Handle bare numbers as irons
+      .replace(/driver/i, "driver")
+      .replace(/wood/i, "-wood")
+      .replace(/iron/i, "-iron")
+      .replace(/wedge/i, "-wedge");
+
+    return YardageModelEnhanced.CLUB_DATABASE[mappedKey] || null;
   }
 }

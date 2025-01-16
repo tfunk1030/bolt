@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useShotCalc } from '@/lib/shot-calc-context'
 import { useEnvironmental } from '@/lib/hooks/use-environmental'
+import { useClubSettings } from '@/lib/club-settings-context'
 import { YardageModelEnhanced, SkillLevel } from '@/lib/yardage-model'
 import WindDirectionCompass from '@/components/wind-direction-compass'
 
@@ -13,15 +14,22 @@ export default function WindCalcPage() {
   const router = useRouter()
   const { shotCalcData } = useShotCalc()
   const { conditions } = useEnvironmental()
+  const { getRecommendedClub } = useClubSettings()
   const [windDirection, setWindDirection] = useState(0)
   const [windSpeed, setWindSpeed] = useState(10)
   const [targetYardage, setTargetYardage] = useState(150)
-  const [selectedClub, setSelectedClub] = useState('7-iron')
   const [result, setResult] = useState<{ 
     environmentalEffect: number
     windEffect: number
     lateralEffect: number
-    totalDistance: number 
+    totalDistance: number
+    recommendedClub: string
+    clubData: {
+      name: string
+      normalCarry: number
+      adjustedCarry: number
+      lateral: number
+    }
   } | null>(null)
   const [yardageModel] = useState(() => new YardageModelEnhanced())
 
@@ -41,18 +49,49 @@ export default function WindCalcPage() {
   const calculateWindEffect = () => {
     if (!conditions) return;
 
+    const recommendedClub = getRecommendedClub(targetYardage)
+    if (!recommendedClub) return;
+
+    // Map club name to yardage model format
+    const clubKey = recommendedClub.name.replace(/(\d)i$/, "$1-iron")
+      .replace(/^(\d)W$/, "$1-wood")
+      .replace(/^PW$/, "pitching-wedge")
+      .replace(/^GW$/, "gap-wedge")
+      .replace(/^SW$/, "sand-wedge")
+      .replace(/^LW$/, "lob-wedge")
+      .replace(/^7W$/, "7-wood")
+      .replace(/^2i$/, "2-iron")
+      .replace(/^3i$/, "3-iron")
+      .replace(/^4i$/, "4-iron")
+      .replace(/^5i$/, "5-iron")
+      .replace(/^6i$/, "6-iron")
+      .replace(/^7i$/, "7-iron")
+      .replace(/^8i$/, "8-iron")
+      .replace(/^9i$/, "9-iron")
+      .replace(/^3w$/, "3-wood")
+      .replace(/^4w$/, "4-wood")
+      .replace(/^5w$/, "5-wood")
+      .replace(/^6w$/, "6-wood")
+      .replace(/^7w$/, "7-wood")
+      .toLowerCase()
+
+    // Set ball model (using mid_range as default)
+    yardageModel.set_ball_model("tour_premium")
+
     // First calculate environmental effects without wind
     yardageModel.set_conditions(
       conditions.temperature,
       conditions.altitude,
-      0,
-      0
+      0,  // No wind
+      0,  // No wind direction
+      conditions.pressure,
+      conditions.humidity
     )
 
     const envResult = yardageModel.calculate_adjusted_yardage(
       targetYardage,
-      SkillLevel.INTERMEDIATE,
-      selectedClub
+      SkillLevel.PROFESSIONAL, // Use consistent skill level
+      clubKey
     )
 
     // Then calculate with wind added
@@ -60,13 +99,15 @@ export default function WindCalcPage() {
       conditions.temperature,
       conditions.altitude,
       windSpeed,
-      windDirection
+      windDirection,
+      conditions.pressure,
+      conditions.humidity
     )
 
     const windResult = yardageModel.calculate_adjusted_yardage(
       targetYardage,
-      SkillLevel.INTERMEDIATE,
-      selectedClub
+      SkillLevel.PROFESSIONAL,
+      clubKey
     )
 
     // Calculate how much shorter/longer to play the shot
@@ -78,7 +119,14 @@ export default function WindCalcPage() {
       environmentalEffect: envEffect,
       windEffect: windEffect,
       lateralEffect: windResult.lateral_movement,
-      totalDistance: targetYardage + totalEffect // Add because effects are already negative for helping conditions
+      totalDistance: targetYardage + totalEffect,
+      recommendedClub: recommendedClub.name,
+      clubData: {
+        name: recommendedClub.name,
+        normalCarry: recommendedClub.normalYardage,
+        adjustedCarry: windResult.carry_distance,
+        lateral: windResult.lateral_movement
+      }
     })
 
     // Scroll to results
@@ -137,22 +185,6 @@ export default function WindCalcPage() {
             onChange={(e) => setWindSpeed(Number(e.target.value))}
             className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
           />
-        </div>
-
-        {/* Club Selection */}
-        <div className="bg-gray-900/30 p-4 rounded-lg border border-gray-700/50">
-          <label className="block text-sm font-medium text-gray-400 mb-1">Club</label>
-          <select
-            value={selectedClub}
-            onChange={(e) => setSelectedClub(e.target.value)}
-            className="w-full bg-gray-800 text-white rounded-lg px-3 py-2 border border-gray-700"
-          >
-            <option value="driver">Driver</option>
-            <option value="3-wood">3 Wood</option>
-            <option value="5-iron">5 Iron</option>
-            <option value="7-iron">7 Iron</option>
-            <option value="pitching-wedge">Pitching Wedge</option>
-          </select>
         </div>
 
         {/* Target Yardage Input */}
