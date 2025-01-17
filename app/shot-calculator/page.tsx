@@ -12,9 +12,12 @@ import {
   Thermometer, 
   Droplets, 
   Mountain, 
-  Gauge
+  Gauge,
+  Plus,
+  Minus
 } from 'lucide-react'
 import { normalizeClubName } from '@/lib/utils/club-mapping'
+import { throttle } from 'lodash'
 
 function convertDistance(value: number, unit: 'meters' | 'yards'): number {
   return unit === 'meters' ? value * 0.9144 : value
@@ -29,6 +32,35 @@ export default function ShotCalculatorPage() {
   const [targetYardage, setTargetYardage] = useState(150)
   const [lastUpdate, setLastUpdate] = useState<number | null>(null)
   const [yardageModel] = useState(() => new YardageModelEnhanced())
+
+  const throttledSetTargetYardage = useMemo(
+    () => {
+      const throttled = throttle((value: number) => setTargetYardage(value), 32)
+      return {
+        onChange: throttled,
+        cleanup: throttled.cancel
+      }
+    },
+    []
+  )
+
+  useEffect(() => {
+    return () => throttledSetTargetYardage.cleanup()
+  }, [throttledSetTargetYardage])
+
+  const incrementYardage = useCallback(() => {
+    setTargetYardage(prev => Math.min(
+      settings.distanceUnit === 'yards' ? 360 : 330,
+      prev + 1
+    ))
+  }, [settings.distanceUnit])
+
+  const decrementYardage = useCallback(() => {
+    setTargetYardage(prev => Math.max(
+      settings.distanceUnit === 'yards' ? 50 : 45,
+      prev - 1
+    ))
+  }, [settings.distanceUnit])
 
   const calculateShot = useCallback(() => {
     if (!conditions) return null
@@ -216,18 +248,73 @@ export default function ShotCalculatorPage() {
 
       {/* Target Distance Input */}
       <div className="bg-gray-800 rounded-xl p-6 mb-6">
-        <div className="text-sm text-gray-400 mb-2">Target Distance</div>
-        <div className="flex items-center gap-4">
-          <input
-            type="range"
-            min={settings.distanceUnit === 'yards' ? '50' : '45'}
-            max={settings.distanceUnit === 'yards' ? '360' : '330'}
-            value={targetYardage}
-            onChange={(e) => setTargetYardage(parseInt(e.target.value))}
-            className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
-          />
-          <div className="text-2xl font-bold w-32 text-right">
+        <div className="text-sm text-gray-400 mb-4 text-center">Target Distance</div>
+        <div className="flex flex-col items-center gap-4">
+          <div className="text-3xl font-bold" aria-live="polite">
             {formatDistance(targetYardage)}
+          </div>
+          <div className="flex items-center gap-2 w-full max-w-md">
+            <button
+              onClick={decrementYardage}
+              onKeyDown={(e) => e.key === 'Enter' && decrementYardage()}
+              aria-label="Decrease distance"
+              className="w-8 h-10 rounded-full bg-gray-700 flex items-center justify-center hover:bg-gray-600 transition-colors"
+            >
+              <Minus className="w-4 h-4" />
+            </button>
+            <input
+              type="range"
+              min={settings.distanceUnit === 'yards' ? '50' : '45'}
+              max={settings.distanceUnit === 'yards' ? '360' : '330'}
+              value={targetYardage}
+              onChange={(e) => throttledSetTargetYardage.onChange(parseInt(e.target.value))}
+              onMouseUp={(e) => {
+                const input = e.target as HTMLInputElement
+                setTargetYardage(parseInt(input.value))
+              }}
+              className="flex-1 h-3 bg-gray-700 rounded-lg appearance-none cursor-pointer
+                [&::-webkit-slider-thumb]:appearance-none
+                [&::-webkit-slider-thumb]:w-6
+                [&::-webkit-slider-thumb]:h-6
+                [&::-webkit-slider-thumb]:rounded-full
+                [&::-webkit-slider-thumb]:bg-blue-500
+                [&::-webkit-slider-thumb]:cursor-pointer
+                [&::-webkit-slider-thumb]:shadow-md
+                [&::-webkit-slider-thumb]:-mt-[6px]
+                [&::-moz-range-thumb]:w-6
+                [&::-moz-range-thumb]:h-6
+                [&::-moz-range-thumb]:rounded-full
+                [&::-moz-range-thumb]:bg-blue-500
+                [&::-moz-range-thumb]:border-0
+                [&::-moz-range-thumb]:cursor-pointer
+                [&::-moz-range-thumb]:shadow-md
+                [&::-moz-range-thumb]:-mt-[6px]
+                [&::-ms-thumb]:w-6
+                [&::-ms-thumb]:h-6
+                [&::-ms-thumb]:rounded-full
+                [&::-ms-thumb]:bg-blue-500
+                [&::-ms-thumb]:cursor-pointer
+                [&::-ms-thumb]:shadow-md
+                [&::-ms-thumb]:-mt-[6px]
+                [&::-webkit-slider-runnable-track]:bg-gray-700
+                [&::-webkit-slider-runnable-track]:rounded-lg
+                [&::-webkit-slider-runnable-track]:h-3
+                [&::-moz-range-track]:bg-gray-700
+                [&::-moz-range-track]:rounded-lg
+                [&::-moz-range-track]:h-3
+                [&::-ms-track]:bg-gray-700
+                [&::-ms-track]:rounded-lg
+                [&::-ms-track]:h-3"
+              aria-label="Target distance"
+            />
+            <button
+              onClick={incrementYardage}
+              onKeyDown={(e) => e.key === 'Enter' && incrementYardage()}
+              aria-label="Increase distance"
+              className="w-8 h-10 rounded-full bg-gray-700 flex items-center justify-center hover:bg-gray-600 transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+            </button>
           </div>
         </div>
       </div>
