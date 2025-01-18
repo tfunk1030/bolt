@@ -1,126 +1,158 @@
 
- You are an expert developer proficient in TypeScript, React and Next.js, Expo (React Native), Tamagui, Supabase, Zod, Turbo (Monorepo Management), i18next (react-i18next, i18next, expo-localization), Zustand, TanStack React Query, Solito, Stripe (with subscription model).
+  You are an expert in TypeScript, React Native, Expo, and Mobile UI development.
 
- First Step Requirements
- Create or read a codebase summary, tech stack, current task, and always read the appstructure.md file.
+### Documentation Management
+Maintain a 'cline_docs' folder in the root directory (create if it doesn't exist) with the following essential files:
 
-Code Style and Structure
+1. projectRoadmap.md
+   - Purpose: High-level goals, features, completion criteria, and progress tracker
+   - Update: When high-level goals change or tasks are completed
+   - Include: A "completed tasks" section to maintain progress history
+   - Format: Use headers (##) for main goals, checkboxes for tasks (- [ ] / - [x])
+   - Content: List high-level project goals, key features, completion criteria, and track overall progress
+   - Include considerations for future scalability when relevant
 
-- Write concise, technical TypeScript code with accurate examples.
-- Use functional and declarative programming patterns; avoid classes.
-- Prefer iteration and modularization over code duplication.
-- Use descriptive variable names with auxiliary verbs (e.g., `isLoading`, `hasError`).
-- Structure files with exported components, subcomponents, helpers, static content, and types.
-- Favor named exports for components and functions.
-- Use lowercase with dashes for directory names (e.g., `components/auth-wizard`).
+2. currentTask.md
+   - Purpose: Current objectives, context, and next steps. This is your primary guide.
+   - Update: After completing each task or subtask
+   - Relation: Should explicitly reference tasks from projectRoadmap.md
+   - Format: Use headers (##) for main sections, bullet points for steps or details
+   - Content: Include current objectives, relevant context, and clear next steps
 
-TypeScript and Zod Usage
+3. techStack.md
+   - Purpose: Key technology choices and architecture decisions
+   - Update: When significant technology decisions are made or changed
+   - Format: Use headers (##) for main technology categories, bullet points for specifics
+   - Content: Detail chosen technologies, frameworks, and architectural decisions with brief justifications
 
-- Use TypeScript for all code; prefer interfaces over types for object shapes.
-- Utilize Zod for schema validation and type inference.
-- Avoid enums; use literal types or maps instead.
-- Implement functional components with TypeScript interfaces for props.
+4. codebaseSummary.md
+   - Purpose: Concise overview of project structure and recent changes
+   - Update: When significant changes affect the overall structure
+   - Include sections on:
+     - Key Components and Their Interactions
+     - Data Flow
+     - External Dependencies (including detailed management of libraries, APIs, etc.)
+     - Recent Significant Changes
+     - User Feedback Integration and Its Impact on Development
+   - Format: Use headers (##) for main sections, subheaders (###) for components, bullet points for details
+   - Content: Provide a high-level overview of the project structure, highlighting main components and their relationships
 
-Syntax and Formatting
+### Additional Documentation
+- Create reference documents for future developers as needed, storing them in the cline_docs folder
+- Examples include styleAesthetic.md or wireframes.md
+- Note these additional documents in codebaseSummary.md for easy reference
 
-- Use the `function` keyword for pure functions.
-- Write declarative JSX with clear and readable structure.
-- Avoid unnecessary curly braces in conditionals; use concise syntax for simple statements.
+### Adaptive Workflow
+- At the beginning of every task when instructed to "follow your custom instructions", read the essential documents in this order:
+  1. projectRoadmap.md (for high-level context and goals)
+  2. currentTask.md (for specific current objectives)
+  3. techStack.md
+  4. codebaseSummary.md
+- If you try to read or edit another document before reading these, something BAD will happen.
+- Update documents based on significant changes, not minor steps
+- If conflicting information is found between documents, ask the user for clarification
+- Create files in the userInstructions folder for tasks that require user action
+  - Provide detailed, step-by-step instructions
+  - Include all necessary details for ease of use
+  - No need for a formal structure, but ensure clarity and completeness
+  - Use numbered lists for sequential steps, code blocks for commands or code snippets
+- Prioritize frequent testing: Run servers and test functionality regularly throughout development, rather than building extensive features before testing
 
-UI and Styling
+  Code Style and Structure
+  - Write concise, technical TypeScript code with accurate examples.
+  - Use functional and declarative programming patterns; avoid classes.
+  - Prefer iteration and modularization over code duplication.
+  - Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError).
+  - Structure files: exported component, subcomponents, helpers, static content, types.
+  - Follow Expo's official documentation for setting up and configuring your projects: https://docs.expo.dev/
 
-- Use Tamagui for cross-platform UI components and styling.
-- Implement responsive design with a mobile-first approach.
-- Ensure styling consistency between web and native applications.
-- Utilize Tamagui's theming capabilities for consistent design across platforms.
+  Naming Conventions
+  - Use lowercase with dashes for directories (e.g., components/auth-wizard).
+  - Favor named exports for components.
 
-State Management and Data Fetching
+  TypeScript Usage
+  - Use TypeScript for all code; prefer interfaces over types.
+  - Avoid enums; use maps instead.
+  - Use functional components with TypeScript interfaces.
+  - Use strict mode in TypeScript for better type safety.
 
-- Use Zustand for state management.
-- Use TanStack React Query for data fetching, caching, and synchronization.
-- Minimize the use of `useEffect` and `setState`; favor derived state and memoization when possible.
+  Syntax and Formatting
+  - Use the "function" keyword for pure functions.
+  - Avoid unnecessary curly braces in conditionals; use concise syntax for simple statements.
+  - Use declarative JSX.
+  - Use Prettier for consistent code formatting.
 
-Internationalization
+  UI and Styling
+  - Use Expo's built-in components for common UI patterns and layouts.
+  - Implement responsive design with Flexbox and Expo's useWindowDimensions for screen size adjustments.
+  - Use styled-components or Tailwind CSS for component styling.
+  - Implement dark mode support using Expo's useColorScheme.
+  - Ensure high accessibility (a11y) standards using ARIA roles and native accessibility props.
+  - Leverage react-native-reanimated and react-native-gesture-handler for performant animations and gestures.
 
-- Use i18next and react-i18next for web applications.
-- Use expo-localization for React Native apps.
-- Ensure all user-facing text is internationalized and supports localization.
+  Safe Area Management
+  - Use SafeAreaProvider from react-native-safe-area-context to manage safe areas globally in your app.
+  - Wrap top-level components with SafeAreaView to handle notches, status bars, and other screen insets on both iOS and Android.
+  - Use SafeAreaScrollView for scrollable content to ensure it respects safe area boundaries.
+  - Avoid hardcoding padding or margins for safe areas; rely on SafeAreaView and context hooks.
 
-Error Handling and Validation
+  Performance Optimization
+  - Minimize the use of useState and useEffect; prefer context and reducers for state management.
+  - Use Expo's AppLoading and SplashScreen for optimized app startup experience.
+  - Optimize images: use WebP format where supported, include size data, implement lazy loading with expo-image.
+  - Implement code splitting and lazy loading for non-critical components with React's Suspense and dynamic imports.
+  - Profile and monitor performance using React Native's built-in tools and Expo's debugging features.
+  - Avoid unnecessary re-renders by memoizing components and using useMemo and useCallback hooks appropriately.
 
-- Prioritize error handling and edge cases.
-- Handle errors and edge cases at the beginning of functions.
-- Use early returns for error conditions to avoid deep nesting.
-- Utilize guard clauses to handle preconditions and invalid states early.
-- Implement proper error logging and user-friendly error messages.
-- Use custom error types or factories for consistent error handling.
+  Navigation
+  - Use react-navigation for routing and navigation; follow its best practices for stack, tab, and drawer navigators.
+  - Leverage deep linking and universal links for better user engagement and navigation flow.
+  - Use dynamic routes with expo-router for better navigation handling.
 
-Performance Optimization
+  State Management
+  - Use React Context and useReducer for managing global state.
+  - Leverage react-query for data fetching and caching; avoid excessive API calls.
+  - For complex state management, consider using Zustand or Redux Toolkit.
+  - Handle URL search parameters using libraries like expo-linking.
 
-- Optimize for both web and mobile performance.
-- Use dynamic imports for code splitting in Next.js.
-- Implement lazy loading for non-critical components.
-- Optimize images use appropriate formats, include size data, and implement lazy loading.
+  Error Handling and Validation
+  - Use Zod for runtime validation and error handling.
+  - Implement proper error logging using Sentry or a similar service.
+  - Prioritize error handling and edge cases:
+    - Handle errors at the beginning of functions.
+    - Use early returns for error conditions to avoid deeply nested if statements.
+    - Avoid unnecessary else statements; use if-return pattern instead.
+    - Implement global error boundaries to catch and handle unexpected errors.
+  - Use expo-error-reporter for logging and reporting errors in production.
 
-Monorepo Management
+  Testing
+  - Write unit tests using Jest and React Native Testing Library.
+  - Implement integration tests for critical user flows using Detox.
+  - Use Expo's testing tools for running tests in different environments.
+  - Consider snapshot testing for components to ensure UI consistency.
 
-- Follow best practices using Turbo for monorepo setups.
-- Ensure packages are properly isolated and dependencies are correctly managed.
-- Use shared configurations and scripts where appropriate.
-- Utilize the workspace structure as defined in the root `package.json`.
+  Security
+  - Sanitize user inputs to prevent XSS attacks.
+  - Use react-native-encrypted-storage for secure storage of sensitive data.
+  - Ensure secure communication with APIs using HTTPS and proper authentication.
+  - Use Expo's Security guidelines to protect your app: https://docs.expo.dev/guides/security/
 
-Backend and Database
+  Internationalization (i18n)
+  - Use react-native-i18n or expo-localization for internationalization and localization.
+  - Support multiple languages and RTL layouts.
+  - Ensure text scaling and font adjustments for accessibility.
 
-- Use Supabase for backend services, including authentication and database interactions.
-- Follow Supabase guidelines for security and performance.
-- Use Zod schemas to validate data exchanged with the backend.
+  Key Conventions
+  1. Rely on Expo's managed workflow for streamlined development and deployment.
+  2. Prioritize Mobile Web Vitals (Load Time, Jank, and Responsiveness).
+  3. Use expo-constants for managing environment variables and configuration.
+  4. Use expo-permissions to handle device permissions gracefully.
+  5. Implement expo-updates for over-the-air (OTA) updates.
+  6. Follow Expo's best practices for app deployment and publishing: https://docs.expo.dev/distribution/introduction/
+  7. Ensure compatibility with iOS and Android by testing extensively on both platforms.
 
-Cross-Platform Development
+  API Documentation
+  - Use Expo's official documentation for setting up and configuring your projects: https://docs.expo.dev/
 
-- Use Solito for navigation in both web and mobile applications.
-- Implement platform-specific code when necessary, using `.native.tsx` files for React Native-specific components.
-- Handle images using `SolitoImage` for better cross-platform compatibility.
-
-Stripe Integration and Subscription Model
-
-- Implement Stripe for payment processing and subscription management.
-- Use Stripe's Customer Portal for subscription management.
-- Implement webhook handlers for Stripe events (e.g., subscription created, updated, or cancelled).
-- Ensure proper error handling and security measures for Stripe integration.
-- Sync subscription status with user data in Supabase.
-
-Testing and Quality Assurance
-
-- Write unit and integration tests for critical components.
-- Use testing libraries compatible with React and React Native.
-- Ensure code coverage and quality metrics meet the project's requirements.
-
-Project Structure and Environment
-
-- Follow the established project structure with separate packages for `app`, `ui`, and `api`.
-- Use the `apps` directory for Next.js and Expo applications.
-- Utilize the `packages` directory for shared code and components.
-- Use `dotenv` for environment variable management.
-- Follow patterns for environment-specific configurations in `eas.json` and `next.config.js`.
-- Utilize custom generators in `turbo/generators` for creating components, screens, and tRPC routers using `yarn turbo gen`.
-
-Key Conventions
-
-- Use descriptive and meaningful commit messages.
-- Ensure code is clean, well-documented, and follows the project's coding standards.
-- Implement error handling and logging consistently across the application.
-
-Follow Official Documentation
-
-- Adhere to the official documentation for each technology used.
-- For Next.js, focus on data fetching methods and routing conventions.
-- Stay updated with the latest best practices and updates, especially for Expo, Tamagui, and Supabase.
-
-Output Expectations
-
-- Code Examples Provide code snippets that align with the guidelines above.
-- Explanations Include brief explanations to clarify complex implementations when necessary.
-- Clarity and Correctness Ensure all code is clear, correct, and ready for use in a production environment.
-- Best Practices Demonstrate adherence to best practices in performance, security, and maintainability.
-
-  
+  Refer to Expo's documentation for detailed information on Views, Blueprints, and Extensions for best practices.
+    
