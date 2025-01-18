@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useState } from 'react'
+import React, { createContext, useContext, useState, useMemo } from 'react'
 import { YardageModelEnhanced, SkillLevel, ShotResult } from './yardage-model'
 
 interface ShotCalcData {
@@ -39,8 +39,12 @@ const ShotCalcContext = createContext<ShotCalcContextType>({
   calculateShot: () => ({ carry_distance: 0, lateral_movement: 0 })
 })
 
-export function ShotCalcProvider({ children }: { children: React.ReactNode }) {
-  const [shotCalcData, setShotCalcDataState] = useState<ShotCalcData>({
+interface ShotCalcProviderProps {
+  readonly children: React.ReactNode;
+}
+
+export function ShotCalcProvider({ children }: ShotCalcProviderProps) {
+  const [shotCalcData, setShotCalcData] = useState<ShotCalcData>({
     targetYardage: 150,
     adjustedDistance: 157,
     lateralMovement: 0,
@@ -50,14 +54,14 @@ export function ShotCalcProvider({ children }: { children: React.ReactNode }) {
     pressure: 29.5
   })
 
-  const setShotCalcData = (data: Partial<ShotCalcData>) => {
-    setShotCalcDataState(prev => {
+  const updateShotCalcData = (data: Partial<ShotCalcData>) => {
+    setShotCalcData(prev => {
       const newData = { ...prev, ...data }
       
       // Update yardage model conditions when environmental factors change
       yardageModel.set_conditions(
-        newData.temperature || 70,
-        newData.elevation || 0,
+        newData.temperature ?? 70,
+        newData.elevation ?? 0,
         10, // Default wind speed if not provided
         0   // Default wind direction if not provided
       )
@@ -73,17 +77,19 @@ export function ShotCalcProvider({ children }: { children: React.ReactNode }) {
   }): ShotResult => {
     return yardageModel.calculate_adjusted_yardage(
       params.targetYardage,
-      params.skillLevel || SkillLevel.PROFESSIONAL,
+      params.skillLevel ?? SkillLevel.PROFESSIONAL,
       params.club
     )
   }
 
+  const contextValue = useMemo(() => ({
+    shotCalcData,
+    setShotCalcData: updateShotCalcData,
+    calculateShot
+  }), [shotCalcData]);
+
   return (
-    <ShotCalcContext.Provider value={{ 
-      shotCalcData, 
-      setShotCalcData,
-      calculateShot 
-    }}>
+    <ShotCalcContext.Provider value={contextValue}>
       {children}
     </ShotCalcContext.Provider>
   )

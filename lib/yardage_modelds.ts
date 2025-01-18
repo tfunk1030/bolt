@@ -34,7 +34,7 @@ export interface ClubData {
 
 export class YardageModelEnhanced {
   // PGA Tour average club data (2023) with wind sensitivity coefficients
-  private static CLUB_DATABASE: Record<string, ClubData> = {
+  private static readonly CLUB_DATABASE: Readonly<Record<string, ClubData>> = {
     "driver": { name: "Driver", ball_speed: 171, launch_angle: 10.4, spin_rate: 2545, max_height: 35, land_angle: 39, spin_decay: 0.08, wind_sensitivity: 0.9 },
     "3-wood": { name: "3-Wood", ball_speed: 162, launch_angle: 9.3, spin_rate: 3663, max_height: 32, land_angle: 44, spin_decay: 0.09, wind_sensitivity: 0.95 },
     "5-wood": { name: "5-Wood", ball_speed: 156, launch_angle: 9.7, spin_rate: 4322, max_height: 33, land_angle: 48, spin_decay: 0.095, wind_sensitivity: 1.0 },
@@ -55,7 +55,7 @@ export class YardageModelEnhanced {
   };
 
   // Altitude effects
-  private static ALTITUDE_EFFECTS: Record<number, number> = {
+  private static readonly ALTITUDE_EFFECTS: Readonly<Record<number, number>> = {
     0: 1.000,
     1000: 1.021,
     2000: 1.043,
@@ -68,7 +68,7 @@ export class YardageModelEnhanced {
   };
 
   // Ball Models with dimple pattern effects
-  private static BALL_MODELS: Record<string, BallModel> = {
+  private static readonly BALL_MODELS: Readonly<Record<string, BallModel>> = {
     "tour_premium": {
       name: "Tour Premium",
       compression: 95,
@@ -213,8 +213,8 @@ export class YardageModelEnhanced {
     if (this.temperature !== null) {
       const currentDensity = this._calculate_air_density(
         this.temperature,
-        this.pressure || 1013.25,
-        this.humidity || 50
+        this.pressure ?? 1013.25,
+        this.humidity ?? 50
       );
 
       const densityRatio = currentDensity / 1.193;
@@ -233,7 +233,7 @@ export class YardageModelEnhanced {
     if (this.altitude !== null) {
       const altitude_effect = this._calculate_altitude_effect(this.altitude);
       const initial_spin = club_data.spin_rate * ball.spin_factor;
-      const average_spin = this._calculate_spin_decay(club_key, initial_spin, flight_time);
+      this._calculate_spin_decay(club_key, initial_spin, flight_time);
       adjusted_yardage *= altitude_effect;
     }
 

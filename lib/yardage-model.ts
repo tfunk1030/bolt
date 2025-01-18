@@ -1,8 +1,6 @@
-import { type } from "os";
 import { normalizeClubName } from '@/lib/utils/club-mapping'
 
 import { 
-  YardageModelEnhanced as YardageModelDS,
   type ShotResult as ShotResultDS,
   type BallModel as BallModelDS,
   type ClubData as ClubDataDS,
@@ -17,7 +15,7 @@ export { SkillLevelDS as SkillLevel };
 
 export class YardageModelEnhanced {
   // PGA Tour average club data (2023)
-  private static CLUB_DATABASE: Record<string, ClubDataDS> = {
+  private static readonly CLUB_DATABASE: Readonly<Record<string, ClubDataDS>> = {
     "driver": { name: "Driver", ball_speed: 171, launch_angle: 10.4, spin_rate: 2545, max_height: 35, land_angle: 39, spin_decay: 0.08, wind_sensitivity: 1.0 },
     "3-wood": { name: "3-Wood", ball_speed: 162, launch_angle: 9.3, spin_rate: 3663, max_height: 32, land_angle: 44, spin_decay: 0.09, wind_sensitivity: 1.0 },
     "5-wood": { name: "5-Wood", ball_speed: 156, launch_angle: 9.7, spin_rate: 4322, max_height: 33, land_angle: 48, spin_decay: 0.095, wind_sensitivity: 1.0 },
@@ -38,7 +36,7 @@ export class YardageModelEnhanced {
   }
 
   // Altitude effects
-  private static ALTITUDE_EFFECTS: Record<number, number> = {
+  private static readonly ALTITUDE_EFFECTS: Readonly<Record<number, number>> = {
     0: 1.000,
     1000: 1.021,
     2000: 1.043,
@@ -51,7 +49,7 @@ export class YardageModelEnhanced {
   }
 
   // Ball Models
-  private static BALL_MODELS: Record<string, BallModelDS> = {
+  private static readonly BALL_MODELS: Readonly<Record<string, BallModelDS>> = {
     "tour_premium": {
       name: "Tour Premium",
       compression: 95,
@@ -87,7 +85,7 @@ export class YardageModelEnhanced {
   }
 
   // Spin decay rates
-  private static SPIN_DECAY_RATES: Record<string, number> = {
+  private static readonly SPIN_DECAY_RATES: Readonly<Record<string, number>> = {
     "driver": 0.08,
     "3-wood": 0.09,
     "5-wood": 0.095,
@@ -108,7 +106,7 @@ export class YardageModelEnhanced {
   }
 
   // Map user club names to database keys
-  private static CLUB_NAME_MAP: Record<string, string> = {
+  private static readonly CLUB_NAME_MAP: Readonly<Record<string, string>> = {
     // Woods
     "driver": "driver",
     "d": "driver",
@@ -154,7 +152,7 @@ export class YardageModelEnhanced {
     "lobwedge": "lob-wedge"
   }
 
-  private static STANDARD_CONDITIONS = {
+  private static readonly STANDARD_CONDITIONS = {
     TEMPERATURE: 70,     // °F
     PRESSURE: 1013.25,   // hPa
     DENSITY: 1.192,      // kg/m³ (corrected from 1.225)
@@ -248,7 +246,7 @@ export class YardageModelEnhanced {
   calculate_adjusted_yardage(target_yardage: number, skill_level: SkillLevelDS, club: string): ShotResultDS {
     // Normalize club name to lowercase
     const normalizedClub = club.toLowerCase()
-    const club_key = YardageModelEnhanced.CLUB_NAME_MAP[normalizedClub] || normalizedClub
+    const club_key = YardageModelEnhanced.CLUB_NAME_MAP[normalizedClub] ?? normalizedClub
     
     if (!(club_key in YardageModelEnhanced.CLUB_DATABASE)) {
       throw new Error(`Unknown club: ${club}`)
@@ -272,8 +270,8 @@ export class YardageModelEnhanced {
     if (this.temperature !== null) {
       const currentDensity = this._calculate_air_density(
         this.temperature,
-        this.pressure || YardageModelEnhanced.STANDARD_CONDITIONS.PRESSURE,
-        this.humidity || YardageModelEnhanced.STANDARD_CONDITIONS.HUMIDITY
+        this.pressure ?? YardageModelEnhanced.STANDARD_CONDITIONS.PRESSURE,
+        this.humidity ?? YardageModelEnhanced.STANDARD_CONDITIONS.HUMIDITY
       );
       
       const densityRatio = currentDensity / YardageModelEnhanced.STANDARD_CONDITIONS.DENSITY;
@@ -292,7 +290,7 @@ export class YardageModelEnhanced {
     if (this.altitude !== null) {
       const altitude_effect = this._calculate_altitude_effect(this.altitude)
       const initial_spin = club_data.spin_rate * ball.spin_factor
-      const average_spin = this._calculate_spin_decay(club_key, initial_spin, flight_time)
+      this._calculate_spin_decay(club_key, initial_spin, flight_time)
       adjusted_yardage *= altitude_effect
     }
     
@@ -336,6 +334,6 @@ export class YardageModelEnhanced {
 
   public getClubData(clubKey: string): ClubDataDS | null {
     const normalizedKey = normalizeClubName(clubKey);
-    return YardageModelEnhanced.CLUB_DATABASE[normalizedKey] || null;
+    return YardageModelEnhanced.CLUB_DATABASE[normalizedKey] ?? null;
   }
 }
