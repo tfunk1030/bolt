@@ -167,10 +167,10 @@ export class YardageModelEnhanced {
   }
 
   private static STANDARD_CONDITIONS = {
-    TEMPERATURE: 70, // °F (15°C)
-    PRESSURE: 1013.25, // hPa
-    DENSITY: 1.225, // kg/m³
-    HUMIDITY: 50 // %
+    TEMPERATURE: 70,     // °F
+    PRESSURE: 1013.25,   // hPa
+    DENSITY: 1.192,      // kg/m³ (corrected from 1.225)
+    HUMIDITY: 50         // %
   }
 
   private temperature: number | null = null
