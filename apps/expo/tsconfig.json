@@ -2,7 +2,11 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
-    "lib": ["esnext", "dom", "dom.iterable"],
+    "lib": [
+      "esnext",
+      "dom",
+      "dom.iterable"
+    ],
     "allowJs": true,
     "jsx": "react-native",
     "noEmit": true,
@@ -15,7 +19,9 @@
     "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
-      "~/*": ["src/*"]
+      "~/*": [
+        "src/*"
+      ]
     },
     "typeRoots": [
       "./node_modules/@types",
@@ -40,9 +46,7 @@
     "*.ts",
     "*.tsx",
     "*.js",
-    "*.jsx",
-    ".expo/types/**/*.ts",
-    "expo-env.d.ts"
+    "*.jsx"
   ],
   "exclude": [
     "node_modules",
@@ -53,5 +57,6 @@
     "**/*.test.ts",
     "**/*.spec.tsx",
     "**/*.test.tsx"
-  ]
+  ],
+  "extends": "expo/tsconfig.base"
 }

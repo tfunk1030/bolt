@@ -11,11 +11,12 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@react-native-async-storage/async-storage": "1.21.0",
-    "@react-native-community/slider": "4.4.3",
+    "@react-native-async-storage/async-storage": "1.18.2",
+    "@react-native-community/slider": "4.4.2",
     "@react-navigation/bottom-tabs": "6.5.11",
     "@react-navigation/native": "6.1.9",
     "@react-navigation/native-stack": "6.9.17",
+    "@shopify/react-native-skia": "0.1.196",
     "@tamagui/button": "1.48.7",
     "@tamagui/config": "1.48.7",
     "@tamagui/core": "1.48.7",
@@ -30,23 +31,23 @@
     "date-fns": "2.30.0",
     "expo": "49.0.21",
     "expo-constants": "14.4.2",
-    "expo-linking": "6.0.0",
-    "expo-localization": "14.5.0",
+    "expo-linking": "~5.0.2",
+    "expo-localization": "~14.3.0",
     "expo-location": "16.1.0",
     "expo-notifications": "0.20.1",
-    "expo-secure-store": "12.5.0",
-    "expo-sensors": "12.5.0",
+    "expo-secure-store": "~12.3.1",
+    "expo-sensors": "~12.3.0",
     "expo-splash-screen": "0.20.5",
-    "expo-status-bar": "1.7.1",
+    "expo-status-bar": "~1.6.0",
     "i18next": "23.7.16",
     "lodash": "4.17.21",
     "nanoid": "3.3.7",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-native": "0.72.6",
+    "react-native": "0.72.10",
     "react-native-gesture-handler": "2.12.1",
     "react-native-reanimated": "3.3.0",
-    "react-native-safe-area-context": "4.7.4",
+    "react-native-safe-area-context": "4.6.3",
     "react-native-screens": "3.22.1",
     "react-native-svg": "13.9.0",
     "react-native-web": "0.19.9",
@@ -70,7 +71,7 @@
     "@types/lodash": "4.14.202",
     "@types/node": "20.10.6",
     "@types/react": "18.2.46",
-    "@types/react-dom": "18.2.18",
+    "@types/react-dom": "~18.0.10",
     "@types/react-native": "0.72.8",
     "@types/react-test-renderer": "18.0.7",
     "@types/testing-library__jest-dom": "6.0.0",
@@ -114,5 +115,6 @@
     "globals": {
       "__DEV__": true
     }
-  }
+  },
+  "packageManager": "yarn@4.6.0"
 }

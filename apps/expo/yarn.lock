@@ -2897,6 +2897,7 @@ __metadata:
     "@react-navigation/bottom-tabs": "npm:6.5.11"
     "@react-navigation/native": "npm:6.1.9"
     "@react-navigation/native-stack": "npm:6.9.17"
+    "@shopify/react-native-skia": "npm:^1.10.2"
     "@tamagui/babel-plugin": "npm:1.48.7"
     "@tamagui/button": "npm:1.48.7"
     "@tamagui/config": "npm:1.48.7"
@@ -3428,6 +3429,27 @@ __metadata:
     component-type: "npm:^1.2.1"
     join-component: "npm:^1.1.0"
   checksum: 10c0/c083c70c5f0a42a2bc5b685f82830b968d01b5b8de2a9a1c362a3952c6bb33ffbdfcf8196c8ce110a5050f78ff9dcf395832eb55687843c80dc77dfe659b0803
+  languageName: node
+  linkType: hard
+
+"@shopify/react-native-skia@npm:^1.10.2":
+  version: 1.10.2
+  resolution: "@shopify/react-native-skia@npm:1.10.2"
+  dependencies:
+    canvaskit-wasm: "npm:0.39.1"
+    react-reconciler: "npm:0.27.0"
+  peerDependencies:
+    react: ">=18.0"
+    react-native: ">=0.64"
+    react-native-reanimated: ">=2.0.0"
+  peerDependenciesMeta:
+    react-native:
+      optional: true
+    react-native-reanimated:
+      optional: true
+  bin:
+    setup-skia-web: ./scripts/setup-canvaskit.js
+  checksum: 10c0/5216d33b273f66148b6990fc4d98f8ce8bbdc08835263126e03df64dfd7427728a3e55d463ecd659aa2dec87e33f2ff314dc4b3994090fe948cf1031a9f33066
   languageName: node
   linkType: hard
 
@@ -5412,6 +5434,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@webgpu/types@npm:0.1.21":
+  version: 0.1.21
+  resolution: "@webgpu/types@npm:0.1.21"
+  checksum: 10c0/74de9683b70064aeadcdd31381747650b323e7e2183fb38f90a35f1a79f80ad267c0a2ee5010c264befb3d31ad213dbdffa04897e2808f6b04feff8d66bc53e0
+  languageName: node
+  linkType: hard
+
 "@xmldom/xmldom@npm:^0.8.8":
   version: 0.8.10
   resolution: "@xmldom/xmldom@npm:0.8.10"
@@ -6461,6 +6490,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"canvaskit-wasm@npm:0.39.1":
+  version: 0.39.1
+  resolution: "canvaskit-wasm@npm:0.39.1"
+  dependencies:
+    "@webgpu/types": "npm:0.1.21"
+  checksum: 10c0/0ae60ae5c430aaa88152f3a20f40fc9a6debb15714a2ce1bdebef93005ec6d5e72e0316b91ab637f50aab220dd8694101abac497209bcf16788d00db78f5a898
+  languageName: node
+  linkType: hard
+
 "chalk@npm:^2.0.1, chalk@npm:^2.4.2":
   version: 2.4.2
   resolution: "chalk@npm:2.4.2"
@@ -6763,10 +6801,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:~2.14.1":
-  version: 2.14.1
-  resolution: "commander@npm:2.14.1"
-  checksum: 10c0/b29bb0220fb27645a958a9cbecc5c138adeb4d151a17d43acd5c8cd7ffed1a64e502a20338e3faad235c5c8e23df893dd02dfe6eddf47f90fc51b51825084719
+"commander@npm:~2.13.0":
+  version: 2.13.0
+  resolution: "commander@npm:2.13.0"
+  checksum: 10c0/e3441096034439e506493ca1e5e9d5d5723ee0eadc3b2b92b3dd332b1d8fcbe72b70a1127f6790e6b3bedde3054316e9fe2cb36cef6ac051000b01559a16ba58
   languageName: node
   linkType: hard
 
@@ -13296,6 +13334,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-reconciler@npm:0.27.0":
+  version: 0.27.0
+  resolution: "react-reconciler@npm:0.27.0"
+  dependencies:
+    loose-envify: "npm:^1.1.0"
+    scheduler: "npm:^0.21.0"
+  peerDependencies:
+    react: ^18.0.0
+  checksum: 10c0/55daff215ff9544dc5b2ba6ecda20520df0f1b2ca145c00fd0905ced1b025f3779664715c36b511a8906aa24b8b433270b0032cd499c55c4e4c878cddc8fc986
+  languageName: node
+  linkType: hard
+
 "react-refresh@npm:^0.4.0":
   version: 0.4.3
   resolution: "react-refresh@npm:0.4.3"
@@ -13917,6 +13967,15 @@ __metadata:
   dependencies:
     loose-envify: "npm:^1.1.0"
   checksum: 10c0/4fb594d64c692199117160bbd1a5261f03287f8ec59d9ca079a772e5fbb3139495ebda843324d7c8957c07390a0825acb6f72bd29827fb9e155d793db6c2e2bc
+  languageName: node
+  linkType: hard
+
+"scheduler@npm:^0.21.0":
+  version: 0.21.0
+  resolution: "scheduler@npm:0.21.0"
+  dependencies:
+    loose-envify: "npm:^1.1.0"
+  checksum: 10c0/083a9a0c83f4923f7f5bb28d8bcf13cff42c90f4303bc187166520fcfc576c97e946d426c707d5a9c0aa0a655819605dd0c741467c626824bbf191251c126f1b
   languageName: node
   linkType: hard
 
@@ -15308,14 +15367,14 @@ __metadata:
   linkType: hard
 
 "uglify-es@npm:^3.1.9":
-  version: 3.3.10
-  resolution: "uglify-es@npm:3.3.10"
+  version: 3.3.9
+  resolution: "uglify-es@npm:3.3.9"
   dependencies:
-    commander: "npm:~2.14.1"
+    commander: "npm:~2.13.0"
     source-map: "npm:~0.6.1"
   bin:
     uglifyjs: bin/uglifyjs
-  checksum: 10c0/165b19b331f72aae4a0eeb4350606d8e5d39c82315ef8eaa8d3a0706d16be9282f6055b5e1e46914422b3e56520740fc68cec40a0b06e7fd6905b1f680528487
+  checksum: 10c0/b591de4ea2c7153f446f80f2559bbabcb4ff53a17dbfd27b9bb980b31f5fb7e563bdae6e9abc07d97ecb484ac4ceba4c7a207e6854cb2aaca72e80e6090c989e
   languageName: node
   linkType: hard
 

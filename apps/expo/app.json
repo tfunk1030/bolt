@@ -11,7 +11,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.lastshot.mobile",
@@ -19,7 +21,10 @@
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "This app needs access to location to provide accurate wind calculations.",
         "NSLocationAlwaysUsageDescription": "This app needs access to location to provide accurate wind calculations.",
-        "UIBackgroundModes": ["location", "fetch"]
+        "UIBackgroundModes": [
+          "location",
+          "fetch"
+        ]
       }
     },
     "android": {
@@ -41,7 +46,9 @@
         {
           "icon": "./assets/notification-icon.png",
           "color": "#ffffff",
-          "sounds": ["./assets/notification-sound.wav"]
+          "sounds": [
+            "./assets/notification-sound.wav"
+          ]
         }
       ],
       [
@@ -49,7 +56,8 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Allow LastShot to use your location to provide accurate wind calculations."
         }
-      ]
+      ],
+      "expo-localization"
     ],
     "extra": {
       "eas": {

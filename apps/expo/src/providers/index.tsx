@@ -3,6 +3,7 @@ import { SettingsProvider } from './settings';
 import { ClubSettingsProvider } from './club-settings';
 import { ShotCalcProvider } from './shot-calc';
 import { QueryClientProvider, queryClient } from './query-client';
+import { TamaguiProvider } from './tamagui-provider';
 
 interface ProvidersProps {
   children: React.ReactNode;
@@ -10,15 +11,17 @@ interface ProvidersProps {
 
 export function Providers({ children }: ProvidersProps) {
   return (
-    <QueryClientProvider>
-      <SettingsProvider>
-        <ClubSettingsProvider>
-          <ShotCalcProvider>
-            {children}
-          </ShotCalcProvider>
-        </ClubSettingsProvider>
-      </SettingsProvider>
-    </QueryClientProvider>
+    <TamaguiProvider>
+      <QueryClientProvider>
+        <SettingsProvider>
+          <ClubSettingsProvider>
+            <ShotCalcProvider>
+              {children}
+            </ShotCalcProvider>
+          </ClubSettingsProvider>
+        </SettingsProvider>
+      </QueryClientProvider>
+    </TamaguiProvider>
   );
 }
 

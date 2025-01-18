@@ -1,117 +1,205 @@
-export type ClubType = 'driver' | 'wood' | 'hybrid' | 'iron' | 'wedge' | 'putter';
+export function normalizeClubName(clubName: string): string {
+  // Convert to lowercase and trim spaces
+  const input = clubName.trim();
+  
+  const clubMappings: Record<string, string> = {
+    // Driver variants
+    'driver': 'driver',
+    'drv': 'driver',
+    'd': 'driver',
+    '1w': 'driver',
+    '1 w': 'driver',
+    '1-w': 'driver',
+    '1wood': 'driver',
+    '1 wood': 'driver',
+    '1-wood': 'driver',
+    
+    // Woods
+    '3w': '3-wood',
+    '3 w': '3-wood',
+    '3-w': '3-wood',
+    '3wood': '3-wood',
+    '3 wood': '3-wood',
+    '3-wood': '3-wood',
+    'threewood': '3-wood',
+    'three-wood': '3-wood',
+    
+    '5w': '5-wood',
+    '5 w': '5-wood',
+    '5-w': '5-wood',
+    '5wood': '5-wood',
+    '5 wood': '5-wood',
+    '5-wood': '5-wood',
+    'fivewood': '5-wood',
+    'five-wood': '5-wood',
+    
+    '7w': '7-wood',
+    '7 w': '7-wood',
+    '7-w': '7-wood',
+    '7wood': '7-wood',
+    '7 wood': '7-wood',
+    '7-wood': '7-wood',
+    'sevenwood': '7-wood',
+    'seven-wood': '7-wood',
+    
+    // Hybrid
+    'hybrid': 'hybrid',
+    'hyb': 'hybrid',
+    'h': 'hybrid',
+    'rescue': 'hybrid',
+    
+    // Irons
+    '2i': '2-iron',
+    '2 i': '2-iron',
+    '2-i': '2-iron',
+    '2iron': '2-iron',
+    '2 iron': '2-iron',
+    '2-iron': '2-iron',
+    'twoiron': '2-iron',
+    'two-iron': '2-iron',
+    
+    '3i': '3-iron',
+    '3 i': '3-iron',
+    '3-i': '3-iron',
+    '3iron': '3-iron',
+    '3 iron': '3-iron',
+    '3-iron': '3-iron',
+    'threeiron': '3-iron',
+    'three-iron': '3-iron',
+    
+    '4i': '4-iron',
+    '4 i': '4-iron',
+    '4-i': '4-iron',
+    '4iron': '4-iron',
+    '4 iron': '4-iron',
+    '4-iron': '4-iron',
+    'fouriron': '4-iron',
+    'four-iron': '4-iron',
+    
+    '5i': '5-iron',
+    '5 i': '5-iron',
+    '5-i': '5-iron',
+    '5iron': '5-iron',
+    '5 iron': '5-iron',
+    '5-iron': '5-iron',
+    'fiveiron': '5-iron',
+    'five-iron': '5-iron',
+    
+    '6i': '6-iron',
+    '6 i': '6-iron',
+    '6-i': '6-iron',
+    '6iron': '6-iron',
+    '6 iron': '6-iron',
+    '6-iron': '6-iron',
+    'sixiron': '6-iron',
+    'six-iron': '6-iron',
+    
+    '7i': '7-iron',
+    '7 i': '7-iron',
+    '7-i': '7-iron',
+    '7iron': '7-iron',
+    '7 iron': '7-iron',
+    '7-iron': '7-iron',
+    'seveniron': '7-iron',
+    'seven-iron': '7-iron',
+    
+    '8i': '8-iron',
+    '8 i': '8-iron',
+    '8-i': '8-iron',
+    '8iron': '8-iron',
+    '8 iron': '8-iron',
+    '8-iron': '8-iron',
+    'eightiron': '8-iron',
+    'eight-iron': '8-iron',
+    
+    '9i': '9-iron',
+    '9 i': '9-iron',
+    '9-i': '9-iron',
+    '9iron': '9-iron',
+    '9 iron': '9-iron',
+    '9-iron': '9-iron',
+    'nineiron': '9-iron',
+    'nine-iron': '9-iron',
+    
+    // Wedges
+    'pw': 'pitching-wedge',
+    'p w': 'pitching-wedge',
+    'p-w': 'pitching-wedge',
+    'pwedge': 'pitching-wedge',
+    'p wedge': 'pitching-wedge',
+    'p-wedge': 'pitching-wedge',
+    'pitching': 'pitching-wedge',
+    'pitchingwedge': 'pitching-wedge',
+    'pitching wedge': 'pitching-wedge',
+    'pitching-wedge': 'pitching-wedge',
+    
+    'gw': 'gap-wedge',
+    'g w': 'gap-wedge',
+    'g-w': 'gap-wedge',
+    'gwedge': 'gap-wedge',
+    'g wedge': 'gap-wedge',
+    'g-wedge': 'gap-wedge',
+    'gap': 'gap-wedge',
+    'gapwedge': 'gap-wedge',
+    'gap wedge': 'gap-wedge',
+    'gap-wedge': 'gap-wedge',
+    'aw': 'gap-wedge',
+    'a w': 'gap-wedge',
+    'a-w': 'gap-wedge',
+    'approach': 'gap-wedge',
+    'approachwedge': 'gap-wedge',
+    'approach wedge': 'gap-wedge',
+    'approach-wedge': 'gap-wedge',
+    
+    'sw': 'sand-wedge',
+    's w': 'sand-wedge',
+    's-w': 'sand-wedge',
+    'swedge': 'sand-wedge',
+    's wedge': 'sand-wedge',
+    's-wedge': 'sand-wedge',
+    'sand': 'sand-wedge',
+    'sandwedge': 'sand-wedge',
+    'sand wedge': 'sand-wedge',
+    'sand-wedge': 'sand-wedge',
+    
+    'lw': 'lob-wedge',
+    'l w': 'lob-wedge',
+    'l-w': 'lob-wedge',
+    'lwedge': 'lob-wedge',
+    'l wedge': 'lob-wedge',
+    'l-wedge': 'lob-wedge',
+    'lob': 'lob-wedge',
+    'lobwedge': 'lob-wedge',
+    'lob wedge': 'lob-wedge',
+    'lob-wedge': 'lob-wedge'
+  };
 
-export interface Club {
-  name: string;
-  type: ClubType;
-  normalYardage: number;
-  loft: number;
-  launchAngle: number;
-  spinRate: number;
+  // Try exact match first
+  if (clubMappings[input.toLowerCase()]) {
+    return clubMappings[input.toLowerCase()];
+  }
+
+  // Remove all spaces and special characters
+  const normalized = input.toLowerCase().replace(/[^a-z0-9]/g, '');
+  if (clubMappings[normalized]) {
+    return clubMappings[normalized];
+  }
+
+  // Try to match patterns if no direct mapping found
+  const patterns = [
+    { regex: /^(\d+)(?:iron|i)$/i, replace: '$1-iron' },
+    { regex: /^(\d+)(?:wood|w)$/i, replace: '$1-wood' },
+    { regex: /^(\d+)$/i, replace: '$1-iron' }
+  ];
+
+  for (const { regex, replace } of patterns) {
+    if (regex.test(normalized)) {
+      const mapped = normalized.replace(regex, replace);
+      if (clubMappings[mapped]) {
+        return clubMappings[mapped];
+      }
+    }
+  }
+
+  return input.toLowerCase();
 }
-
-export const defaultClubs: Club[] = [
-  {
-    name: 'Driver',
-    type: 'driver',
-    normalYardage: 260,
-    loft: 10.5,
-    launchAngle: 12,
-    spinRate: 2500,
-  },
-  {
-    name: '3 Wood',
-    type: 'wood',
-    normalYardage: 235,
-    loft: 15,
-    launchAngle: 14,
-    spinRate: 3000,
-  },
-  {
-    name: '5 Wood',
-    type: 'wood',
-    normalYardage: 215,
-    loft: 18,
-    launchAngle: 15,
-    spinRate: 3200,
-  },
-  {
-    name: '4 Iron',
-    type: 'iron',
-    normalYardage: 190,
-    loft: 21,
-    launchAngle: 16,
-    spinRate: 4000,
-  },
-  {
-    name: '5 Iron',
-    type: 'iron',
-    normalYardage: 180,
-    loft: 24,
-    launchAngle: 17,
-    spinRate: 4500,
-  },
-  {
-    name: '6 Iron',
-    type: 'iron',
-    normalYardage: 170,
-    loft: 27,
-    launchAngle: 18,
-    spinRate: 5000,
-  },
-  {
-    name: '7 Iron',
-    type: 'iron',
-    normalYardage: 160,
-    loft: 31,
-    launchAngle: 19,
-    spinRate: 5500,
-  },
-  {
-    name: '8 Iron',
-    type: 'iron',
-    normalYardage: 150,
-    loft: 35,
-    launchAngle: 20,
-    spinRate: 6000,
-  },
-  {
-    name: '9 Iron',
-    type: 'iron',
-    normalYardage: 140,
-    loft: 39,
-    launchAngle: 21,
-    spinRate: 6500,
-  },
-  {
-    name: 'PW',
-    type: 'wedge',
-    normalYardage: 130,
-    loft: 45,
-    launchAngle: 22,
-    spinRate: 7000,
-  },
-  {
-    name: 'GW',
-    type: 'wedge',
-    normalYardage: 120,
-    loft: 50,
-    launchAngle: 23,
-    spinRate: 7500,
-  },
-  {
-    name: 'SW',
-    type: 'wedge',
-    normalYardage: 110,
-    loft: 56,
-    launchAngle: 24,
-    spinRate: 8000,
-  },
-  {
-    name: 'LW',
-    type: 'wedge',
-    normalYardage: 90,
-    loft: 60,
-    launchAngle: 25,
-    spinRate: 8500,
-  },
-];
