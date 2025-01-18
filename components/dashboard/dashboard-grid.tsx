@@ -2,6 +2,7 @@
 
 import React, { useState, useCallback, useEffect } from 'react'
 import { Responsive, WidthProvider } from 'react-grid-layout'
+import type { ResponsiveProps } from 'react-grid-layout'
 import { useDashboard } from '@/lib/dashboard-context'
 import { EnvironmentalConditionsWidget } from './widgets/environmental-conditions'
 import { WindWidget } from './widgets/wind-widget'
@@ -14,7 +15,9 @@ import { WidgetProvider } from '@/lib/widget-context'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
 
-const ResponsiveGridLayout = WidthProvider(Responsive)
+const ResponsiveGridLayout = WidthProvider(Responsive) as React.ComponentType<
+  ResponsiveProps & { children: React.ReactNode }
+>
 
 type WidgetType = 'environmental' | 'wind' | 'round-tracker' | 'compass';
 
