@@ -78,8 +78,15 @@ export default function WindCalcPage() {
       const preClubData = yardageModel.getClubData(clubKey);
       console.log('Pre-calculation club data:', preClubData);
 
-      // Set ball model (using tour_premium as default)
-      yardageModel.set_ball_model("tour_premium")
+      // Verify we have access to new properties
+      console.log('Enhanced Club Data:', {
+        name: preClubData?.name,
+        windSensitivity: preClubData?.wind_sensitivity,
+        ballSpeed: preClubData?.ball_speed
+      });
+
+      // Set ball model with enhanced features
+      yardageModel.set_ball_model("tour_premium");
 
       // First calculate environmental effects without wind
       yardageModel.set_conditions(
@@ -257,7 +264,7 @@ export default function WindCalcPage() {
               <div className="text-xl text-gray-400">
                 Aim{' '}
                 <span className="text-2xl font-bold text-emerald-400">
-                  {Math.abs(result.lateralEffect)} yards {result.lateralEffect > 0 ? 'right' : 'left'}
+                  {Math.abs(result.lateralEffect)} yards {result.lateralEffect > 0 ? 'left' : 'right'}
                 </span>
               </div>
             )}
@@ -286,7 +293,7 @@ export default function WindCalcPage() {
             <div className="bg-gray-900/30 p-4 rounded-lg border border-gray-700/50">
               <div className="font-medium mb-2 text-gray-400">Lateral Effect</div>
               <div className={`font-semibold ${Math.abs(result.lateralEffect) < 5 ? 'text-emerald-400' : 'text-yellow-400'}`}>
-                {Math.abs(result.lateralEffect)} yards {result.lateralEffect > 0 ? 'right' : 'left'}
+                {Math.abs(result.lateralEffect)} yards
               </div>
             </div>
           </div>
