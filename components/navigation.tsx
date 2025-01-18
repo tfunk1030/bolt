@@ -174,6 +174,16 @@ export default function Navigation() {
             <Settings className="w-6 h-6" />
             <span className="text-xs mt-1">Settings</span>
           </Link>
+
+          <Link
+            href="/wind-comparison"
+            className={`flex flex-col items-center px-3 py-2 rounded-lg ${
+              pathname === '/wind-comparison' ? 'text-blue-400' : 'text-gray-400'
+            }`}
+          >
+            <Wind className="w-6 h-6" />
+            <span className="text-xs mt-1">Wind Comparison</span>
+          </Link>
         </div>
       </nav>
     </>

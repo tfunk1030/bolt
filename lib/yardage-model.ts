@@ -1,12 +1,13 @@
 import { type } from "os";
 import { normalizeClubName } from '@/lib/utils/club-mapping'
 
-// Temporarily import and re-export the enhanced model
-import { YardageModelEnhanced as YardageModelDS, 
-         type ShotResult as ShotResultDS,
-         type BallModel as BallModelDS,
-         type ClubData as ClubDataDS,
-         SkillLevel as SkillLevelDS } from './yardage_modelds';
+import { 
+  YardageModelEnhanced as YardageModelDS,
+  type ShotResult as ShotResultDS,
+  type BallModel as BallModelDS,
+  type ClubData as ClubDataDS,
+  SkillLevel as SkillLevelDS 
+} from '@/lib/yardage_modelds';
 
 // Re-export types from the new model
 export type { ShotResultDS as ShotResult };
@@ -14,60 +15,26 @@ export type { BallModelDS as BallModel };
 export type { ClubDataDS as ClubData };
 export { SkillLevelDS as SkillLevel };
 
-// Export the new model implementation temporarily
-export { YardageModelDS as YardageModelEnhanced };
-
-/*
-export enum SkillLevel {
-  BEGINNER = "beginner",      // High HCP (17+)
-  INTERMEDIATE = "intermediate",  // Mid HCP (9-16)
-  ADVANCED = "advanced",      // Low HCP (0-8)
-  PROFESSIONAL = "professional"  // Tour Pro
-}
-
-export interface ShotResult {
-  carry_distance: number  // Adjusted carry distance in yards
-  lateral_movement: number  // Lateral movement in yards (+ is right, - is left)
-}
-
-export interface BallModel {
-  name: string
-  compression: number
-  speed_factor: number
-  spin_factor: number
-  temp_sensitivity: number
-}
-
-export interface ClubData {
-  name: string
-  ball_speed: number     // Ball speed in mph
-  launch_angle: number   // Launch angle in degrees
-  spin_rate: number      // Spin rate in rpm
-  max_height: number     // Max height in yards
-  land_angle: number     // Landing angle in degrees
-  spin_decay: number     // Spin decay rate in % per second
-}
-
 export class YardageModelEnhanced {
   // PGA Tour average club data (2023)
-  private static CLUB_DATABASE: Record<string, ClubData> = {
-    "driver": { name: "Driver", ball_speed: 171, launch_angle: 10.4, spin_rate: 2545, max_height: 35, land_angle: 39, spin_decay: 0.08 },
-    "3-wood": { name: "3-Wood", ball_speed: 162, launch_angle: 9.3, spin_rate: 3663, max_height: 32, land_angle: 44, spin_decay: 0.09 },
-    "5-wood": { name: "5-Wood", ball_speed: 156, launch_angle: 9.7, spin_rate: 4322, max_height: 33, land_angle: 48, spin_decay: 0.095 },
-    "7-wood": { name: "7-Wood", ball_speed: 152, launch_angle: 11.2, spin_rate: 4750, max_height: 34, land_angle: 50, spin_decay: 0.098 },
-    "hybrid": { name: "Hybrid", ball_speed: 149, launch_angle: 10.2, spin_rate: 4587, max_height: 31, land_angle: 49, spin_decay: 0.10 },
-    "2-iron": { name: "2-Iron", ball_speed: 148, launch_angle: 9.8, spin_rate: 4100, max_height: 29, land_angle: 47, spin_decay: 0.095 },
-    "3-iron": { name: "3-Iron", ball_speed: 145, launch_angle: 10.3, spin_rate: 4404, max_height: 30, land_angle: 48, spin_decay: 0.10 },
-    "4-iron": { name: "4-Iron", ball_speed: 140, launch_angle: 10.8, spin_rate: 4782, max_height: 31, land_angle: 49, spin_decay: 0.105 },
-    "5-iron": { name: "5-Iron", ball_speed: 135, launch_angle: 11.9, spin_rate: 5280, max_height: 33, land_angle: 50, spin_decay: 0.11 },
-    "6-iron": { name: "6-Iron", ball_speed: 130, launch_angle: 14.0, spin_rate: 6204, max_height: 32, land_angle: 50, spin_decay: 0.115 },
-    "7-iron": { name: "7-Iron", ball_speed: 123, launch_angle: 16.1, spin_rate: 7124, max_height: 34, land_angle: 51, spin_decay: 0.12 },
-    "8-iron": { name: "8-Iron", ball_speed: 118, launch_angle: 17.8, spin_rate: 8078, max_height: 33, land_angle: 51, spin_decay: 0.13 },
-    "9-iron": { name: "9-Iron", ball_speed: 112, launch_angle: 20.0, spin_rate: 8793, max_height: 32, land_angle: 52, spin_decay: 0.14 },
-    "pitching-wedge": { name: "PW", ball_speed: 104, launch_angle: 23.7, spin_rate: 9316, max_height: 32, land_angle: 52, spin_decay: 0.15 },
-    "gap-wedge": { name: "GW", ball_speed: 101, launch_angle: 24.5, spin_rate: 9600, max_height: 32, land_angle: 53, spin_decay: 0.155 },
-    "sand-wedge": { name: "SW", ball_speed: 98, launch_angle: 25.3, spin_rate: 9900, max_height: 32, land_angle: 54, spin_decay: 0.17 },
-    "lob-wedge": { name: "LW", ball_speed: 95, launch_angle: 26.1, spin_rate: 10200, max_height: 32, land_angle: 55, spin_decay: 0.18 }
+  private static CLUB_DATABASE: Record<string, ClubDataDS> = {
+    "driver": { name: "Driver", ball_speed: 171, launch_angle: 10.4, spin_rate: 2545, max_height: 35, land_angle: 39, spin_decay: 0.08, wind_sensitivity: 1.0 },
+    "3-wood": { name: "3-Wood", ball_speed: 162, launch_angle: 9.3, spin_rate: 3663, max_height: 32, land_angle: 44, spin_decay: 0.09, wind_sensitivity: 1.0 },
+    "5-wood": { name: "5-Wood", ball_speed: 156, launch_angle: 9.7, spin_rate: 4322, max_height: 33, land_angle: 48, spin_decay: 0.095, wind_sensitivity: 1.0 },
+    "7-wood": { name: "7-Wood", ball_speed: 152, launch_angle: 11.2, spin_rate: 4750, max_height: 34, land_angle: 50, spin_decay: 0.098, wind_sensitivity: 1.0 },
+    "hybrid": { name: "Hybrid", ball_speed: 149, launch_angle: 10.2, spin_rate: 4587, max_height: 31, land_angle: 49, spin_decay: 0.10, wind_sensitivity: 1.0 },
+    "2-iron": { name: "2-Iron", ball_speed: 148, launch_angle: 9.8, spin_rate: 4100, max_height: 29, land_angle: 47, spin_decay: 0.095, wind_sensitivity: 1.0 },
+    "3-iron": { name: "3-Iron", ball_speed: 145, launch_angle: 10.3, spin_rate: 4404, max_height: 30, land_angle: 48, spin_decay: 0.10, wind_sensitivity: 1.0 },
+    "4-iron": { name: "4-Iron", ball_speed: 140, launch_angle: 10.8, spin_rate: 4782, max_height: 31, land_angle: 49, spin_decay: 0.105, wind_sensitivity: 1.0 },
+    "5-iron": { name: "5-Iron", ball_speed: 135, launch_angle: 11.9, spin_rate: 5280, max_height: 33, land_angle: 50, spin_decay: 0.11, wind_sensitivity: 1.0 },
+    "6-iron": { name: "6-Iron", ball_speed: 130, launch_angle: 14.0, spin_rate: 6204, max_height: 32, land_angle: 50, spin_decay: 0.115, wind_sensitivity: 1.0 },
+    "7-iron": { name: "7-Iron", ball_speed: 123, launch_angle: 16.1, spin_rate: 7124, max_height: 34, land_angle: 51, spin_decay: 0.12, wind_sensitivity: 1.0 },
+    "8-iron": { name: "8-Iron", ball_speed: 118, launch_angle: 17.8, spin_rate: 8078, max_height: 33, land_angle: 51, spin_decay: 0.13, wind_sensitivity: 1.0 },
+    "9-iron": { name: "9-Iron", ball_speed: 112, launch_angle: 20.0, spin_rate: 8793, max_height: 32, land_angle: 52, spin_decay: 0.14, wind_sensitivity: 1.0 },
+    "pitching-wedge": { name: "PW", ball_speed: 104, launch_angle: 23.7, spin_rate: 9316, max_height: 32, land_angle: 52, spin_decay: 0.15, wind_sensitivity: 1.0 },
+    "gap-wedge": { name: "GW", ball_speed: 101, launch_angle: 24.5, spin_rate: 9600, max_height: 32, land_angle: 53, spin_decay: 0.155, wind_sensitivity: 1.0 },
+    "sand-wedge": { name: "SW", ball_speed: 98, launch_angle: 25.3, spin_rate: 9900, max_height: 32, land_angle: 54, spin_decay: 0.17, wind_sensitivity: 1.0 },
+    "lob-wedge": { name: "LW", ball_speed: 95, launch_angle: 26.1, spin_rate: 10200, max_height: 32, land_angle: 55, spin_decay: 0.18, wind_sensitivity: 1.0 }
   }
 
   // Altitude effects
@@ -84,34 +51,38 @@ export class YardageModelEnhanced {
   }
 
   // Ball Models
-  private static BALL_MODELS: Record<string, BallModel> = {
+  private static BALL_MODELS: Record<string, BallModelDS> = {
     "tour_premium": {
       name: "Tour Premium",
       compression: 95,
       speed_factor: 1.00,
       spin_factor: 1.05,
-      temp_sensitivity: 0.8
+      temp_sensitivity: 0.8,
+      dimple_pattern: "hexagonal"
     },
     "distance": {
       name: "Distance",
       compression: 85,
       speed_factor: 1.01,
       spin_factor: 0.95,
-      temp_sensitivity: 1.0
+      temp_sensitivity: 1.0,
+      dimple_pattern: "multi-dimensional"
     },
     "mid_range": {
       name: "Mid Range",
       compression: 90,
       speed_factor: 0.98,
       spin_factor: 1.00,
-      temp_sensitivity: 1.0
+      temp_sensitivity: 1.0,
+      dimple_pattern: "332"
     },
     "two_piece": {
       name: "Two Piece",
       compression: 80,
       speed_factor: 0.96,
       spin_factor: 0.90,
-      temp_sensitivity: 1.2
+      temp_sensitivity: 1.2,
+      dimple_pattern: "tour-style"
     }
   }
 
@@ -274,7 +245,7 @@ export class YardageModelEnhanced {
     return initial_spin * (1 - decay_rate * flight_time/2)
   }
 
-  calculate_adjusted_yardage(target_yardage: number, skill_level: SkillLevel, club: string): ShotResult {
+  calculate_adjusted_yardage(target_yardage: number, skill_level: SkillLevelDS, club: string): ShotResultDS {
     // Normalize club name to lowercase
     const normalizedClub = club.toLowerCase()
     const club_key = YardageModelEnhanced.CLUB_NAME_MAP[normalizedClub] || normalizedClub
@@ -326,7 +297,7 @@ export class YardageModelEnhanced {
     }
     
     // Wind effects
-    let lateral_movement = 0
+    let lateral_movement = 0;
     if (this.wind_speed !== null && this.wind_direction !== null) {
       const wind_rad = this.wind_direction * Math.PI / 180
       const distance_factor = adjusted_yardage / 300
@@ -345,15 +316,16 @@ export class YardageModelEnhanced {
       const height_effect = Math.sqrt(club_data.max_height / 35)
       adjusted_yardage -= head_tail_effect * height_effect
       
-      // Crosswind
-      const cross_factor = Math.sin(wind_rad)
-      const cross_wind_effect = effective_wind * cross_factor * 0.35
-      const lateral_base = cross_wind_effect * distance_factor * speed_factor * 3.0
+      // Crosswind - Reverse the sign to match DS model convention
+      const cross_factor = Math.sin(wind_rad);
+      const cross_wind_effect = effective_wind * cross_factor * 0.35;
+      const lateral_base = cross_wind_effect * distance_factor * speed_factor * 3.0;
       
-      const spin_factor = Math.sqrt((club_data.spin_rate * ball.spin_factor) / 2545)
-      const loft_factor = Math.sqrt(club_data.launch_angle / 10.4)
+      const spin_factor = Math.sqrt((club_data.spin_rate * ball.spin_factor) / 2545);
+      const loft_factor = Math.sqrt(club_data.launch_angle / 10.4);
       
-      lateral_movement = lateral_base * (1 + (spin_factor + loft_factor - 2) * 0.2)
+      // Negate the lateral movement to match DS model convention
+      lateral_movement = -(lateral_base * (1 + (spin_factor + loft_factor - 2) * 0.2));
     }
 
     return {
@@ -362,9 +334,8 @@ export class YardageModelEnhanced {
     }
   }
 
-  public getClubData(clubKey: string): ClubData | null {
+  public getClubData(clubKey: string): ClubDataDS | null {
     const normalizedKey = normalizeClubName(clubKey);
     return YardageModelEnhanced.CLUB_DATABASE[normalizedKey] || null;
   }
 }
-*/
