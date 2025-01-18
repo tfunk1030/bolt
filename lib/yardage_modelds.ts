@@ -217,7 +217,7 @@ export class YardageModelEnhanced {
         this.humidity || 50
       );
 
-      const densityRatio = currentDensity / 1.225;
+      const densityRatio = currentDensity / 1.193;
 
       // Density effect (inverted - higher density means shorter distance)
       const densityEffect = -(densityRatio - 1);
