@@ -58,9 +58,18 @@ export default function WindComparisonPage() {
     if (!conditions) return null;
 
     try {
+      console.log('\nCalculation Debug:');
+      console.log('Club Key:', clubKey);
+      console.log('Environmental Conditions:', conditions);
+      console.log('Target Yardage:', targetYardage);
+      console.log('Wind Speed:', windSpeed);
+      console.log('Wind Direction:', windDirection);
+
       model.set_ball_model("tour_premium");
+      console.log('Ball Model: tour_premium');
 
       // First calculate environmental effects without wind
+      console.log('\nNo Wind Calculation:');
       model.set_conditions(
         conditions.temperature,
         conditions.altitude,
@@ -75,8 +84,10 @@ export default function WindComparisonPage() {
         SkillLevel.PROFESSIONAL,
         clubKey
       )
+      console.log('Environment Only Result:', envResult);
 
       // Then calculate with wind added
+      console.log('\nWith Wind Calculation:');
       model.set_conditions(
         conditions.temperature,
         conditions.altitude,
@@ -91,9 +102,13 @@ export default function WindComparisonPage() {
         SkillLevel.PROFESSIONAL,
         clubKey
       )
+      console.log('Wind Added Result:', windResult);
 
       // Calculate wind effect exactly as in wind-calc page
       const windEffect = -(windResult.carry_distance - envResult.carry_distance)
+      console.log('\nFinal Effects:');
+      console.log('Wind Effect:', windEffect);
+      console.log('Lateral Effect:', windResult.lateral_movement);
 
       return {
         windEffect,
