@@ -4,7 +4,7 @@
     "require": ["tsconfig-paths/register"]
   },
   "compilerOptions": {
-    "module": "CommonJS",
+    "module": "ES2015",
     "baseUrl": "..",
     "paths": {
       "@/*": ["./*"]
