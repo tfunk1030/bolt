@@ -1,5 +1,4 @@
-import { YardageModelEnhanced as YardageModelRevised } from '@/lib/revised-yardage-model';
-import { YardageModelEnhanced as YardageModelLegacy } from '@/lib/yardage-model';
+import { YardageModelEnhanced as LatestYardageModel } from '@/lib/latest-yardage-model';
 import { SkillLevel } from '@/lib/yardage_modelds';
 import { normalizeClubName } from '@/lib/utils/club-mapping';
 
@@ -7,11 +6,30 @@ import { normalizeClubName } from '@/lib/utils/club-mapping';
 const YARDAGES = Array.from({ length: 12 }, (_, i) => 80 + i * 20); // 80-300 in 20 yard increments
 const WIND_SPEEDS = [5, 10, 15, 20];
 const WIND_DIRECTIONS = [
-  { name: "Head Wind", degrees: 180 },
-  { name: "Tail Wind", degrees: 0 },
+  { name: "Head Wind", degrees: 0 },
+  { name: "Tail Wind", degrees: 180 },
   { name: "Cross Wind", degrees: 90 },
-  { name: "Quartering Head Wind", degrees: 135 },
-  { name: "Quartering Help Wind", degrees: 45 }
+  { name: "Quartering Head Wind", degrees: 45 },
+  { name: "Quartering Help Wind", degrees: 135 }
+];
+
+// Default clubs with their normal yardages
+const DEFAULT_CLUBS = [
+  { name: "Driver", normalYardage: 282 },
+  { name: "3-Wood", normalYardage: 249 },
+  { name: "5-Wood", normalYardage: 236 },
+  { name: "Hybrid", normalYardage: 231 },
+  { name: "3-Iron", normalYardage: 218 },
+  { name: "4-Iron", normalYardage: 209 },
+  { name: "5-Iron", normalYardage: 199 },
+  { name: "6-Iron", normalYardage: 188 },
+  { name: "7-Iron", normalYardage: 176 },
+  { name: "8-Iron", normalYardage: 164 },
+  { name: "9-Iron", normalYardage: 152 },
+  { name: "PW", normalYardage: 142 },
+  { name: "GW", normalYardage: 130 },
+  { name: "SW", normalYardage: 118 },
+  { name: "LW", normalYardage: 106 }
 ];
 
 // Standard environmental conditions
@@ -20,32 +38,11 @@ const conditions = {
   altitude: 0,
   pressure: 1013.25,
   humidity: 60,
-  density: 1.225
+  density: 1.193
 };
 
-// Initialize models
-const models = {
-  revised: new YardageModelRevised(),
-};
-
-// Default clubs from club-settings-context
-const DEFAULT_CLUBS = [
-  { name: "Driver", normalYardage: 282, loft: 9.5 },
-  { name: "3-Wood", normalYardage: 249, loft: 15 },
-  { name: "5-Wood", normalYardage: 236, loft: 18 },
-  { name: "Hybrid", normalYardage: 231, loft: 20 },
-  { name: "3-Iron", normalYardage: 218, loft: 21 },
-  { name: "4-Iron", normalYardage: 209, loft: 24 },
-  { name: "5-Iron", normalYardage: 199, loft: 27 },
-  { name: "6-Iron", normalYardage: 188, loft: 30 },
-  { name: "7-Iron", normalYardage: 176, loft: 34 },
-  { name: "8-Iron", normalYardage: 164, loft: 38 },
-  { name: "9-Iron", normalYardage: 152, loft: 42 },
-  { name: "PW", normalYardage: 142, loft: 46 },
-  { name: "GW", normalYardage: 130, loft: 50 },
-  { name: "SW", normalYardage: 118, loft: 54 },
-  { name: "LW", normalYardage: 106, loft: 58 }
-];
+// Initialize model
+const yardageModel = new LatestYardageModel();
 
 function getRecommendedClub(targetYardage: number) {
   let closestClub = DEFAULT_CLUBS[0];
@@ -62,18 +59,16 @@ function getRecommendedClub(targetYardage: number) {
   return closestClub;
 }
 
-function calculateModelEffect(
-  model: YardageModelRevised | YardageModelLegacy,
-  clubKey: string,
-  targetYardage: number,
-  windSpeed: number,
-  windDirection: number
-) {
+function calculateModelEffect(yardage: number, windSpeed: number, windDirection: number) {
   try {
-    model.set_ball_model("tour_premium");
+    const recommendedClub = getRecommendedClub(yardage);
+    const clubKey = normalizeClubName(recommendedClub.name);
+    
+    // Set ball model with enhanced features
+    yardageModel.set_ball_model("tour_premium");
 
     // First calculate environmental effects without wind
-    model.set_conditions(
+    yardageModel.set_conditions(
       conditions.temperature,
       conditions.altitude,
       0,  // No wind
@@ -82,14 +77,19 @@ function calculateModelEffect(
       conditions.humidity
     );
 
-    const envResult = model.calculate_adjusted_yardage(
-      targetYardage,
+    const envResult = yardageModel.calculate_adjusted_yardage(
+      yardage,
       SkillLevel.PROFESSIONAL,
       clubKey
     );
 
+    if (!envResult) {
+      console.error('No environmental result from calculation');
+      return null;
+    }
+
     // Then calculate with wind added
-    model.set_conditions(
+    yardageModel.set_conditions(
       conditions.temperature,
       conditions.altitude,
       windSpeed,
@@ -98,61 +98,92 @@ function calculateModelEffect(
       conditions.humidity
     );
 
-    const windResult = model.calculate_adjusted_yardage(
-      targetYardage,
+    const windResult = yardageModel.calculate_adjusted_yardage(
+      yardage,
       SkillLevel.PROFESSIONAL,
       clubKey
     );
 
-    const windEffect = -(windResult.carry_distance - envResult.carry_distance);
-    const lateralEffect = windResult.lateral_movement;
+    if (!windResult) {
+      console.error('No wind result from calculation');
+      return null;
+    }
 
-    return { windEffect, lateralEffect };
+    // Calculate effects matching the app's calculations
+    const environmentalEffect = -(envResult.carry_distance - yardage);
+    const windEffect = -(windResult.carry_distance - envResult.carry_distance);
+    
+    return {
+      clubKey,
+      environmentalEffect,
+      windEffect,
+      lateralEffect: windResult.lateral_movement,
+      totalDistance: windResult.carry_distance
+    };
   } catch (error) {
     console.error('Error calculating model effect:', error);
     return null;
   }
 }
 
-// Create output string
-let output = 'Wind Effect Matrix\n\n';
+// Generate the matrix
+function generateMatrix() {
+  let output = '# Wind Effect Matrix\n\n';
 
-for (const windDirection of WIND_DIRECTIONS) {
-  output += `${windDirection.name} (${windDirection.degrees}°)\n`;
-  output += '─'.repeat(120) + '\n';
-  
-  // Header row
-  output += 'Target | Club  | Model  | ' + WIND_SPEEDS.map(speed => 
-    `${speed} mph (Wind/Lateral)`.padEnd(25)
-  ).join(' | ') + '\n';
-  output += '─'.repeat(120) + '\n';
+  for (const windDirection of WIND_DIRECTIONS) {
+    output += `## ${windDirection.name} (${windDirection.degrees}°)\n\n`;
+    
+    // Header row with alignment markers
+    output += [
+      '| Target',
+      'Club',
+      ...WIND_SPEEDS.map(speed => `${speed} mph (Wind/Lateral)`)
+    ].join(' | ') + ' |\n';
+    
+    // Alignment row
+    output += [
+      '| ---:',
+      ':---',
+      ...WIND_SPEEDS.map(() => ':---:')
+    ].join(' | ') + ' |\n';
 
-  for (const yardage of YARDAGES) {
-    const recommendedClub = getRecommendedClub(yardage);
-    const clubKey = normalizeClubName(recommendedClub.name);
-
-    // Calculate for both models
-    for (const [modelName, model] of Object.entries(models)) {
+    for (const yardage of YARDAGES) {
       const results = WIND_SPEEDS.map(speed => 
-        calculateModelEffect(model, clubKey, yardage, speed, windDirection.degrees)
+        calculateModelEffect(yardage, speed, windDirection.degrees)
       );
 
-      // Format the results
+      if (!results[0]) continue;
+
+      // Format each data column
       const resultStr = results.map(result => {
-        if (!result) return 'Error'.padEnd(25);
-        const windStr = result.windEffect.toFixed(1).padStart(6);
-        const lateralStr = (Math.abs(result.lateralEffect).toFixed(1) + (result.lateralEffect > 0 ? 'R' : 'L')).padStart(6);
-        return `${windStr}y / ${lateralStr}y`.padEnd(25);
+        if (!result) return 'Error';
+        
+        // Format wind effect
+        const windSign = result.windEffect >= 0 ? '+' : '';
+        const windStr = windSign + result.windEffect.toFixed(1).padStart(5);
+        const windColor = result.windEffect >= 0 ? '#22c55e' : '#ef4444';
+        
+        // Format lateral effect
+        const lateralStr = result.lateralEffect.toFixed(1).padStart(4) + 'L';
+        
+        return `**<span style="color: ${windColor}">${windStr}y</span>** / **<span style="color: #3b82f6">${lateralStr}y</span>**`;
       }).join(' | ');
 
-      output += `${yardage.toString().padStart(6)} | ${recommendedClub.name.padEnd(6)} | ${modelName.padEnd(6)} | ${resultStr}\n`;
+      // Format row
+      output += [
+        `| **${yardage}**`,
+        `${results[0].clubKey.toLowerCase()}`,
+        resultStr
+      ].join(' | ') + ' |\n';
     }
-    output += '─'.repeat(120) + '\n';
+    output += '\n\n';
   }
-  output += '\n\n';
+
+  return output;
 }
 
-// Write to file
+// Execute and save output
+const output = generateMatrix();
 const fs = require('fs');
-fs.writeFileSync('wind-effects-output.txt', output);
-console.log('Wind effect matrix has been written to wind-effects-output.txt');
+fs.writeFileSync('wind-effects-output.md', output);  // Changed extension to .md
+console.log('Wind effect matrix has been written to wind-effects-output.md');

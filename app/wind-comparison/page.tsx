@@ -8,6 +8,7 @@ import { useClubSettings } from '@/lib/club-settings-context'
 import { useEnvironmental } from '@/lib/hooks/use-environmental'
 import { YardageModelEnhanced as YardageModelLegacy } from '@/lib/yardage-model'
 import { YardageModelEnhanced as YardageModelRevised } from '@/lib/revised-yardage-model'
+import { YardageModelEnhanced as LatestYardageModel } from '@/lib/latest-yardage-model'
 import { SkillLevel } from '@/lib/yardage_modelds'
 import WindDirectionCompass from '@/components/wind-direction-compass'
 import { normalizeClubName } from '@/lib/utils/club-mapping'
@@ -27,6 +28,7 @@ export default function WindComparisonPage() {
   const [windSpeed, setWindSpeed] = useState(10)
   const [targetYardage, setTargetYardage] = useState(150)
   const [results, setResults] = useState<{
+    [x: string]: any
     revised: ModelResult | null
     legacy: ModelResult | null
   }>({
@@ -36,7 +38,8 @@ export default function WindComparisonPage() {
 
   const [models] = useState(() => ({
     revised: new YardageModelRevised(),
-    legacy: new YardageModelLegacy()
+    legacy: new YardageModelLegacy(),
+    latest: new LatestYardageModel()
   }))
 
   useEffect(() => {
@@ -52,7 +55,7 @@ export default function WindComparisonPage() {
   }, [isPremium, router])
 
   const calculateModelEffect = useCallback((
-    model: YardageModelRevised | YardageModelLegacy,
+    model: YardageModelRevised | YardageModelLegacy | LatestYardageModel, 
     clubKey: string
   ): ModelResult | null => {
     if (!conditions) return null;
@@ -130,7 +133,8 @@ export default function WindComparisonPage() {
 
     setResults({
       revised: calculateModelEffect(models.revised, clubKey),
-      legacy: calculateModelEffect(models.legacy, clubKey)
+      legacy: calculateModelEffect(models.legacy, clubKey),
+      latest: calculateModelEffect(models.latest, clubKey)
     })
   }, [conditions, targetYardage, windSpeed, windDirection, calculateModelEffect, getRecommendedClub, models])
 
@@ -220,7 +224,8 @@ export default function WindComparisonPage() {
           <div className="bg-gray-900/30 p-4 rounded-lg border border-gray-700/50">
             {[
               { name: "Revised Model", result: results.revised },
-              { name: "Legacy Model", result: results.legacy }
+              { name: "Legacy Model", result: results.legacy },
+              { name: "Latest Model", result: results.latest }
             ].map(({ name, result }) => result && (
               <div key={name} className="py-3 first:pt-0 last:pb-0 border-b last:border-0 border-gray-700">
                 <div className="text-sm font-medium text-gray-400">{name}</div>
