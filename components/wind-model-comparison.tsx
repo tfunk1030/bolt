@@ -2,8 +2,8 @@
 
 import React, { useState, useCallback, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
-import { YardageModelEnhanced as YardageModelRevised } from '@/lib/revised-yardage-model'
-import { YardageModelEnhanced as YardageModelDS, SkillLevel } from '@/lib/yardage_modelds'
+import { SkillLevel, YardageModelEnhanced as YardageModelRevised } from '@/lib/revised-yardage-model'
+import { YardageModelEnhanced as LatestYardageModel } from '@/lib/latest-yardage-model'
 import { YardageModelEnhanced as YardageModelLegacy } from '@/lib/yardage-model'
 import { useEnvironmental } from '@/lib/hooks/use-environmental'
 import { useClubSettings } from '@/lib/club-settings-context'
@@ -43,9 +43,9 @@ export function WindModelComparison() {
   })
 
   const [models] = useState(() => ({
-    revised: new YardageModelRevised(),
-    ds: new YardageModelDS(),
-    legacy: new YardageModelLegacy()
+    revised: new LatestYardageModel(),
+    ds: new LatestYardageModel(),
+    legacy: new LatestYardageModel()
   }))
 
   // Update target yardage when shot calc data changes
@@ -56,7 +56,7 @@ export function WindModelComparison() {
   }, [shotCalcData.targetYardage])
 
   const calculateModelEffect = useCallback((
-    model: YardageModelRevised | YardageModelDS | YardageModelLegacy,
+    model: YardageModelRevised | LatestYardageModel | YardageModelLegacy,
     recommendedClub: ReturnType<typeof getRecommendedClub>,
     clubKey: string
   ): ModelResult | null => {
