@@ -1,4 +1,4 @@
-import { YardageModelEnhanced as LatestYardageModel } from '@/lib/latest-yardage-model';
+import { YardageModelEnhanced as YardageModelRevised } from '@/lib/revised-yardage-model';
 import { SkillLevel } from '@/lib/yardage_modelds';
 import { normalizeClubName } from '@/lib/utils/club-mapping';
 
@@ -15,21 +15,19 @@ const WIND_DIRECTIONS = [
 
 // Default clubs with their normal yardages
 const DEFAULT_CLUBS = [
-  { name: "Driver", normalYardage: 282 },
-  { name: "3-Wood", normalYardage: 249 },
-  { name: "5-Wood", normalYardage: 236 },
-  { name: "Hybrid", normalYardage: 231 },
-  { name: "3-Iron", normalYardage: 218 },
-  { name: "4-Iron", normalYardage: 209 },
-  { name: "5-Iron", normalYardage: 199 },
-  { name: "6-Iron", normalYardage: 188 },
+  { name: "Driver", normalYardage: 295 },
+  { name: "3-Wood", normalYardage: 258 },
+  { name: "3-Iron", normalYardage: 233 },
+  { name: "4-Iron", normalYardage: 215 },
+  { name: "5-Iron", normalYardage: 203 },
+  { name: "6-Iron", normalYardage: 192 },
   { name: "7-Iron", normalYardage: 176 },
   { name: "8-Iron", normalYardage: 164 },
   { name: "9-Iron", normalYardage: 152 },
-  { name: "PW", normalYardage: 142 },
-  { name: "GW", normalYardage: 130 },
-  { name: "SW", normalYardage: 118 },
-  { name: "LW", normalYardage: 106 }
+  { name: "PW", normalYardage: 136 },
+  { name: "GW", normalYardage: 122 },
+  { name: "SW", normalYardage: 110 },
+  { name: "LW", normalYardage: 90 }
 ];
 
 // Standard environmental conditions
@@ -42,7 +40,7 @@ const conditions = {
 };
 
 // Initialize model
-const yardageModel = new LatestYardageModel();
+const yardageModel = new YardageModelRevised();
 
 function getRecommendedClub(targetYardage: number) {
   let closestClub = DEFAULT_CLUBS[0];

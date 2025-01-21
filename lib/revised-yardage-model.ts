@@ -43,23 +43,19 @@ export class YardageModelEnhanced {
 
   // Club database with refined wind sensitivity coefficients
   private static readonly CLUB_DATABASE: Readonly<Record<string, ClubData>> = {
-    "driver": { name: "Driver", ball_speed: 171, launch_angle: 10.4, spin_rate: 2545, max_height: 35, land_angle: 39, spin_decay: 0.08, wind_sensitivity: 1.0 },
-    "3-wood": { name: "3-Wood", ball_speed: 162, launch_angle: 9.3, spin_rate: 3663, max_height: 32, land_angle: 44, spin_decay: 0.09, wind_sensitivity: 1.05 },
-    "5-wood": { name: "5-Wood", ball_speed: 156, launch_angle: 9.7, spin_rate: 4322, max_height: 33, land_angle: 48, spin_decay: 0.095, wind_sensitivity: 1.1 },
-    "7-wood": { name: "7-Wood", ball_speed: 152, launch_angle: 11.2, spin_rate: 4750, max_height: 34, land_angle: 50, spin_decay: 0.098, wind_sensitivity: 1.15 },
-    "hybrid": { name: "Hybrid", ball_speed: 149, launch_angle: 10.2, spin_rate: 4587, max_height: 31, land_angle: 49, spin_decay: 0.10, wind_sensitivity: 1.18 },
-    "2-iron": { name: "2-Iron", ball_speed: 148, launch_angle: 9.8, spin_rate: 4100, max_height: 29, land_angle: 47, spin_decay: 0.095, wind_sensitivity: 1.15 },
-    "3-iron": { name: "3-Iron", ball_speed: 145, launch_angle: 10.3, spin_rate: 4404, max_height: 30, land_angle: 48, spin_decay: 0.10, wind_sensitivity: 1.18 },
-    "4-iron": { name: "4-Iron", ball_speed: 140, launch_angle: 10.8, spin_rate: 4782, max_height: 31, land_angle: 49, spin_decay: 0.105, wind_sensitivity: 1.2 },
-    "5-iron": { name: "5-Iron", ball_speed: 135, launch_angle: 11.9, spin_rate: 5280, max_height: 33, land_angle: 50, spin_decay: 0.11, wind_sensitivity: 1.2 },
-    "6-iron": { name: "6-Iron", ball_speed: 130, launch_angle: 14.0, spin_rate: 6204, max_height: 32, land_angle: 50, spin_decay: 0.115, wind_sensitivity: 1.25 },
-    "7-iron": { name: "7-Iron", ball_speed: 123, launch_angle: 16.1, spin_rate: 7124, max_height: 34, land_angle: 51, spin_decay: 0.12, wind_sensitivity: 1.28 },
-    "8-iron": { name: "8-Iron", ball_speed: 118, launch_angle: 17.8, spin_rate: 8078, max_height: 33, land_angle: 51, spin_decay: 0.13, wind_sensitivity: 1.3 },
-    "9-iron": { name: "9-Iron", ball_speed: 112, launch_angle: 20.0, spin_rate: 8793, max_height: 32, land_angle: 52, spin_decay: 0.14, wind_sensitivity: 1.35 },
-    "pitching-wedge": { name: "PW", ball_speed: 104, launch_angle: 23.7, spin_rate: 9316, max_height: 32, land_angle: 52, spin_decay: 0.15, wind_sensitivity: 1.38 },
-    "gap-wedge": { name: "GW", ball_speed: 101, launch_angle: 24.5, spin_rate: 9600, max_height: 32, land_angle: 53, spin_decay: 0.155, wind_sensitivity: 1.4 },
-    "sand-wedge": { name: "SW", ball_speed: 98, launch_angle: 25.3, spin_rate: 9900, max_height: 32, land_angle: 54, spin_decay: 0.16, wind_sensitivity: 1.42 },
-    "lob-wedge": { name: "LW", ball_speed: 95, launch_angle: 26.1, spin_rate: 10200, max_height: 32, land_angle: 55, spin_decay: 0.165, wind_sensitivity: 1.45 }
+    "driver": { name: "Driver", ball_speed: 172, launch_angle: 10.8, spin_rate: 2345, max_height: 36, land_angle: 39, spin_decay: 0.08, wind_sensitivity: 0.99 },
+    "3-wood": { name: "3-Wood", ball_speed: 161, launch_angle: 10.5, spin_rate: 3443, max_height: 35, land_angle: 42, spin_decay: 0.09, wind_sensitivity: 0.99 },
+    "3-iron": { name: "3-Iron", ball_speed: 146, launch_angle: 11.2, spin_rate: 3304, max_height: 30, land_angle: 39, spin_decay: 0.10, wind_sensitivity: 0.99 },
+    "4-iron": { name: "4-Iron", ball_speed: 138, launch_angle: 12.7, spin_rate: 3992, max_height: 31.5, land_angle: 40, spin_decay: 0.105, wind_sensitivity: 0.99 },
+    "5-iron": { name: "5-Iron", ball_speed: 134, launch_angle: 14.3, spin_rate: 4400, max_height: 32.5, land_angle: 42.6, spin_decay: 0.11, wind_sensitivity: 0.99 },
+    "6-iron": { name: "6-Iron", ball_speed: 130, launch_angle: 16.0, spin_rate: 5004, max_height: 34.5, land_angle: 46, spin_decay: 0.115, wind_sensitivity: 1.0 },
+    "7-iron": { name: "7-Iron", ball_speed: 124, launch_angle: 17.8, spin_rate: 6024, max_height: 34.3, land_angle: 48.2, spin_decay: 0.12, wind_sensitivity: 1.0 },
+    "8-iron": { name: "8-Iron", ball_speed: 116, launch_angle: 20.0, spin_rate: 6778, max_height: 33.6, land_angle: 47.3, spin_decay: 0.13, wind_sensitivity: 1.0 },
+    "9-iron": { name: "9-Iron", ball_speed: 112, launch_angle: 21.6, spin_rate: 7793, max_height: 33.1, land_angle: 49.6, spin_decay: 0.14, wind_sensitivity: 1.0 },
+    "pitching-wedge": { name: "PW", ball_speed: 103, launch_angle: 24.3, spin_rate: 8316, max_height: 32.5, land_angle: 50.6, spin_decay: 0.15, wind_sensitivity: 1.0 },
+    "gap-wedge": { name: "GW", ball_speed: 95, launch_angle: 26.5, spin_rate: 9670, max_height: 30.2, land_angle: 51.1, spin_decay: 0.155, wind_sensitivity: 1.0 },
+    "sand-wedge": { name: "SW", ball_speed: 89, launch_angle: 28.3, spin_rate: 10800, max_height: 28, land_angle: 51.4, spin_decay: 0.16, wind_sensitivity: 1.0 },
+    "lob-wedge": { name: "LW", ball_speed: 77, launch_angle: 33.1, spin_rate: 11000, max_height: 25, land_angle: 52, spin_decay: 0.165, wind_sensitivity: 1.0 }
   };
 
   // Maintain original altitude effects
