@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Wind Effect Matrix</title>
+    <style>
+        body {
+            background-color: #0F1624;
+            color: #fff;
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 2px;
+            max-width: 1200px;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+
+        .block {
+            margin-bottom: 2px;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .header {
+            background-color: #F5F5DC;
+            color: #000;
+            padding: 4px;
+            font-weight: 700;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 16px;
+            table-layout: fixed;
+            box-sizing: border-box;
+        }
+
+        th {
+            background-color: #1A1E2D;
+            padding: 8px;
+            text-align: center;
+            font-weight: normal;
+            border: 1px solid #2A2E3D;
+        }
+
+        td:first-child {
+            width: 120px;
+            text-align: center;
+        }
+
+        td {
+            width: auto;
+            padding: 8px 2px;
+            text-align: center;
+            border: 1px solid #2A2E3D;
+            min-width: 0;
+        }
+
+        .into { background-color: #2D1F1F; }
+        .quarter-into { background-color: #1F1F2D; }
+        .cross { background-color: #1F1F3D; }
+        .quarter-help { background-color: #1F2D1F; }
+        .help { background-color: #0F1F0F; }
+
+        .mph-header {
+            background-color: #1A1E2D;
+            color: #fff;
+            padding: 0;
+            display: grid;
+            grid-template-columns: 120px repeat(4, 1fr);
+            gap: 1px;
+            font-size: 14px;
+            border: 1px solid #2A2E3D;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+            height: 31px;
+        }
+
+        .mph-cell {
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 0;
+            padding: 6px 8px;
+            height: 20px;
+            line-height: 19px;
+        }
+
+        .mph-cell:first-child {
+            justify-content: flex-start;
+            padding: 6px 8px;
+        }
+
+        .mph-cell:not(:first-child) {
+            justify-content: center;
+            width: 100%;
+            text-align: center;
+            padding: 6px 8px;
+        }
+
+        .stacked-numbers {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        
+        .stacked-numbers span {
+            display: block;
+            line-height: 1.2;
+        }
+
+        .into-number {
+            color: #ff4d4d;
+        }
+
+        .help-number {
+            color: #4dff4d;
+        }
+
+        .lateral {
+            color: #4da6ff;
+            font-size: 0.9em;
+        }
+
+        .lateral::before {
+            content: "L/R";
+            margin-right: 2px;
+            font-size: 0.8em;
+            opacity: 0.7;
+        }
+
+        .header, .mph-header, table {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="grid">
+        <!-- 80 yards -->
+        <div class="block">
+            <div class="header">80 yards</div>
+            <div class="mph-header">
+                <div class="mph-cell">MPH →</div>
+                <div class="mph-cell">5</div>
+                <div class="mph-cell">10</div>
+                <div class="mph-cell">15</div>
+                <div class="mph-cell">20</div>
+            </div>
+            <table>
+                <tr class="into">
+                    <td>Into</td>
+                    <td><span class="into-number">+0.6</span></td>
+                    <td><span class="into-number">+1.7</span></td>
+                    <td><span class="into-number">+3.0</span></td>
+                    <td><span class="into-number">+4.6</span></td>
+                </tr>
+                <tr class="quarter-into">
+                    <td>Quarter Into</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+0.5</span>
+                            <span class="lateral">0.6</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+1.2</span>
+                            <span class="lateral">1.2</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+2.2</span>
+                            <span class="lateral">2.0</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+3.2</span>
+                            <span class="lateral">2.7</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="cross">
+                    <td>Cross</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">0.8</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">1.7</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">2.8</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">3.9</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="quarter-help">
+                    <td>Quarter Help</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-0.3</span>
+                            <span class="lateral">0.3</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-1.0</span>
+                            <span class="lateral">0.8</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-1.7</span>
+                            <span class="lateral">1.2</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-2.7</span>
+                            <span class="lateral">1.7</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="help">
+                    <td>Help</td>
+                    <td><span class="help-number">-0.5</span></td>
+                    <td><span class="help-number">-1.4</span></td>
+                    <td><span class="help-number">-2.5</span></td>
+                    <td><span class="help-number">-3.8</span></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- 100 yards -->
+        <div class="block">
+            <div class="header">100 yards</div>
+            <div class="mph-header">
+                <div class="mph-cell">MPH →</div>
+                <div class="mph-cell">5</div>
+                <div class="mph-cell">10</div>
+                <div class="mph-cell">15</div>
+                <div class="mph-cell">20</div>
+            </div>
+            <table>
+                <tr class="into">
+                    <td>Into</td>
+                    <td><span class="into-number">+1.4</span></td>
+                    <td><span class="into-number">+3.7</span></td>
+                    <td><span class="into-number">+6.6</span></td>
+                    <td><span class="into-number">+10.0</span></td>
+                </tr>
+                <tr class="quarter-into">
+                    <td>Quarter Into</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+1.0</span>
+                            <span class="lateral">1.1</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+2.6</span>
+                            <span class="lateral">2.5</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+4.7</span>
+                            <span class="lateral">4.0</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+7.1</span>
+                            <span class="lateral">5.6</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="cross">
+                    <td>Cross</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">1.6</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">3.6</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">5.7</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">8.0</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="quarter-help">
+                    <td>Quarter Help</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-0.8</span>
+                            <span class="lateral">0.8</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-2.2</span>
+                            <span class="lateral">2.2</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-3.9</span>
+                            <span class="lateral">3.9</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-5.9</span>
+                            <span class="lateral">5.9</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="help">
+                    <td>Help</td>
+                    <td><span class="help-number">-1.1</span></td>
+                    <td><span class="help-number">-3.1</span></td>
+                    <td><span class="help-number">-5.5</span></td>
+                    <td><span class="help-number">-8.4</span></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- 120 yards -->
+        <div class="block">
+            <div class="header">120 yards</div>
+            <div class="mph-header">
+                <div class="mph-cell">MPH →</div>
+                <div class="mph-cell">5</div>
+                <div class="mph-cell">10</div>
+                <div class="mph-cell">15</div>
+                <div class="mph-cell">20</div>
+            </div>
+            <table>
+                <tr class="into">
+                    <td>Into</td>
+                    <td><span class="into-number">+2.0</span></td>
+                    <td><span class="into-number">+5.5</span></td>
+                    <td><span class="into-number">+9.9</span></td>
+                    <td><span class="into-number">+15.0</span></td>
+                </tr>
+                <tr class="quarter-into">
+                    <td>Quarter Into</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+1.4</span>
+                            <span class="lateral">1.4</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+3.9</span>
+                            <span class="lateral">3.9</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+7.0</span>
+                            <span class="lateral">7.0</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+10.6</span>
+                            <span class="lateral">10.6</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="cross">
+                    <td>Cross</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">2.6</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">5.8</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">9.3</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">12.9</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="quarter-help">
+                    <td>Quarter Help</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-1.2</span>
+                            <span class="lateral">1.2</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-3.2</span>
+                            <span class="lateral">3.2</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-5.8</span>
+                            <span class="lateral">5.8</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-8.8</span>
+                            <span class="lateral">8.8</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="help">
+                    <td>Help</td>
+                    <td><span class="help-number">-1.7</span></td>
+                    <td><span class="help-number">-4.6</span></td>
+                    <td><span class="help-number">-8.2</span></td>
+                    <td><span class="help-number">-12.5</span></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- 140 yards -->
+        <div class="block">
+            <div class="header">140 yards</div>
+            <div class="mph-header">
+                <div class="mph-cell">MPH →</div>
+                <div class="mph-cell">5</div>
+                <div class="mph-cell">10</div>
+                <div class="mph-cell">15</div>
+                <div class="mph-cell">20</div>
+            </div>
+            <table>
+                <tr class="into">
+                    <td>Into</td>
+                    <td><span class="into-number">+2.3</span></td>
+                    <td><span class="into-number">+6.4</span></td>
+                    <td><span class="into-number">+11.5</span></td>
+                    <td><span class="into-number">+17.5</span></td>
+                </tr>
+                <tr class="quarter-into">
+                    <td>Quarter Into</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+1.7</span>
+                            <span class="lateral">1.7</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+4.5</span>
+                            <span class="lateral">4.5</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+8.1</span>
+                            <span class="lateral">8.1</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+12.3</span>
+                            <span class="lateral">12.3</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="cross">
+                    <td>Cross</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">3.1</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">6.9</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">11.0</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">15.3</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="quarter-help">
+                    <td>Quarter Help</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-1.4</span>
+                            <span class="lateral">1.4</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-3.8</span>
+                            <span class="lateral">3.8</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-6.8</span>
+                            <span class="lateral">6.8</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-10.3</span>
+                            <span class="lateral">10.3</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="help">
+                    <td>Help</td>
+                    <td><span class="help-number">-2.0</span></td>
+                    <td><span class="help-number">-5.4</span></td>
+                    <td><span class="help-number">-9.6</span></td>
+                    <td><span class="help-number">-14.6</span></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- 160 yards -->
+        <div class="block">
+            <div class="header">160 yards</div>
+            <div class="mph-header">
+                <div class="mph-cell">MPH →</div>
+                <div class="mph-cell">5</div>
+                <div class="mph-cell">10</div>
+                <div class="mph-cell">15</div>
+                <div class="mph-cell">20</div>
+            </div>
+            <table>
+                <tr class="into">
+                    <td>Into</td>
+                    <td><span class="into-number">+3.0</span></td>
+                    <td><span class="into-number">+8.2</span></td>
+                    <td><span class="into-number">+14.7</span></td>
+                    <td><span class="into-number">+22.3</span></td>
+                </tr>
+                <tr class="quarter-into">
+                    <td>Quarter Into</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+2.1</span>
+                            <span class="lateral">2.1</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+5.8</span>
+                            <span class="lateral">5.8</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+10.4</span>
+                            <span class="lateral">10.4</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+15.8</span>
+                            <span class="lateral">15.8</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="cross">
+                    <td>Cross</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">4.0</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">8.8</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">14.0</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">19.6</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="quarter-help">
+                    <td>Quarter Help</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-1.8</span>
+                            <span class="lateral">1.8</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-4.9</span>
+                            <span class="lateral">4.9</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-8.7</span>
+                            <span class="lateral">8.7</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-13.2</span>
+                            <span class="lateral">13.2</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="help">
+                    <td>Help</td>
+                    <td><span class="help-number">-2.5</span></td>
+                    <td><span class="help-number">-6.9</span></td>
+                    <td><span class="help-number">-12.3</span></td>
+                    <td><span class="help-number">-18.6</span></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- 180 yards -->
+        <div class="block">
+            <div class="header">180 yards</div>
+            <div class="mph-header">
+                <div class="mph-cell">MPH →</div>
+                <div class="mph-cell">5</div>
+                <div class="mph-cell">10</div>
+                <div class="mph-cell">15</div>
+                <div class="mph-cell">20</div>
+            </div>
+            <table>
+                <tr class="into">
+                    <td>Into</td>
+                    <td><span class="into-number">+3.5</span></td>
+                    <td><span class="into-number">+9.4</span></td>
+                    <td><span class="into-number">+16.8</span></td>
+                    <td><span class="into-number">+25.4</span></td>
+                </tr>
+                <tr class="quarter-into">
+                    <td>Quarter Into</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+2.5</span>
+                            <span class="lateral">2.5</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+6.6</span>
+                            <span class="lateral">6.6</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+11.9</span>
+                            <span class="lateral">11.9</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+18.0</span>
+                            <span class="lateral">18.0</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="cross">
+                    <td>Cross</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">4.1</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">9.0</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">14.4</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">20.1</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="quarter-help">
+                    <td>Quarter Help</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-2.0</span>
+                            <span class="lateral">2.0</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-5.5</span>
+                            <span class="lateral">5.5</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-9.9</span>
+                            <span class="lateral">9.9</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-15.0</span>
+                            <span class="lateral">15.0</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="help">
+                    <td>Help</td>
+                    <td><span class="help-number">-2.8</span></td>
+                    <td><span class="help-number">-7.8</span></td>
+                    <td><span class="help-number">-14.0</span></td>
+                    <td><span class="help-number">-21.3</span></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- 200 yards -->
+        <div class="block">
+            <div class="header">200 yards</div>
+            <div class="mph-header">
+                <div class="mph-cell">MPH →</div>
+                <div class="mph-cell">5</div>
+                <div class="mph-cell">10</div>
+                <div class="mph-cell">15</div>
+                <div class="mph-cell">20</div>
+            </div>
+            <table>
+                <tr class="into">
+                    <td>Into</td>
+                    <td><span class="into-number">+3.6</span></td>
+                    <td><span class="into-number">+9.7</span></td>
+                    <td><span class="into-number">+17.4</span></td>
+                    <td><span class="into-number">+26.3</span></td>
+                </tr>
+                <tr class="quarter-into">
+                    <td>Quarter Into</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+2.5</span>
+                            <span class="lateral">2.5</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+6.9</span>
+                            <span class="lateral">6.9</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+12.3</span>
+                            <span class="lateral">12.3</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+18.6</span>
+                            <span class="lateral">18.6</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="cross">
+                    <td>Cross</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">4.3</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">9.5</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">15.1</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">21.0</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="quarter-help">
+                    <td>Quarter Help</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-2.1</span>
+                            <span class="lateral">2.1</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-5.8</span>
+                            <span class="lateral">5.8</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-10.4</span>
+                            <span class="lateral">10.4</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-15.7</span>
+                            <span class="lateral">15.7</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="help">
+                    <td>Help</td>
+                    <td><span class="help-number">-3.0</span></td>
+                    <td><span class="help-number">-8.2</span></td>
+                    <td><span class="help-number">-14.7</span></td>
+                    <td><span class="help-number">-22.3</span></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- 220 yards -->
+        <div class="block">
+            <div class="header">220 yards</div>
+            <div class="mph-header">
+                <div class="mph-cell">MPH →</div>
+                <div class="mph-cell">5</div>
+                <div class="mph-cell">10</div>
+                <div class="mph-cell">15</div>
+                <div class="mph-cell">20</div>
+            </div>
+            <table>
+                <tr class="into">
+                    <td>Into</td>
+                    <td><span class="into-number">+3.0</span></td>
+                    <td><span class="into-number">+8.2</span></td>
+                    <td><span class="into-number">+14.7</span></td>
+                    <td><span class="into-number">+22.2</span></td>
+                </tr>
+                <tr class="quarter-into">
+                    <td>Quarter Into</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+2.1</span>
+                            <span class="lateral">2.1</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+5.8</span>
+                            <span class="lateral">5.8</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+10.4</span>
+                            <span class="lateral">10.4</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+15.7</span>
+                            <span class="lateral">15.7</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="cross">
+                    <td>Cross</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">3.5</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">7.7</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">12.2</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">17.0</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="quarter-help">
+                    <td>Quarter Help</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-1.8</span>
+                            <span class="lateral">1.8</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-4.9</span>
+                            <span class="lateral">4.9</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-8.9</span>
+                            <span class="lateral">8.9</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-13.4</span>
+                            <span class="lateral">13.4</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="help">
+                    <td>Help</td>
+                    <td><span class="help-number">-2.6</span></td>
+                    <td><span class="help-number">-7.0</span></td>
+                    <td><span class="help-number">-12.5</span></td>
+                    <td><span class="help-number">-19.0</span></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- 240 yards -->
+        <div class="block">
+            <div class="header">240 yards</div>
+            <div class="mph-header">
+                <div class="mph-cell">MPH →</div>
+                <div class="mph-cell">5</div>
+                <div class="mph-cell">10</div>
+                <div class="mph-cell">15</div>
+                <div class="mph-cell">20</div>
+            </div>
+            <table>
+                <tr class="into">
+                    <td>Into</td>
+                    <td><span class="into-number">+2.5</span></td>
+                    <td><span class="into-number">+6.8</span></td>
+                    <td><span class="into-number">+12.2</span></td>
+                    <td><span class="into-number">+18.5</span></td>
+                </tr>
+                <tr class="quarter-into">
+                    <td>Quarter Into</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+1.8</span>
+                            <span class="lateral">1.8</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+4.8</span>
+                            <span class="lateral">4.8</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+8.6</span>
+                            <span class="lateral">8.6</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+13.1</span>
+                            <span class="lateral">13.1</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="cross">
+                    <td>Cross</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">2.7</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">6.0</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">9.6</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">13.4</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="quarter-help">
+                    <td>Quarter Help</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-1.5</span>
+                            <span class="lateral">1.5</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-4.2</span>
+                            <span class="lateral">4.2</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-7.5</span>
+                            <span class="lateral">7.5</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-11.3</span>
+                            <span class="lateral">11.3</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="help">
+                    <td>Help</td>
+                    <td><span class="help-number">-2.2</span></td>
+                    <td><span class="help-number">-5.9</span></td>
+                    <td><span class="help-number">-10.5</span></td>
+                    <td><span class="help-number">-16.0</span></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- 260 yards -->
+        <div class="block">
+            <div class="header">260 yards</div>
+            <div class="mph-header">
+                <div class="mph-cell">MPH →</div>
+                <div class="mph-cell">5</div>
+                <div class="mph-cell">10</div>
+                <div class="mph-cell">15</div>
+                <div class="mph-cell">20</div>
+            </div>
+            <table>
+                <tr class="into">
+                    <td>Into</td>
+                    <td><span class="into-number">+3.5</span></td>
+                    <td><span class="into-number">+9.5</span></td>
+                    <td><span class="into-number">+17.1</span></td>
+                    <td><span class="into-number">+25.9</span></td>
+                </tr>
+                <tr class="quarter-into">
+                    <td>Quarter Into</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+2.5</span>
+                            <span class="lateral">2.5</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+6.7</span>
+                            <span class="lateral">6.7</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+12.1</span>
+                            <span class="lateral">12.1</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+18.3</span>
+                            <span class="lateral">18.3</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="cross">
+                    <td>Cross</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">4.1</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">9.1</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">14.6</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">20.3</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="quarter-help">
+                    <td>Quarter Help</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-2.1</span>
+                            <span class="lateral">2.1</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-5.8</span>
+                            <span class="lateral">5.8</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-10.4</span>
+                            <span class="lateral">10.4</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-15.7</span>
+                            <span class="lateral">15.7</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="help">
+                    <td>Help</td>
+                    <td><span class="help-number">-3.0</span></td>
+                    <td><span class="help-number">-8.2</span></td>
+                    <td><span class="help-number">-14.7</span></td>
+                    <td><span class="help-number">-22.3</span></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- 280 yards -->
+        <div class="block">
+            <div class="header">280 yards</div>
+            <div class="mph-header">
+                <div class="mph-cell">MPH →</div>
+                <div class="mph-cell">5</div>
+                <div class="mph-cell">10</div>
+                <div class="mph-cell">15</div>
+                <div class="mph-cell">20</div>
+            </div>
+            <table>
+                <tr class="into">
+                    <td>Into</td>
+                    <td><span class="into-number">+3.9</span></td>
+                    <td><span class="into-number">+10.7</span></td>
+                    <td><span class="into-number">+19.2</span></td>
+                    <td><span class="into-number">+29.1</span></td>
+                </tr>
+                <tr class="quarter-into">
+                    <td>Quarter Into</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+2.7</span>
+                            <span class="lateral">2.7</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+7.5</span>
+                            <span class="lateral">7.5</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+13.5</span>
+                            <span class="lateral">13.5</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+20.5</span>
+                            <span class="lateral">20.5</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="cross">
+                    <td>Cross</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">4.9</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">10.8</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">17.2</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">24.0</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="quarter-help">
+                    <td>Quarter Help</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-2.4</span>
+                            <span class="lateral">2.4</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-6.5</span>
+                            <span class="lateral">6.5</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-11.7</span>
+                            <span class="lateral">11.7</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-17.7</span>
+                            <span class="lateral">17.7</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="help">
+                    <td>Help</td>
+                    <td><span class="help-number">-3.4</span></td>
+                    <td><span class="help-number">-9.2</span></td>
+                    <td><span class="help-number">-16.5</span></td>
+                    <td><span class="help-number">-25.0</span></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- 300 yards -->
+        <div class="block">
+            <div class="header">300 yards</div>
+            <div class="mph-header">
+                <div class="mph-cell">MPH →</div>
+                <div class="mph-cell">5</div>
+                <div class="mph-cell">10</div>
+                <div class="mph-cell">15</div>
+                <div class="mph-cell">20</div>
+            </div>
+            <table>
+                <tr class="into">
+                    <td>Into</td>
+                    <td><span class="into-number">+4.2</span></td>
+                    <td><span class="into-number">+11.3</span></td>
+                    <td><span class="into-number">+20.2</span></td>
+                    <td><span class="into-number">+30.6</span></td>
+                </tr>
+                <tr class="quarter-into">
+                    <td>Quarter Into</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+3.0</span>
+                            <span class="lateral">3.0</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+8.0</span>
+                            <span class="lateral">8.0</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+14.3</span>
+                            <span class="lateral">14.3</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="into-number">+21.6</span>
+                            <span class="lateral">21.6</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="cross">
+                    <td>Cross</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">5.1</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">11.3</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">18.1</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="lateral">25.2</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="quarter-help">
+                    <td>Quarter Help</td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-2.4</span>
+                            <span class="lateral">2.4</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-6.8</span>
+                            <span class="lateral">6.8</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-12.2</span>
+                            <span class="lateral">12.2</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stacked-numbers">
+                            <span class="help-number">-18.5</span>
+                            <span class="lateral">18.5</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="help">
+                    <td>Help</td>
+                    <td><span class="help-number">-3.5</span></td>
+                    <td><span class="help-number">-9.6</span></td>
+                    <td><span class="help-number">-17.2</span></td>
+                    <td><span class="help-number">-26.1</span></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

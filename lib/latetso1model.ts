@@ -37,7 +37,7 @@ export class YardageModelEnhanced {
   private static readonly GRAVITY: number = 32.174;  // ft/s²
   private static readonly WIND_POWER_SCALE: number = 0.245;  // O1 model refined value
   private static readonly TAILWIND_AMPLIFIER: number = 1.235; // O1 model refined value
-  private static readonly LATERAL_BASE_MULTIPLIER: number = 2.53; // Refined value
+  private static readonly LATERAL_BASE_MULTIPLIER: number = 2.0; // Refined value
   private static readonly SPIN_GYRO_THRESHOLD: number = 6000; // RPM threshold
   private static readonly SPIN_TRANSITION_ZONE: number = 300; // RPM transition width
   private static readonly AIR_DENSITY_SEA_LEVEL: number = 1.225; // kg/m³
@@ -47,8 +47,8 @@ export class YardageModelEnhanced {
   private static readonly CLUB_DATABASE: Readonly<Record<string, ClubData>> = {
     "driver": { 
       name: "Driver", 
-      ball_speed: 171.5, 
-      launch_angle: 12.0, 
+      ball_speed: 175.5, 
+      launch_angle: 11.0, 
       spin_rate: 2575, 
       max_height: 40, 
       land_angle: 39, 
@@ -58,9 +58,9 @@ export class YardageModelEnhanced {
     "3-wood": { 
       name: "3-Wood", 
       ball_speed: 160, 
-      launch_angle: 10.5, 
+      launch_angle: 11.5, 
       spin_rate: 3143, 
-      max_height: 33.5, 
+      max_height: 38, 
       land_angle: 42, 
       spin_decay: 0.09, 
       wind_sensitivity: 1.0 
@@ -70,17 +70,17 @@ export class YardageModelEnhanced {
       ball_speed: 144.4, 
       launch_angle: 11.5, 
       spin_rate: 3573, 
-      max_height: 33, 
+      max_height: 34, 
       land_angle: 37, 
       spin_decay: 0.10, 
       wind_sensitivity: 1.0 
     },
     "4-iron": { 
       name: "4-Iron", 
-      ball_speed: 144.4, 
-      launch_angle: 11.5, 
+      ball_speed: 135.4, 
+      launch_angle: 13.5, 
       spin_rate: 3573, 
-      max_height: 33, 
+      max_height: 36, 
       land_angle: 40, 
       spin_decay: 0.105, 
       wind_sensitivity: 1.0 
@@ -90,7 +90,7 @@ export class YardageModelEnhanced {
       ball_speed: 132.4, 
       launch_angle: 15.6, 
       spin_rate: 4474, 
-      max_height: 38, 
+      max_height: 37, 
       land_angle: 42.6, 
       spin_decay: 0.11, 
       wind_sensitivity: 1.0
@@ -117,10 +117,10 @@ export class YardageModelEnhanced {
     },
     "8-iron": { 
       name: "8-Iron", 
-      ball_speed: 114, 
+      ball_speed: 116, 
       launch_angle: 22.5, 
       spin_rate: 6608, 
-      max_height: 35.5, 
+      max_height: 33.5, 
       land_angle: 47.3, 
       spin_decay: 0.13, 
       wind_sensitivity: 1.0 
@@ -128,7 +128,7 @@ export class YardageModelEnhanced {
     "9-iron": { 
       name: "9-Iron", 
       ball_speed: 112, 
-      launch_angle: 21.6, 
+      launch_angle: 22.6, 
       spin_rate: 7793, 
       max_height: 32.5, 
       land_angle: 49.6, 
@@ -138,9 +138,9 @@ export class YardageModelEnhanced {
     "pitching-wedge": { 
       name: "PW", 
       ball_speed: 107.5, 
-      launch_angle: 23.3, 
-      spin_rate: 6836, 
-      max_height: 33.5, 
+      launch_angle: 24.3, 
+      spin_rate: 8836, 
+      max_height: 31.5, 
       land_angle: 50.6, 
       spin_decay: 0.15, 
       wind_sensitivity: 1.0 
@@ -150,7 +150,7 @@ export class YardageModelEnhanced {
       ball_speed: 95.8, 
       launch_angle: 27.0, 
       spin_rate: 9170, 
-      max_height: 32.5, 
+      max_height: 30.5, 
       land_angle: 51.1, 
       spin_decay: 0.155, 
       wind_sensitivity: 1.0 
