@@ -42,6 +42,8 @@ export class YardageModelEnhanced {
   private static readonly SPIN_TRANSITION_ZONE: number = 300; // RPM transition width
   private static readonly AIR_DENSITY_SEA_LEVEL: number = 1.225; // kg/m³
   private static readonly REFERENCE_VELOCITY: number = 50; // m/s for spin decay
+  private static readonly SPECIFIC_GAS_CONSTANT = 287.058; // J/(kg·K)
+  private static readonly ALTITUDE_PRESSURE_RATIO = 0.190284;
 
   // Club database with refined wind sensitivity coefficients
   private static readonly CLUB_DATABASE: Readonly<Record<string, ClubData>> = {
@@ -336,7 +338,7 @@ export class YardageModelEnhanced {
     const a = 6.1121;
     const b = 17.502;
     const c = 240.97;
-    const sat_vapor_pressure = a * Math.exp((b * temp_c) / (c + temp_c));
+    const sat_vapor_pressure = 6.1094 * Math.exp((17.625 * temp_c)/(temp_c + 243.04));
     
     const vapor_pressure = (humidity / 100) * sat_vapor_pressure;
     const dry_pressure = pressure_pa - vapor_pressure;
@@ -346,31 +348,18 @@ export class YardageModelEnhanced {
     const R_v = 461.495;
     
     const temp_k = temp_c + 273.15;
-    return (dry_pressure / (R_d * temp_k)) + (vapor_pressure / (R_v * temp_k));
+    return (dry_pressure / (YardageModelEnhanced.SPECIFIC_GAS_CONSTANT * temp_k)) + 
+           (vapor_pressure / (461.495 * temp_k));
   }
 
   // Enhanced altitude effect calculation
   private _calculate_altitude_effect(altitude_ft: number): number {
-    const altitude_keys = Object.keys(YardageModelEnhanced.ALTITUDE_EFFECTS)
-      .map(Number)
-      .sort((a, b) => a - b);
+    const pressure_ratio = Math.pow(
+      1 - (altitude_ft / 145366.45), 
+      1/YardageModelEnhanced.ALTITUDE_PRESSURE_RATIO
+    );
     
-    let lower_alt = altitude_keys[0];
-    let upper_alt = altitude_keys[altitude_keys.length - 1];
-    
-    for (let i = 0; i < altitude_keys.length - 1; i++) {
-      if (altitude_ft >= altitude_keys[i] && altitude_ft < altitude_keys[i + 1]) {
-        lower_alt = altitude_keys[i];
-        upper_alt = altitude_keys[i + 1];
-        break;
-      }
-    }
-    
-    const lower_effect = YardageModelEnhanced.ALTITUDE_EFFECTS[lower_alt];
-    const upper_effect = YardageModelEnhanced.ALTITUDE_EFFECTS[upper_alt];
-    const alt_ratio = (altitude_ft - lower_alt) / (upper_alt - lower_alt);
-    
-    return lower_effect + (upper_effect - lower_effect) * alt_ratio;
+    return 1 / pressure_ratio; // More physically accurate than lookup table
   }
 
   // Enhanced spin decay calculation with velocity consideration
@@ -399,22 +388,30 @@ export class YardageModelEnhanced {
 
   // Main calculation method - maintains existing API
   calculate_adjusted_yardage(target_yardage: number, skill_level: SkillLevel, club: string): ShotResult {
-    const normalizedClub = club.toLowerCase();
-    const club_key = normalizeClubName(normalizedClub) || normalizedClub;
+    const club_key = normalizeClubName(club.toLowerCase()) || club.toLowerCase();
+    const club_data = YardageModelEnhanced.CLUB_DATABASE[club_key];
+    const ball = YardageModelEnhanced.BALL_MODELS[this.ball_model];
 
     if (!(club_key in YardageModelEnhanced.CLUB_DATABASE)) {
       throw new Error(`Unknown club: ${club}`);
     }
-
-    const club_data = YardageModelEnhanced.CLUB_DATABASE[club_key];
-    const ball = YardageModelEnhanced.BALL_MODELS[this.ball_model];
     
     let adjusted_yardage = target_yardage * ball.speed_factor;
+    
 
     // Calculate flight parameters
     const initial_velocity_fps = club_data.ball_speed * 1.467 * ball.speed_factor;
     const launch_rad = club_data.launch_angle * Math.PI / 180;
     const flight_time = (2 * initial_velocity_fps * Math.sin(launch_rad)) / YardageModelEnhanced.GRAVITY;
+
+
+     // Apply altitude effects
+     if (this.altitude !== null) {
+      const altitude_effect = this._calculate_altitude_effect(this.altitude);
+      const initial_spin = club_data.spin_rate * ball.spin_factor;
+      this._calculate_spin_decay(initial_spin, flight_time, club_data.ball_speed);
+      adjusted_yardage *= altitude_effect;
+    }
 
     // Apply environmental effects
     if (this.temperature !== null) {
@@ -424,19 +421,13 @@ export class YardageModelEnhanced {
         this.humidity ?? 50
       );
       const densityRatio = currentDensity / YardageModelEnhanced.AIR_DENSITY_SEA_LEVEL;
-      const densityEffect = -(densityRatio - 1);
+      const densityEffect = Math.pow(densityRatio, 0.48); // Non-linear correction
       const tempEffect = (this.temperature - 70) * 0.0015 * ball.temp_sensitivity;
       
-      adjusted_yardage *= (1 + tempEffect) * (1 + densityEffect);
+      adjusted_yardage *= (1 + tempEffect) * densityEffect;
     }
 
-    // Apply altitude effects
-    if (this.altitude !== null) {
-      const altitude_effect = this._calculate_altitude_effect(this.altitude);
-      const initial_spin = club_data.spin_rate * ball.spin_factor;
-      this._calculate_spin_decay(initial_spin, flight_time, club_data.ball_speed);
-      adjusted_yardage *= altitude_effect;
-    }
+   
 
     // Calculate wind effects with enhanced model
     let lateral_movement = 0;
@@ -464,6 +455,17 @@ export class YardageModelEnhanced {
       carry_distance: Math.round(adjusted_yardage * 10) / 10,
       lateral_movement: Math.round(lateral_movement * 10) / 10,
     };
+  }
+
+
+  private _calculate_wet_bulb_effect(temp_f: number, humidity: number): number {
+    // Improved psychrometric calculation
+    const temp_c = (temp_f - 32) * 5/9;
+    const tw = temp_c * Math.atan(0.151977 * Math.sqrt(humidity + 8.313659)) +
+      Math.atan(temp_c + humidity) - Math.atan(humidity - 1.676331) +
+      0.00391838 * Math.pow(humidity, 1.5) * Math.atan(0.023101 * humidity) - 4.686035;
+    
+    return tw * 0.0003; // Empirical effect coefficient
   }
 
   // Existing setter methods remain unchanged
