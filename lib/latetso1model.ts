@@ -35,7 +35,7 @@ export interface ClubData {
 export class YardageModelEnhanced {
   // Enhanced physics constants with O1 model refinements
   private static readonly GRAVITY: number = 32.174;  // ft/s²
-  private static readonly WIND_POWER_SCALE: number = 0.245;  // O1 model refined value
+  private static readonly WIND_POWER_SCALE: number = 0.230;  // O1 model refined value
   private static readonly TAILWIND_AMPLIFIER: number = 1.235; // O1 model refined value
   private static readonly LATERAL_BASE_MULTIPLIER: number = 2.0; // Refined value
   private static readonly SPIN_GYRO_THRESHOLD: number = 6000; // RPM threshold
@@ -269,23 +269,23 @@ export class YardageModelEnhanced {
     // Head/tail wind calculations with advanced factors
     const HEADTAIL_CALIBRATION = 0.15;
     let wind_factor = Math.cos(wind_rad);
-    const wind_normalized = effective_wind / 1;
+    const wind_normalized = effective_wind / 5;
 
     if (wind_factor > 0) {
       // Tailwind: Less affected by spin
       const spin_lift_factor = 1.0 + (gyro_stability * 0.25);
       wind_factor *= YardageModelEnhanced.TAILWIND_AMPLIFIER *
-        Math.pow(Math.abs(wind_normalized), YardageModelEnhanced.WIND_POWER_SCALE + 0.2) *
+        Math.pow(Math.abs(wind_normalized), YardageModelEnhanced.WIND_POWER_SCALE) *
         Math.pow(flight_time / 2.0, 0.37) *
         spin_lift_factor * //
-        HEADTAIL_CALIBRATION * 1.33;
+        HEADTAIL_CALIBRATION * 3.7;
     } else {
       // Headwind: More affected by spin due to increased lift
       const spin_lift_factor = 1.1 + (gyro_stability * 0.25); // Additional lift effect
-      wind_factor *= Math.pow(Math.abs(wind_normalized), YardageModelEnhanced.WIND_POWER_SCALE + 0.2) *
+      wind_factor *= Math.pow(Math.abs(wind_normalized), YardageModelEnhanced.WIND_POWER_SCALE) *
         Math.pow(flight_time / 2.0, 0.30) *
         spin_lift_factor * // Apply extra lift from spin
-        HEADTAIL_CALIBRATION * 1.33;
+        HEADTAIL_CALIBRATION * 3.7;
     }
 
     // Apply stability_factor to final head/tail effect
@@ -316,7 +316,7 @@ export class YardageModelEnhanced {
     height_factor *
     stability_factor *
     CROSSWIND_CALIBRATION *
-    Math.pow(Math.abs(wind_normalized), 0.15) *
+    Math.pow(Math.abs(wind_normalized), 0.3) *
     (1 + ball.spin_factor * 0.05) *
     YardageModelEnhanced.LATERAL_BASE_MULTIPLIER *
     quarteringMultiplier; // Apply the asymmetric multiplier
