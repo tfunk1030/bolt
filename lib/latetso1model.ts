@@ -47,9 +47,9 @@ export class YardageModelEnhanced {
   private static readonly CLUB_DATABASE: Readonly<Record<string, ClubData>> = {
     "driver": { 
       name: "Driver", 
-      ball_speed: 172, 
-      launch_angle: 10.8, 
-      spin_rate: 2345, 
+      ball_speed: 171.5, 
+      launch_angle: 12.0, 
+      spin_rate: 2575, 
       max_height: 40, 
       land_angle: 39, 
       spin_decay: 0.08, 
@@ -57,39 +57,39 @@ export class YardageModelEnhanced {
     },
     "3-wood": { 
       name: "3-Wood", 
-      ball_speed: 161, 
+      ball_speed: 160, 
       launch_angle: 10.5, 
-      spin_rate: 3443, 
-      max_height: 39.5, 
+      spin_rate: 3143, 
+      max_height: 33.5, 
       land_angle: 42, 
       spin_decay: 0.09, 
       wind_sensitivity: 1.0 
     },
     "3-iron": { 
       name: "3-Iron", 
-      ball_speed: 146, 
-      launch_angle: 11.2, 
-      spin_rate: 3704, 
-      max_height: 35, 
+      ball_speed: 144.4, 
+      launch_angle: 11.5, 
+      spin_rate: 3573, 
+      max_height: 33, 
       land_angle: 37, 
       spin_decay: 0.10, 
       wind_sensitivity: 1.0 
     },
     "4-iron": { 
       name: "4-Iron", 
-      ball_speed: 138, 
-      launch_angle: 12.7, 
-      spin_rate: 3992, 
-      max_height: 37, 
+      ball_speed: 144.4, 
+      launch_angle: 11.5, 
+      spin_rate: 3573, 
+      max_height: 33, 
       land_angle: 40, 
       spin_decay: 0.105, 
       wind_sensitivity: 1.0 
     },
     "5-iron": { 
       name: "5-Iron", 
-      ball_speed: 134, 
-      launch_angle: 14.3, 
-      spin_rate: 4400, 
+      ball_speed: 132.4, 
+      launch_angle: 15.6, 
+      spin_rate: 4474, 
       max_height: 38, 
       land_angle: 42.6, 
       spin_decay: 0.11, 
@@ -117,10 +117,10 @@ export class YardageModelEnhanced {
     },
     "8-iron": { 
       name: "8-Iron", 
-      ball_speed: 116, 
-      launch_angle: 20.0, 
-      spin_rate: 6778, 
-      max_height: 33.5, 
+      ball_speed: 114, 
+      launch_angle: 22.5, 
+      spin_rate: 6608, 
+      max_height: 35.5, 
       land_angle: 47.3, 
       spin_decay: 0.13, 
       wind_sensitivity: 1.0 
@@ -137,20 +137,20 @@ export class YardageModelEnhanced {
     },
     "pitching-wedge": { 
       name: "PW", 
-      ball_speed: 103, 
-      launch_angle: 24.3, 
-      spin_rate: 8316, 
-      max_height: 31.5, 
+      ball_speed: 107.5, 
+      launch_angle: 23.3, 
+      spin_rate: 6836, 
+      max_height: 33.5, 
       land_angle: 50.6, 
       spin_decay: 0.15, 
       wind_sensitivity: 1.0 
     },
     "gap-wedge": { 
       name: "GW", 
-      ball_speed: 95, 
-      launch_angle: 26.5, 
-      spin_rate: 9670, 
-      max_height: 29.5, 
+      ball_speed: 95.8, 
+      launch_angle: 27.0, 
+      spin_rate: 9170, 
+      max_height: 32.5, 
       land_angle: 51.1, 
       spin_decay: 0.155, 
       wind_sensitivity: 1.0 
@@ -273,7 +273,7 @@ export class YardageModelEnhanced {
 
     if (wind_factor > 0) {
       // Tailwind: Less affected by spin
-      const spin_lift_factor = 1.0 + (gyro_stability * 0.4);
+      const spin_lift_factor = 1.0 + (gyro_stability * 0.25);
       wind_factor *= YardageModelEnhanced.TAILWIND_AMPLIFIER *
         Math.pow(Math.abs(wind_normalized), YardageModelEnhanced.WIND_POWER_SCALE + 0.2) *
         Math.pow(flight_time / 2.0, 0.37) *
@@ -281,11 +281,11 @@ export class YardageModelEnhanced {
         HEADTAIL_CALIBRATION * 1.33;
     } else {
       // Headwind: More affected by spin due to increased lift
-      const spin_lift_factor = 1.0 + (gyro_stability * 0.4); // Additional lift effect
-      wind_factor *= Math.pow(Math.abs(wind_normalized), YardageModelEnhanced.WIND_POWER_SCALE) *
-        Math.pow(flight_time / 2.0, 0.25) *
+      const spin_lift_factor = 1.1 + (gyro_stability * 0.25); // Additional lift effect
+      wind_factor *= Math.pow(Math.abs(wind_normalized), YardageModelEnhanced.WIND_POWER_SCALE + 0.2) *
+        Math.pow(flight_time / 2.0, 0.30) *
         spin_lift_factor * // Apply extra lift from spin
-        HEADTAIL_CALIBRATION;
+        HEADTAIL_CALIBRATION * 1.33;
     }
 
     // Apply stability_factor to final head/tail effect
@@ -299,25 +299,32 @@ export class YardageModelEnhanced {
 
     // Crosswind calculations (existing logic)
     const CROSSWIND_CALIBRATION = 0.08;
-    const cross_factor = Math.sin(wind_rad);
-    
-    const lateral_movement = cross_factor *
-      effective_wind *
-      flight_time *
-      distance_factor *
-      speed_factor *
-      club_data.wind_sensitivity *
-      height_factor *
-      stability_factor *
-      CROSSWIND_CALIBRATION *
-      Math.pow(Math.abs(wind_normalized), 0.15) *
-      (1 + ball.spin_factor * 0.05) *
-      YardageModelEnhanced.LATERAL_BASE_MULTIPLIER;
+  const cross_factor = Math.sin(wind_rad);
+  
+  // Determine if it's a quartering headwind (around 45°) or quartering tailwind (around 135°)
+  // cos(wind_rad) < 0 means wind has a headwind component
+  // cos(wind_rad) > 0 means wind has a tailwind component
+  const isQuarteringHead = Math.cos(wind_rad) > 0;
+  const quarteringMultiplier = isQuarteringHead ? 1.3 : 0.8; // 30% stronger for quartering headwind, 20% weaker for quartering tailwind
+  
+  const lateral_movement = cross_factor *
+    effective_wind *
+    flight_time *
+    distance_factor *
+    speed_factor *
+    club_data.wind_sensitivity *
+    height_factor *
+    stability_factor *
+    CROSSWIND_CALIBRATION *
+    Math.pow(Math.abs(wind_normalized), 0.15) *
+    (1 + ball.spin_factor * 0.05) *
+    YardageModelEnhanced.LATERAL_BASE_MULTIPLIER *
+    quarteringMultiplier; // Apply the asymmetric multiplier
 
-    return {
-      distance_effect: head_tail_effect,
-      lateral_movement,
-    };
+  return {
+    distance_effect: head_tail_effect,
+    lateral_movement,
+  };
   }
 
   // Enhanced air density calculation with humidity consideration
