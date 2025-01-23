@@ -45,12 +45,12 @@ export default function WeatherPage() {
               {formatTemperature(conditions?.temperature ?? 0)}
             </div>
             <div className="text-gray-400 text-sm">
-              Feels like {formatTemperature((conditions?.temperature ?? 0) + 2)}
+              Temperature
+            </div>
             </div>
           </div>
           <div className="w-12"></div> {/* Spacer for centering */}
         </div>
-      </div>
 
       {/* Detailed Conditions */}
       <div className="grid grid-cols-2 gap-4">

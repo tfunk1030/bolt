@@ -6,7 +6,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { useShotCalc } from '@/lib/shot-calc-context'
 import { useEnvironmental } from '@/lib/hooks/use-environmental'
 import { useClubSettings } from '@/lib/club-settings-context'
-import { YardageModelEnhanced, SkillLevel } from '@/lib/yardage-model'
+import { YardageModelEnhanced, SkillLevel } from '@/lib/latetso1model'
 import WindDirectionCompass from '@/components/wind-direction-compass'
 import { normalizeClubName } from '@/lib/utils/club-mapping'
 
@@ -25,12 +25,6 @@ export default function WindCalcPage() {
     lateralEffect: number
     totalDistance: number
     recommendedClub: string
-    clubData: {
-      name: string
-      normalCarry: number
-      adjustedCarry: number
-      lateral: number
-    }
   } | null>(null)
   const [yardageModel] = useState(() => new YardageModelEnhanced())
 
@@ -68,22 +62,17 @@ export default function WindCalcPage() {
       const clubKey = normalizeClubName(recommendedClub.name);
       console.log('Mapped Club Key:', clubKey);
 
-      // Ensure yardage model is properly initialized
-      if (!yardageModel.getClubData || !yardageModel.set_ball_model) {
-        console.error('YardageModel not properly initialized');
+      // Validate recommended club against model
+      if (!yardageModel.clubExists(clubKey)) {
+        console.error('Club not supported:', clubKey);
         return;
       }
 
-      // Try to get initial club data
-      const preClubData = yardageModel.getClubData(clubKey);
-      console.log('Pre-calculation club data:', preClubData);
-
-      // Verify we have access to new properties
-      console.log('Enhanced Club Data:', {
-        name: preClubData?.name,
-        windSensitivity: preClubData?.wind_sensitivity,
-        ballSpeed: preClubData?.ball_speed
-      });
+      // Verify model initialization
+      if (!yardageModel.set_ball_model) {
+        console.error('Model not properly initialized');
+        return;
+      }
 
       // Set ball model with enhanced features
       yardageModel.set_ball_model("tour_premium");
@@ -147,13 +136,7 @@ export default function WindCalcPage() {
         windEffect: windEffect,
         lateralEffect: lateralEffect,
         totalDistance: targetYardage + envEffect + windEffect,
-        recommendedClub: recommendedClub.name,
-        clubData: {
-          name: recommendedClub.name,
-          normalCarry: recommendedClub.normalYardage,
-          adjustedCarry: windResult.carry_distance,
-          lateral: lateralEffect
-        }
+        recommendedClub: recommendedClub.name
       })
     } catch (error) {
       console.error('Error calculating wind effect:', error);

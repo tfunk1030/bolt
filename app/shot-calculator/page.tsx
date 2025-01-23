@@ -6,7 +6,7 @@ import { useClubSettings } from '@/lib/club-settings-context'
 import { usePremium } from '@/lib/premium-context'
 import { useSettings } from '@/lib/settings-context'
 import { useShotCalc } from '@/lib/shot-calc-context'
-import { YardageModelEnhanced, SkillLevel } from '@/lib/yardage-model'
+import { YardageModelEnhanced, SkillLevel } from '@/lib/latetso1model'
 import { 
   Target, 
   Thermometer, 
@@ -50,22 +50,17 @@ export default function ShotCalculatorPage() {
       const clubKey = normalizeClubName(recommendedClub.name);
       console.log('Mapped Club Key:', clubKey);
       
-      const clubData = yardageModel.getClubData(clubKey);
-      console.log('Club Data Found:', !!clubData, 'for key:', clubKey);
-      if (!clubData) {
-        console.error('No club data found for:', clubKey, 'in environment:', process.env.NODE_ENV);
+      // Validate recommended club against model
+      if (!yardageModel.clubExists(clubKey)) {
+        console.error('Club not supported:', clubKey);
         return null;
       }
 
-      // Ensure yardage model is properly initialized
-      if (!yardageModel.getClubData || !yardageModel.set_ball_model) {
-        console.error('YardageModel not properly initialized');
+      // Ensure model is initialized
+      if (!yardageModel.set_ball_model) {
+        console.error('Model not properly initialized');
         return null;
       }
-
-      // Try to get initial club data
-      const preClubData = yardageModel.getClubData(clubKey);
-      console.log('Pre-calculation club data:', preClubData);
 
       // Set up the model
       yardageModel.set_ball_model("tour_premium")
@@ -97,7 +92,6 @@ export default function ShotCalculatorPage() {
 
       return {
         result,
-        clubData,
         recommendedClub
       }
     } catch (error) {

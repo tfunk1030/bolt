@@ -44,6 +44,11 @@ export class YardageModelEnhanced {
   private static readonly REFERENCE_VELOCITY: number = 50; // m/s for spin decay
   private static readonly SPECIFIC_GAS_CONSTANT = 287.058; // J/(kg·K)
   private static readonly ALTITUDE_PRESSURE_RATIO = 0.190284;
+  private static readonly MAGNUS_A = 6.1121;
+  private static readonly MAGNUS_B = 17.502;
+  private static readonly MAGNUS_C = 240.97;
+  private static readonly GAS_CONSTANT_DRY = 287.058;
+  private static readonly GAS_CONSTANT_VAPOR = 461.495;
 
   // Club database with refined wind sensitivity coefficients
   private static readonly CLUB_DATABASE: Readonly<Record<string, ClubData>> = {
@@ -199,7 +204,7 @@ export class YardageModelEnhanced {
       compression: 95,
       speed_factor: 1.00,
       spin_factor: 1.05,
-      temp_sensitivity: 0.8,
+      temp_sensitivity: 1.2,
       dimple_pattern: "hexagonal"
     },
     // ... [Previous ball models remain unchanged]
@@ -334,23 +339,26 @@ export class YardageModelEnhanced {
     const temp_c = (temp_f - 32) * 5/9;
     const pressure_pa = pressure_mb * 100;
     
-    // Calculate saturation vapor pressure using Magnus formula
-    const a = 6.1121;
+    // Magnus formula constants (should be used in calculation)
+    const a = 6.1121;  // hPa
     const b = 17.502;
-    const c = 240.97;
-    const sat_vapor_pressure = 6.1094 * Math.exp((17.625 * temp_c)/(temp_c + 243.04));
+    const c = 240.97;  // °C
+    
+    // Correct saturation pressure calculation using defined constants
+    const sat_vapor_pressure = a * Math.exp((b * temp_c)/(temp_c + c));
     
     const vapor_pressure = (humidity / 100) * sat_vapor_pressure;
-    const dry_pressure = pressure_pa - vapor_pressure;
+    const dry_pressure = pressure_pa - (vapor_pressure * 100);  // Convert hPa to Pa
     
-    // Gas constants
-    const R_d = 287.058;
-    const R_v = 461.495;
+    // Gas constants (should be used instead of hardcoded values)
+    const R_d = 287.058;  // J/(kg·K) - Dry air
+    const R_v = 461.495;  // J/(kg·K) - Water vapor
     
     const temp_k = temp_c + 273.15;
-    return (dry_pressure / (YardageModelEnhanced.SPECIFIC_GAS_CONSTANT * temp_k)) + 
-           (vapor_pressure / (461.495 * temp_k));
-  }
+    return (dry_pressure / (R_d * temp_k)) +  // Use R_d here
+           (vapor_pressure * 100 / (R_v * temp_k));  // Use R_v here
+}
+
 
   // Enhanced altitude effect calculation
   private _calculate_altitude_effect(altitude_ft: number): number {
@@ -408,26 +416,41 @@ export class YardageModelEnhanced {
      // Apply altitude effects
      if (this.altitude !== null) {
       const altitude_effect = this._calculate_altitude_effect(this.altitude);
-      const initial_spin = club_data.spin_rate * ball.spin_factor;
-      this._calculate_spin_decay(initial_spin, flight_time, club_data.ball_speed);
       adjusted_yardage *= altitude_effect;
+      
+      // Use max_height for altitude compensation
+      const height_compensation = 1 + (club_data.max_height / 1000) * (this.altitude / 1000);
+      adjusted_yardage *= height_compensation;
     }
 
     // Apply environmental effects
     if (this.temperature !== null) {
-      const currentDensity = this._calculate_air_density(
-        this.temperature,
-        this.pressure ?? 1013.25,
-        this.humidity ?? 50
-      );
+      const currentDensity = this._calculate_air_density(this.temperature, this.pressure ?? 1013.25, this.humidity ?? 50);
       const densityRatio = currentDensity / YardageModelEnhanced.AIR_DENSITY_SEA_LEVEL;
-      const densityEffect = Math.pow(densityRatio, 0.48); // Non-linear correction
-      const tempEffect = (this.temperature - 70) * 0.0015 * ball.temp_sensitivity;
-      
-      adjusted_yardage *= (1 + tempEffect) * densityEffect;
-    }
+      const densityEffect = 1 / Math.pow(densityRatio, 1.2); // Non-linear correction
+      const tempEffect = (this.temperature - 70) * 0.0015 * ball.temp_sensitivity * (ball.compression / 100);
+      const viscosityEffect = 1 - Math.max(0, (70 - this.temperature) * 0.0005);
+      const dimpleEffect = ball.dimple_pattern === 'hexagonal' ? 
+      1.01 - (densityRatio - 1) * 0.1 : 1.0;
 
-   
+      adjusted_yardage *= (1 + tempEffect) * densityEffect * viscosityEffect * dimpleEffect;
+}
+
+if (this.temperature !== null && this.humidity !== null) {
+  if (this.temperature < 40 && this.humidity > 80) {
+    // 3% penalty for frost-like conditions
+    adjusted_yardage *= 0.97;
+  }
+}
+
+
+    const skillMultipliers = {
+      [SkillLevel.BEGINNER]: 0.90,
+      [SkillLevel.INTERMEDIATE]: 0.95,
+      [SkillLevel.ADVANCED]: 1.00,
+      [SkillLevel.PROFESSIONAL]: 1.00
+    };
+    adjusted_yardage *= skillMultipliers[skill_level];
 
     // Calculate wind effects with enhanced model
     let lateral_movement = 0;
@@ -451,6 +474,11 @@ export class YardageModelEnhanced {
       lateral_movement = wind_effects.lateral_movement;
     }
 
+    if (this.temperature !== null && this.humidity !== null) {
+      const wetBulbEffect = this._calculate_wet_bulb_effect(this.temperature, this.humidity);
+      adjusted_yardage *= (1 + wetBulbEffect);
+    }
+
     return {
       carry_distance: Math.round(adjusted_yardage * 10) / 10,
       lateral_movement: Math.round(lateral_movement * 10) / 10,
@@ -469,6 +497,11 @@ export class YardageModelEnhanced {
   }
 
   // Existing setter methods remain unchanged
+  clubExists(clubKey: string): boolean {
+    return clubKey in YardageModelEnhanced.CLUB_DATABASE
+  }
+
+
   set_ball_model(model: string): void {
     if (!(model in YardageModelEnhanced.BALL_MODELS)) {
       throw new Error(`Unknown ball model: ${model}`);
