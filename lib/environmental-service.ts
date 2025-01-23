@@ -310,38 +310,13 @@ export class EnvironmentalService {
     console.groupEnd();
     console.log('Fetching weather for coordinates:', location);
 
-    const url = `https://api.tomorrow.io/v4/weather/realtime?location=${location.lat},${location.lng}&fields=temperature,humidity,windSpeed,windDirection,pressure&units=imperial&apikey=${apiKey}`;
-
-    // Cache weather data for 5 minutes to avoid excessive API calls
-    const cacheKey = `weather-${location.lat}-${location.lng}`;
-    const cachedData = localStorage.getItem(cacheKey);
-    
-    if (cachedData) {
-      try {
-        const { timestamp, data } = JSON.parse(cachedData);
-        // Validate cached data
-        if (Date.now() - timestamp < 5 * 60 * 1000 && 
-            typeof data.temperature === 'number' &&
-            data.temperature > -50 && data.temperature < 150 &&
-            typeof data.humidity === 'number' &&
-            data.humidity >= 0 && data.humidity <= 100) {
-          console.log('Using cached weather data:', data);
-          return this.transformWeatherData(data, location);
-        } else {
-          console.log('Cached weather data is invalid or expired, clearing cache');
-          localStorage.removeItem(cacheKey);
-        }
-      } catch (error) {
-        console.warn('Failed to parse cached weather data:', error);
-        localStorage.removeItem(cacheKey);
-      }
-    }
-
+    // Try Tomorrow.io first
     try {
-      console.log('Fetching fresh weather data from Tomorrow.io...');
+      const url = `https://api.tomorrow.io/v4/weather/realtime?location=${location.lat},${location.lng}&fields=temperature,humidity,windSpeed,windDirection,pressure&units=imperial&apikey=${apiKey}`;
       const response = await fetch(url);
+      
       if (!response.ok) {
-        throw new Error(`API request failed with status ${response.status}`);
+        throw new Error(`Tomorrow.io API returned ${response.status}`);
       }
       
       const data = await response.json();
@@ -380,6 +355,7 @@ export class EnvironmentalService {
       }
 
       // Cache the validated data
+      const cacheKey = `weather-${location.lat}-${location.lng}`;
       localStorage.setItem(cacheKey, JSON.stringify({
         timestamp: Date.now(),
         data: weatherData
@@ -396,34 +372,48 @@ export class EnvironmentalService {
       const transformed = this.transformWeatherData(weatherData, location);
       console.log('Transformed weather data:', transformed);
       return transformed;
-    } catch (error) {
-      console.error('Failed to fetch weather data:', error);
+    } catch (tomorrowError) {
+      console.warn('Failed to fetch Tomorrow.io weather data, trying OpenWeather:', tomorrowError);
       
-      // If we have cached data, use it even if it's stale
-      if (cachedData) {
-        const { data } = JSON.parse(cachedData);
-        console.warn('Using stale cached weather data due to API error');
-        return this.transformWeatherData(data, location);
-      }
-      
-      // If all else fails, return reasonable defaults for Jacksonville, FL
-      console.warn('Using default weather data');
-      return {
-        temperature: 75, // °F
-        humidity: 70, // %
-        pressure: 1013.25, // mb (standard sea level pressure)
-        altitude: 16, // ft (Jacksonville average elevation)
-        windSpeed: 8, // mph (typical coastal breeze)
-        windDirection: 90, // ° (typical easterly wind from Atlantic)
-        density: this.calculateAirDensity({
+      try {
+        const openWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${location.lat}&lon=${location.lng}&appid=${process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY}&units=imperial`;
+        const openWeatherResponse = await fetch(openWeatherUrl);
+        
+        if (!openWeatherResponse.ok) {
+          throw new Error(`OpenWeather API returned ${openWeatherResponse.status}`);
+        }
+        
+        const weatherData = await openWeatherResponse.json();
+        console.log('OpenWeather response:', weatherData);
+        
+        return this.transformWeatherData({
+          temperature: weatherData.main.temp,
+          humidity: weatherData.main.humidity,
+          pressure: weatherData.main.pressure, // Convert hPa to inHg
+          windSpeed: weatherData.wind.speed,
+          windDirection: weatherData.wind.deg
+        }, location);
+        
+      } catch (openWeatherError) {
+        console.error('Both weather APIs failed:', openWeatherError);
+        // Fall back to your existing default values
+        return {
           temperature: 75,
           humidity: 70,
           pressure: 1013.25,
           altitude: 16,
           windSpeed: 8,
-          windDirection: 90
-        })
-      };
+          windDirection: 90,
+          density: this.calculateAirDensity({
+            temperature: 75,
+            humidity: 70,
+            pressure: 1013.25,
+            altitude: 16,
+            windSpeed: 8,
+            windDirection: 90
+          })
+        };
+      }
     }
   }
 
@@ -434,7 +424,7 @@ export class EnvironmentalService {
     
     // Calculate saturation vapor pressure using Magnus formula
     const a = 6.1121; // mb
-    const b = 17.368;
+    const b = 17.502;
     const c = 238.88; // °C
     const svp = a * Math.exp((b * tempC) / (c + tempC));
     
