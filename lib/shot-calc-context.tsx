@@ -1,7 +1,7 @@
 'use client'
 
 import React, { createContext, useContext, useState, useMemo } from 'react'
-import { YardageModelEnhanced, SkillLevel, ShotResult } from './yardage-model'
+import { YardageModelEnhanced, SkillLevel, ShotResult } from './latetso1model'
 
 interface ShotCalcData {
   targetYardage: number | null
@@ -63,7 +63,9 @@ export function ShotCalcProvider({ children }: ShotCalcProviderProps) {
         newData.temperature ?? 70,
         newData.elevation ?? 0,
         10, // Default wind speed if not provided
-        0   // Default wind direction if not provided
+        0,  // Default wind direction if not provided
+        newData.humidity ?? 60,
+        newData.pressure ?? 29.92
       )
       
       return newData

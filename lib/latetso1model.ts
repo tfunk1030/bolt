@@ -41,8 +41,7 @@ export class YardageModelEnhanced {
   private static readonly SPIN_GYRO_THRESHOLD: number = 6000; // RPM threshold
   private static readonly SPIN_TRANSITION_ZONE: number = 300; // RPM transition width
   private static readonly AIR_DENSITY_SEA_LEVEL: number = 1.225; // kg/m³
-  private static readonly REFERENCE_VELOCITY: number = 50; // m/s for spin decay
-  private static readonly SPECIFIC_GAS_CONSTANT = 287.058; // J/(kg·K)
+  private static readonly REFERENCE_VELOCITY: number = 50; // m/s for spin decay // J/(kg·K)
   private static readonly ALTITUDE_PRESSURE_RATIO = 0.190284;
   private static readonly MAGNUS_A = 6.1121;
   private static readonly MAGNUS_B = 17.502;
@@ -70,6 +69,26 @@ export class YardageModelEnhanced {
       max_height: 38, 
       land_angle: 42, 
       spin_decay: 0.09, 
+      wind_sensitivity: 1.0 
+    },
+    "hybrid": { 
+      name: "Hybrid", 
+      ball_speed: 149, 
+      launch_angle: 10.2, 
+      spin_rate: 4587, 
+      max_height: 34, 
+      land_angle: 37, 
+      spin_decay: 0.10, 
+      wind_sensitivity: 1.0 
+    },
+    "5-wood": { 
+      name: "5-Wood", 
+      ball_speed: 156, 
+      launch_angle: 9.7, 
+      spin_rate: 4322, 
+      max_height: 34, 
+      land_angle: 37, 
+      spin_decay: 0.10, 
       wind_sensitivity: 1.0 
     },
     "3-iron": { 
@@ -339,24 +358,16 @@ export class YardageModelEnhanced {
     const temp_c = (temp_f - 32) * 5/9;
     const pressure_pa = pressure_mb * 100;
     
-    // Magnus formula constants (should be used in calculation)
-    const a = 6.1121;  // hPa
-    const b = 17.502;
-    const c = 240.97;  // °C
-    
     // Correct saturation pressure calculation using defined constants
-    const sat_vapor_pressure = a * Math.exp((b * temp_c)/(temp_c + c));
+    const sat_vapor_pressure = YardageModelEnhanced.MAGNUS_A * 
+        Math.exp((YardageModelEnhanced.MAGNUS_B * temp_c)/(temp_c + YardageModelEnhanced.MAGNUS_C));
     
     const vapor_pressure = (humidity / 100) * sat_vapor_pressure;
     const dry_pressure = pressure_pa - (vapor_pressure * 100);  // Convert hPa to Pa
     
-    // Gas constants (should be used instead of hardcoded values)
-    const R_d = 287.058;  // J/(kg·K) - Dry air
-    const R_v = 461.495;  // J/(kg·K) - Water vapor
-    
     const temp_k = temp_c + 273.15;
-    return (dry_pressure / (R_d * temp_k)) +  // Use R_d here
-           (vapor_pressure * 100 / (R_v * temp_k));  // Use R_v here
+    return (dry_pressure / (YardageModelEnhanced.GAS_CONSTANT_DRY * temp_k)) + 
+           (vapor_pressure * 100 / (YardageModelEnhanced.GAS_CONSTANT_VAPOR * temp_k));
 }
 
 
@@ -438,8 +449,8 @@ export class YardageModelEnhanced {
 
 if (this.temperature !== null && this.humidity !== null) {
   if (this.temperature < 40 && this.humidity > 80) {
-    // 3% penalty for frost-like conditions
-    adjusted_yardage *= 0.97;
+    const frostSeverity = Math.min(1, (40 - this.temperature) / 10);
+    adjusted_yardage *= 1 - (0.03 + frostSeverity * 0.05); // 3-8% penalty
   }
 }
 

@@ -434,22 +434,24 @@ export class EnvironmentalService {
     
     // Calculate saturation vapor pressure using Magnus formula
     const a = 6.1121; // mb
-    const b = 17.368;
-    const c = 238.88; // °C
+    const b = 17.502;
+    const c = 240.97; // °C
     const svp = a * Math.exp((b * tempC) / (c + tempC));
     
     // Calculate actual vapor pressure
     const vp = svp * (conditions.humidity / 100);
+    const dry_pressure = pressurePA - (vp * 100);
     
     // Gas constants
     const Rd = 287.058; // J/(kg·K) - Specific gas constant for dry air
     const Rv = 461.495; // J/(kg·K) - Specific gas constant for water vapor
     
     // Convert temperature to Kelvin
-    const tempK = tempC + 273.15;
+    const temp_k = tempC + 273.15;
     
     // Calculate air density using the enhanced equation that accounts for humidity
-    const density = (pressurePA - (vp * 100)) / (Rd * tempK) + (vp * 100) / (Rv * tempK);
+    const density = (dry_pressure / (Rd * temp_k)) +  // Use R_d here
+    (vp * 100 / (Rv * temp_k));
     
     return Math.round(density * 1000) / 1000; // Round to 3 decimal places
   }

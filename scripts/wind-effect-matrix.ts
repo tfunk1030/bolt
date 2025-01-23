@@ -1,4 +1,4 @@
-import { YardageModelEnhanced as LatestYardageModel } from '@/lib/latest-yardage-model';
+import { YardageModelEnhanced as LatestYardageModel } from '@/lib/latetso1model';
 import { SkillLevel } from '@/lib/yardage_modelds';
 import { normalizeClubName } from '@/lib/utils/club-mapping';
 
