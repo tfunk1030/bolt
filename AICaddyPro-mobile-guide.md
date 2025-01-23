@@ -35,8 +35,8 @@ mkdir -p \
 ## 3. Shared Code Migration
 ```bash
 # From original project root:
-cp -r lib/*-context.tsx packages/core/src/lib/
-cp lib/types.ts packages/shared-types/src/
+cp -r lib/*-context.tsx aicaddypro/packages/core/src/lib/
+cp lib/types.ts aicaddypro/packages/shared-types/src/
 
 # Create symlink to preserve web app
 cd apps

@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "AICaddyPro Mobile",
+    "slug": "aicaddypro-mobile",
+    "owner": "aicaddy",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "scheme": "aicaddypro",
+    "ios": {
+      "bundleIdentifier": "com.aicaddypro.mobile",
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.aicaddypro.mobile",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+      }
+    }
+  }
+}

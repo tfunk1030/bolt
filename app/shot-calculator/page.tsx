@@ -20,7 +20,12 @@ function convertDistance(value: number, unit: 'meters' | 'yards'): number {
   return unit === 'meters' ? value * 0.9144 : value
 }
 
+import { Button, H1, H2, H3, Paragraph, XStack, YStack, Slider, Card, Text, Separator } from 'tamagui'
+import { z } from 'zod'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+
 export default function ShotCalculatorPage() {
+  const insets = useSafeAreaInsets()
   const { conditions } = useEnvironmental()
   const { getRecommendedClub } = useClubSettings()
   const { isPremium } = usePremium()
@@ -135,13 +140,13 @@ export default function ShotCalculatorPage() {
 
   if (!conditions) {
     return (
-      <div className="min-h-screen bg-gray-900 text-white p-8">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-800 rounded w-1/4 mb-4"></div>
-          <div className="h-64 bg-gray-800 rounded mb-4"></div>
-          <div className="h-8 bg-gray-800 rounded w-1/2"></div>
-        </div>
-      </div>
+      <YStack flex={1} backgroundColor="$gray900" padding="$4">
+        <YStack enterStyle={{ opacity: 0 }} opacity={0.5} space="$4">
+          <YStack height="$2" backgroundColor="$gray800" width="25%" borderRadius={4} />
+          <YStack height="$12" backgroundColor="$gray800" borderRadius={4} />
+          <YStack height="$2" backgroundColor="$gray800" width="50%" borderRadius={4} />
+        </YStack>
+      </YStack>
     )
   }
 
@@ -160,71 +165,81 @@ export default function ShotCalculatorPage() {
       <h1 className="text-2xl font-bold mb-4">Shot Calculator</h1>
 
       {/* Environmental Conditions - Streamlined */}
-      <div className="bg-gray-800 rounded-xl p-3 mb-6 flex items-center justify-between">
-        <div className="flex items-center gap-6">
+      <XStack backgroundColor="$gray800" borderRadius={16} padding="$3" marginBottom="$6"
+        justifyContent="space-between" alignItems="center">
+        <XStack gap="$6">
           {/* Air Density */}
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-blue-500/20 rounded-full flex items-center justify-center">
-              <Gauge className="w-3 h-3 text-blue-400" />
-            </div>
-            <div className="text-xs">
-              <div className="text-gray-400">Density</div>
-              <div>{conditions?.density?.toFixed(3) ?? 'N/A'}</div>
-            </div>
-          </div>
+          <XStack gap="$2" alignItems="center">
+            <YStack width={24} height={24} backgroundColor="$blue500/20" borderRadius={12}
+              justifyContent="center" alignItems="center">
+              <Gauge width={12} height={12} color="$blue400" />
+            </YStack>
+            <YStack>
+              <Text fontSize={12} color="$color10">Density</Text>
+              <Text fontSize={14}>{conditions?.density?.toFixed(3) ?? 'N/A'}</Text>
+            </YStack>
+          </XStack>
 
           {/* Altitude */}
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-blue-500/20 rounded-full flex items-center justify-center">
-              <Mountain className="w-3 h-3 text-blue-400" />
-            </div>
-            <div className="text-xs">
-              <div className="text-gray-400">Altitude</div>
-              <div>{formatAltitude(conditions.altitude)}</div>
-            </div>
-          </div>
+          <XStack gap="$2" alignItems="center">
+            <YStack width={24} height={24} backgroundColor="$blue500/20" borderRadius={12}
+              justifyContent="center" alignItems="center">
+              <Mountain width={12} height={12} color="$blue400" />
+            </YStack>
+            <YStack>
+              <Text fontSize={12} color="$color10">Altitude</Text>
+              <Text fontSize={14}>{formatAltitude(conditions.altitude)}</Text>
+            </YStack>
+          </XStack>
 
           {/* Temperature */}
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-blue-500/20 rounded-full flex items-center justify-center">
-              <Thermometer className="w-3 h-3 text-blue-400" />
-            </div>
-            <div className="text-xs">
-              <div className="text-gray-400">Temp</div>
-              <div>{formatTemperature(conditions.temperature)}</div>
-            </div>
-          </div>
+          <XStack gap="$2" alignItems="center">
+            <YStack width={24} height={24} backgroundColor="$blue500/20" borderRadius={12}
+              justifyContent="center" alignItems="center">
+              <Thermometer width={12} height={12} color="$blue400" />
+            </YStack>
+            <YStack>
+              <Text fontSize={12} color="$color10">Temp</Text>
+              <Text fontSize={14}>{formatTemperature(conditions.temperature)}</Text>
+            </YStack>
+          </XStack>
 
           {/* Humidity */}
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-blue-500/20 rounded-full flex items-center justify-center">
-              <Droplets className="w-3 h-3 text-blue-400" />
-            </div>
-            <div className="text-xs">
-              <div className="text-gray-400">Humidity</div>
-              <div>{conditions.humidity.toFixed(0)}%</div>
-            </div>
-          </div>
-        </div>
-      </div>
+          <XStack gap="$2" alignItems="center">
+            <YStack width={24} height={24} backgroundColor="$blue500/20" borderRadius={12}
+              justifyContent="center" alignItems="center">
+              <Droplets width={12} height={12} color="$blue400" />
+            </YStack>
+            <YStack>
+              <Text fontSize={12} color="$color10">Humidity</Text>
+              <Text fontSize={14}>{conditions.humidity.toFixed(0)}%</Text>
+            </YStack>
+          </XStack>
+        </XStack>
+      </XStack>
 
       {/* Target Distance Input */}
-      <div className="bg-gray-800 rounded-xl p-6 mb-6">
-        <div className="text-sm text-gray-400 mb-2">Target Distance</div>
-        <div className="flex items-center gap-4">
-          <input
-            type="range"
-            min={settings.distanceUnit === 'yards' ? '50' : '45'}
-            max={settings.distanceUnit === 'yards' ? '360' : '330'}
-            value={targetYardage}
-            onChange={(e) => setTargetYardage(parseInt(e.target.value))}
-            className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
-          />
-          <div className="text-2xl font-bold w-32 text-right">
+      <Card backgroundColor="$gray800" borderRadius={16} padding="$6" marginBottom="$6">
+        <Text fontSize="$1" color="$color10" marginBottom="$2">Target Distance</Text>
+        <XStack alignItems="center" gap="$4">
+          <Slider
+            flex={1}
+            min={settings.distanceUnit === 'yards' ? 50 : 45}
+            max={settings.distanceUnit === 'yards' ? 360 : 330}
+            value={[targetYardage]}
+            onValueChange={([val]) => setTargetYardage(val)}
+            size="$2"
+          >
+            <Slider.Track backgroundColor="$gray700">
+              <Slider.TrackActive backgroundColor="$blue500" />
+            </Slider.Track>
+            <Slider.Thumb circular index={0} />
+          </Slider>
+          <Text fontSize={24} fontWeight="700" minWidth={40} textAlign="right">
             {formatDistance(targetYardage)}
-          </div>
-        </div>
-      </div>
+          </Text>
+        </XStack>
+      </Card>
 
       {/* Total Effect */}
       {shotData && (
@@ -239,8 +254,9 @@ export default function ShotCalculatorPage() {
             </div>
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-400">Play's Like</div>
-              <div className="text-lg font-bold">
+              <Text fontSize={18} fontWeight="700">
                 {formatDistance(targetYardage * (targetYardage / shotData.result.carry_distance))}
+              </Text>
               </div>
             </div>
           </div>
@@ -260,56 +276,53 @@ export default function ShotCalculatorPage() {
             const exactClub = getRecommendedClub(playsLikeDistance)
             const isExactMatch = exactClub?.normalYardage === Math.round(playsLikeDistance)
             
-            return isExactMatch ? (
-              // Show only the exact matching club
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-400">Perfect Club</span>
-                  <span className="text-lg font-bold">{exactClub.name}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Normal Carry</span>
-                  <span>{formatDistance(exactClub.normalYardage)}</span>
-                </div>
-              </div>
-            ) : (
-              // Show +/- 7 yard options when no exact match
-              <div className="space-y-4">
-                {/* Longer Club */}
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-400">Longer Option</span>
-                    <span className="text-lg font-bold">
-                      {getRecommendedClub(playsLikeDistance + 7)?.name || shotData.recommendedClub.name}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Normal Carry</span>
-                    <span>
-                      {formatDistance(getRecommendedClub(playsLikeDistance + 7)?.normalYardage || shotData.recommendedClub.normalYardage)}
-                    </span>
-                  </div>
-                </div>
+              return isExactMatch ? (
+                <YStack space="$2">
+                  <XStack justifyContent="space-between" alignItems="center">
+                    <Text color="$color10">Perfect Club</Text>
+                    <Text fontWeight="700" fontSize={20}>{exactClub.name}</Text>
+                  </XStack>
+                    <XStack justifyContent="space-between">
+                    <Text color="$color10">Normal Carry</Text>
+                    <Text>{formatDistance(exactClub.normalYardage)}</Text>
+                  </XStack>
+                </YStack>
+              ) : (
+                <YStack space="$4">
+                  {/* Longer Club */}
+                  <YStack space="$2">
+                    <XStack justifyContent="space-between" alignItems="center">
+                      <Text color="$color10">Longer Option</Text>
+                      <Text fontWeight="700" fontSize={18}>
+                        {getRecommendedClub(playsLikeDistance + 7)?.name || shotData.recommendedClub.name}
+                      </Text>
+                    </XStack>
+                    <XStack justifyContent="space-between">
+                      <Text color="$color10">Normal Carry</Text>
+                      <Text>
+                        {formatDistance(getRecommendedClub(playsLikeDistance + 7)?.normalYardage || shotData.recommendedClub.normalYardage)}
+                      </Text>
+                    </XStack>
+                  </YStack>
 
-                {/* Divider */}
-                <div className="border-t border-gray-700 my-4"></div>
+                  <Separator borderColor="$borderColor" />
 
-                {/* Shorter Club */}
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-400">Shorter Option</span>
-                    <span className="text-lg font-bold">
-                      {getRecommendedClub(playsLikeDistance)?.name || shotData.recommendedClub.name}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Normal Carry</span>
-                    <span>
-                      {formatDistance(getRecommendedClub(playsLikeDistance)?.normalYardage || shotData.recommendedClub.normalYardage)}
-                    </span>
-                  </div>
-                </div>
-              </div>
+                  {/* Shorter Club */}
+                  <YStack space="$2">
+                    <XStack justifyContent="space-between" alignItems="center">
+                      <Text color="$color10">Shorter Option</Text>
+                      <Text fontWeight="700" fontSize={18}>
+                        {getRecommendedClub(playsLikeDistance)?.name || shotData.recommendedClub.name}
+                      </Text>
+                    </XStack>
+                    <XStack justifyContent="space-between">
+                      <Text color="$color10">Normal Carry</Text>
+                      <Text>
+                        {formatDistance(getRecommendedClub(playsLikeDistance)?.normalYardage || shotData.recommendedClub.normalYardage)}
+                      </Text>
+                    </XStack>
+                  </YStack>
+                </YStack>
             )
           })()}
         </div>

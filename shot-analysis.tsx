@@ -1,5 +1,6 @@
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Pressable } from 'react-native';
+import { YStack, XStack, ScrollView, Text } from 'tamagui';
 
 interface Conditions {
   temperature: string;
@@ -61,73 +62,105 @@ const ShotAnalysisScreen = () => {
   };
 
   return (
-    <div className="p-4 space-y-4">
-      <Card className="bg-gray-900/80 backdrop-blur-sm border-gray-800">
-        <CardHeader className="border-b border-gray-800">
-          <CardTitle className="text-emerald-400">Shot Analysis</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4">
-            {/* Conditions Section */}
-            <div className="text-xs text-gray-400 space-y-1">
-              <p>Weather Conditions:</p>
-              <p>{`Temp: ${shotData.conditions.temperature} | Humidity: ${shotData.conditions.humidity} | Pressure: ${shotData.conditions.pressure}`}</p>
-              <p>{`Altitude: ${shotData.conditions.altitude} | Wind: ${shotData.conditions.wind.speed} ${shotData.conditions.wind.direction}`}</p>
-            </div>
+    <ScrollView>
+      <YStack p="$4" space="$4" maw={600} als="center">
+        {/* Header Section */}
+        <YStack pb="$4" borderBottomWidth={1} borderColor="$border">
+          <Text fontSize="$9" fontWeight="800" color="$green9">
+            Shot Analysis
+          </Text>
+        </YStack>
 
-            {/* Shot Data Section */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-gray-800/50 p-4 rounded-lg">
-                <h3 className="text-emerald-400 mb-2">Target</h3>
-                <div className="text-lg">{shotData.shot.intendedYardage} yards</div>
-              </div>
-              <div className="bg-gray-800/50 p-4 rounded-lg">
-                <h3 className="text-emerald-400 mb-2">Adjusted</h3>
-                <div className="text-lg">{shotData.shot.adjustedYardage} yards</div>
-              </div>
-            </div>
+        {/* Conditions Card */}
+        <Pressable
+          onPress={() => console.log('Weather details')}
+          accessibilityLabel="Weather conditions"
+        >
+          <YStack p="$4" bg="$background" borderRadius="$4" space="$2">
+            <Text fontSize="$5" color="$color12" mb="$2">
+              Current Conditions
+            </Text>
+            <XStack fw="wrap" gap="$4">
+              <ConditionPill
+                icon="thermometer"
+                value={shotData.conditions.temperature}
+              />
+              <ConditionPill
+                icon="humidity"
+                value={shotData.conditions.humidity}
+              />
+              <ConditionPill
+                icon="wind"
+                value={`${shotData.conditions.wind.speed} ${shotData.conditions.wind.direction}`}
+              />
+              <ConditionPill
+                icon="mountain"
+                value={shotData.conditions.altitude}
+              />
+            </XStack>
+          </YStack>
+        </Pressable>
 
-            {/* Club Suggestions */}
-            <div className="bg-gray-800/50 p-4 rounded-lg">
-              <h3 className="text-emerald-400 mb-2">Suggested Clubs</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <div className="text-sm text-gray-400">Primary</div>
-                  <div className="text-lg">{shotData.shot.suggestedClub}</div>
-                </div>
-                <div>
-                  <div className="text-sm text-gray-400">Alternative</div>
-                  <div className="text-lg">{shotData.shot.alternateClub}</div>
-                </div>
-              </div>
-            </div>
+        {/* Yardage Cards */}
+        <XStack space="$4" jc="space-between">
+          <YardageCard
+            label="Target"
+            value={shotData.shot.intendedYardage}
+            variant="primary"
+          />
+          <YardageCard
+            label="Adjusted"
+            value={shotData.shot.adjustedYardage}
+            variant="secondary"
+          />
+        </XStack>
 
-            {/* Actual Results */}
-            <div className="bg-gray-800/50 p-4 rounded-lg">
-              <h3 className="text-emerald-400 mb-2">Actual Results</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <div className="text-sm text-gray-400">Carry</div>
-                  <div>{shotData.shot.flightPath.carry}</div>
-                </div>
-                <div>
-                  <div className="text-sm text-gray-400">Total</div>
-                  <div>{shotData.shot.flightPath.total}</div>
-                </div>
-                <div>
-                  <div className="text-sm text-gray-400">Apex</div>
-                  <div>{shotData.shot.flightPath.apex}</div>
-                </div>
-                <div>
-                  <div className="text-sm text-gray-400">Landing Angle</div>
-                  <div>{shotData.shot.flightPath.landingAngle}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+        {/* Club Recommendations */}
+        <YStack space="$3">
+          <Text fontSize="$6" color="$color12">
+            Club Recommendations
+          </Text>
+          <XStack space="$4">
+            <ClubButton
+              club={shotData.shot.suggestedClub}
+              isPrimary
+            />
+            <ClubButton
+              club={shotData.shot.alternateClub}
+            />
+          </XStack>
+        </YStack>
+
+        {/* Flight Metrics */}
+        <YStack space="$3">
+          <Text fontSize="$6" color="$color12">
+            Shot Performance
+          </Text>
+          <XStack fw="wrap" gap="$3">
+            <MetricTile
+              label="Carry"
+              value={shotData.shot.flightPath.carry}
+              icon="arrow-up"
+            />
+            <MetricTile
+              label="Total"
+              value={shotData.shot.flightPath.total}
+              icon="target"
+            />
+            <MetricTile
+              label="Apex"
+              value={shotData.shot.flightPath.apex}
+              icon="maximize"
+            />
+            <MetricTile
+              label="Landing"
+              value={shotData.shot.flightPath.landingAngle}
+              icon="angle"
+            />
+          </XStack>
+        </YStack>
+      </YStack>
+    </ScrollView>
   );
 };
 

@@ -2,6 +2,11 @@ import { YardageModelEnhanced as LatestYardageModel } from '@/lib/latetso1model'
 import { SkillLevel } from '@/lib/yardage_modelds';
 import { normalizeClubName } from '@/lib/utils/club-mapping';
 
+export interface WindEffectResult {
+  adjustment: number;
+  clubChange: string;
+}
+
 // Test parameters
 const YARDAGES = Array.from({ length: 12 }, (_, i) => 80 + i * 20); // 80-300 in 20 yard increments
 const WIND_SPEEDS = [5, 10, 15, 20];
