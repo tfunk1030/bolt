@@ -1,0 +1,94 @@
+
+# 2025-01-22 11:54:07.586156
++y
+
+# 2025-01-22 11:54:15.225651
++n
+
+# 2025-01-22 11:54:29.181756
++/ask
+
+# 2025-01-22 11:55:04.054722
++/add lib\latetso1model.ts /add lib\yardage-model.ts
+
+# 2025-01-22 11:55:09.574929
++n
+
+# 2025-01-22 11:55:22.404016
++/add app\shot-calculator\page.tsx
+
+# 2025-01-22 11:55:29.344780
++/add app\wind-calc\page.tsx
+
+# 2025-01-22 11:55:40.025169
++/add lib\utils\club-mapping.ts
+
+# 2025-01-22 11:55:47.685890
++/add lib\club-settings-context.tsx
+
+# 2025-01-22 11:55:55.477723
++/add app\
+
+# 2025-01-22 11:56:19.134628
++analyze latetso1model vs the old yardage_modelds.ts
+
+# 2025-01-22 11:56:22.584903
++y
+
+# 2025-01-22 11:57:01.170350
++/help
+
+# 2025-01-22 11:57:10.900376
++/models
+
+# 2025-01-22 12:00:30.806425
++/model --model openrouter/deepseek/deepseek-r1
+
+# 2025-01-22 12:00:56.626953
++/model
+
+# 2025-01-22 12:01:16.722465
++analyze project
+
+# 2025-01-22 12:01:32.649848
++n
+
+# 2025-01-22 12:01:36.537974
++--model openrouter/deepseek/deepseek-r1
+
+# 2025-01-22 12:01:38.430952
++n
+
+# 2025-01-22 12:01:43.738970
++/model openrouter/deepseek/deepseek-r1
+
+# 2025-01-22 12:01:48.854988
++analyze file
+
+# 2025-01-22 12:02:11.218818
++n
+
+# 2025-01-22 12:02:29.648744
++/ask what do you think of this project
+
+# 2025-01-22 12:05:15.459924
++/help litellm.APIError: APIError: OpenrouterException - The api_key client option must be set either by passing api_key to the
++client or by setting the OPENAI_API_KEY environment variable
+
+# 2025-01-22 12:05:19.192714
++y
+
+# 2025-01-22 12:19:39.403489
++n
+
+# 2025-01-22 12:20:28.368198
++/architect
+
+# 2025-01-22 12:20:34.602338
++/map
+
+# 2025-01-22 12:21:17.651805
++i want to change app\shot-calculator\page.tsx
+
+# 2025-01-22 12:21:20.358629
++y
