@@ -223,7 +223,7 @@ export class YardageModelEnhanced {
       compression: 95,
       speed_factor: 1.00,
       spin_factor: 1.05,
-      temp_sensitivity: 1.2,
+      temp_sensitivity: 1.0,
       dimple_pattern: "hexagonal"
     },
     // ... [Previous ball models remain unchanged]
@@ -426,25 +426,25 @@ export class YardageModelEnhanced {
 
      // Apply altitude effects
      if (this.altitude !== null) {
-      const altitude_effect = this._calculate_altitude_effect(this.altitude);
-      adjusted_yardage *= altitude_effect;
+      //const altitude_effect = this._calculate_altitude_effect(this.altitude);
+      //adjusted_yardage *= altitude_effect;
       
       // Use max_height for altitude compensation
-      const height_compensation = 1 + (club_data.max_height / 1000) * (this.altitude / 1000);
-      adjusted_yardage *= height_compensation;
+      //const height_compensation = 1 + (club_data.max_height / 1000) * (this.altitude / 1000);
+      //adjusted_yardage *= height_compensation;
     }
 
     // Apply environmental effects
     if (this.temperature !== null) {
       const currentDensity = this._calculate_air_density(this.temperature, this.pressure ?? 1013.25, this.humidity ?? 50);
       const densityRatio = currentDensity / YardageModelEnhanced.AIR_DENSITY_SEA_LEVEL;
-      const densityEffect = 1 / Math.pow(densityRatio, 1.2); // Non-linear correction
+      const densityEffect = 1 / Math.pow(densityRatio, 0.65); // Non-linear correction
       const tempEffect = (this.temperature - 70) * 0.0015 * ball.temp_sensitivity * (ball.compression / 100);
       const viscosityEffect = 1 - Math.max(0, (70 - this.temperature) * 0.0005);
-      const dimpleEffect = ball.dimple_pattern === 'hexagonal' ? 
-      1.01 - (densityRatio - 1) * 0.1 : 1.0;
+      //const dimpleEffect = ball.dimple_pattern === 'hexagonal' ? 
+      //1.01 - (densityRatio - 1) * 0.1 : 1.0;
 
-      adjusted_yardage *= (1 + tempEffect) * densityEffect * viscosityEffect * dimpleEffect;
+      adjusted_yardage *= (1 + tempEffect) * densityEffect * viscosityEffect;
 }
 
 if (this.temperature !== null && this.humidity !== null) {

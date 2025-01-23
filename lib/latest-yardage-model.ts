@@ -81,7 +81,7 @@ export class YardageModelEnhanced {
       name: "Tour Premium",
       compression: 95,
       speed_factor: 1.00,
-      spin_factor: 1.05,
+      spin_factor: 1.00,
       temp_sensitivity: 0.8,
       dimple_pattern: "hexagonal"
     },
