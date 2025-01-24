@@ -3,6 +3,7 @@
     "name": "AICaddyPro",
     "slug": "aicaddypro",
     "version": "1.0.0",
+    "main": "./App.tsx",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -16,7 +17,8 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.aicaddypro.app"
+      "bundleIdentifier": "com.aicaddypro.app",
+      "deploymentTarget": "15.1"
     },
     "android": {
       "adaptiveIcon": {
@@ -26,7 +28,17 @@
       "package": "com.aicaddypro.app"
     },
     "plugins": [
-      "expo-localization"
+      "expo-localization",
+      "expo-font",
+      "expo-router",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "deploymentTarget": "15.1"
+          }
+        }
+      ]
     ]
   }
 }

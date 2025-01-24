@@ -7,13 +7,12 @@ import { usePremium } from '@/lib/premium-context'
 import { useSettings } from '@/lib/settings-context'
 import { useShotCalc } from '@/lib/shot-calc-context'
 import { YardageModelEnhanced, SkillLevel } from '@/lib/latetso1model'
-import { 
-  Target, 
-  Thermometer, 
-  Droplets, 
-  Mountain, 
-  Gauge
-} from 'lucide-react'
+import {
+  Gauge,
+  Thermometer,
+  Droplets,
+  Mountain
+} from '@tamagui/lucide-icons'
 import { normalizeClubName } from '@/lib/utils/club-mapping'
 
 function convertDistance(value: number, unit: 'meters' | 'yards'): number {
@@ -161,8 +160,14 @@ export default function ShotCalculatorPage() {
   }
 
   return (
-    <div className="p-4 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Shot Calculator</h1>
+    <YStack
+      flex={1}
+      padding="$4"
+      paddingTop={insets.top}
+      backgroundColor="$background"
+      space="$4"
+    >
+      <H1 fontSize="$3" fontWeight="600">Shot Calculator</H1>
 
       {/* Environmental Conditions - Streamlined */}
       <XStack backgroundColor="$gray800" borderRadius={16} padding="$3" marginBottom="$6"
@@ -257,7 +262,6 @@ export default function ShotCalculatorPage() {
               <Text fontSize={18} fontWeight="700">
                 {formatDistance(targetYardage * (targetYardage / shotData.result.carry_distance))}
               </Text>
-              </div>
             </div>
           </div>
         </div>
@@ -327,6 +331,6 @@ export default function ShotCalculatorPage() {
           })()}
         </div>
       )}
-    </div>
+    </YStack>
   )
 }

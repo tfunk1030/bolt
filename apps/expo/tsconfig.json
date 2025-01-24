@@ -2,7 +2,8 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "strict": true,
-    "jsx": "react-native",
+    "lib": ["es2017"],
+    "jsx": "react-native", 
     "baseUrl": ".",
     "paths": {
       "@my/app/*": ["../../packages/app/*"]

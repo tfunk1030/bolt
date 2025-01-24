@@ -2,6 +2,10 @@
 /node_modules
 /.pnp
 .pnp.js
+/AICaddyPro/node_modules
+/apps/expo/node_modules
+/app/node_modules
+./node_modules
 
 # testing
 /coverage
@@ -16,11 +20,15 @@
 # misc
 .DS_Store
 *.pem
+.env
+.env.*
+!.env.example
 
 # debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.pnpm-debug.log*
 
 # local env files
 .env*.local
@@ -33,3 +41,29 @@ next-env.d.ts
 .history/
 .lh/
 .vercel
+
+# expo
+.expo/
+dist/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+web-build/
+ios/Pods/
+android/.gradle
+android/app/build
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# Temporary files
+*.log
+*.tmp
+.DS_Store
+Thumbs.db

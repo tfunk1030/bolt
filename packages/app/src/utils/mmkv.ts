@@ -1,17 +1,36 @@
-import { MMKV } from 'react-native-mmkv'
+import { Platform } from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { StateStorage } from 'zustand/middleware'
 
-export const storage = new MMKV()
+let storage: StateStorage
 
-export const mmkv: StateStorage = {
-  setItem: (name, value) => {
-    return storage.set(name, value)
-  },
-  getItem: (name) => {
-    const value = storage.getString(name)
-    return value ?? null
-  },
-  removeItem: (name) => {
-    return storage.delete(name)
-  },
-} 
+if (Platform.OS === 'web') {
+  storage = {
+    getItem: async (key) => {
+      return AsyncStorage.getItem(key)
+    },
+    setItem: async (key, value) => {
+      await AsyncStorage.setItem(key, value)
+    },
+    removeItem: async (key) => {
+      await AsyncStorage.removeItem(key)
+    }
+  }
+} else {
+  const { MMKV } = require('react-native-mmkv')
+  const mmkvInstance = new MMKV()
+  
+  storage = {
+    getItem: async (key) => {
+      return mmkvInstance.getString(key) || null
+    },
+    setItem: async (key, value) => {
+      mmkvInstance.set(key, value)
+    },
+    removeItem: async (key) => {
+      mmkvInstance.delete(key)
+    }
+  }
+}
+
+export const mmkv = storage 
