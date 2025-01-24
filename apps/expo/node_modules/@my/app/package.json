@@ -1,0 +1,27 @@
+{
+  "name": "@my/app",
+  "version": "0.0.0",
+  "main": "index.ts",
+  "types": "./index.ts",
+  "sideEffects": [
+    "*.css"
+  ],
+  "dependencies": {
+    "@react-navigation/native": "^6.1.9",
+    "@react-navigation/native-stack": "^6.9.17",
+    "@tamagui/font-inter": "^1.74.8",
+    "@tamagui/shorthands": "^1.74.8",
+    "@tamagui/themes": "^1.74.8",
+    "expo-localization": "~14.3.0",
+    "i18n-js": "3.8.0",
+    "react-native-mmkv": "^2.11.0",
+    "tamagui": "^1.74.8",
+    "zod": "^3.22.4",
+    "zustand": "^4.4.7"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.14",
+    "@types/react-native": "^0.72.6",
+    "typescript": "^5.1.3"
+  }
+} 
