@@ -1,58 +1,38 @@
 # dependencies
-/node_modules
-/.pnp
+node_modules
+.pnp
 .pnp.js
-/AICaddyPro/node_modules
-/apps/expo/node_modules
-/app/node_modules
-./node_modules
 
 # testing
-/coverage
+coverage
 
 # next.js
-/.next/
-/out/
+.next
+out
 
 # production
-/build
+build
+dist
 
 # misc
 .DS_Store
 *.pem
-.env
-.env.*
+.env*
 !.env.example
 
 # debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# local env files
-.env*.local
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-
-# history
-.history/
-.lh/
-.vercel
+*.log*
 
 # expo
-.expo/
-dist/
+.expo
 *.jks
 *.p8
 *.p12
 *.key
 *.mobileprovision
 *.orig.*
-web-build/
-ios/Pods/
+web-build
+ios/Pods
 android/.gradle
 android/app/build
 
@@ -62,8 +42,21 @@ android/app/build
 *.swp
 *.swo
 
-# Temporary files
-*.log
+# cache
+.turbo
+.cache
+.eslintcache
+
+# typescript
+*.tsbuildinfo
+
+# temp
 *.tmp
-.DS_Store
 Thumbs.db
+.history
+.lh
+.vercel
+
+# old files
+*_old
+*.bak
