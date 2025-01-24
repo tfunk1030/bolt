@@ -27,7 +27,13 @@ export default function App(): JSX.Element {
   const colorScheme = useColorScheme()
 
   if (!loaded) {
-    return <></> // Return empty fragment instead of null
+    return (
+      <TamaguiProvider config={config}>
+        <Theme name={colorScheme || 'light'}>
+          <></>
+        </Theme>
+      </TamaguiProvider>
+    )
   }
 
   return (
