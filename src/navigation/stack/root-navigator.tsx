@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { View, Text, TouchableOpacity } from 'react-native'
 import { Link } from 'expo-router'
 import { usePathname } from 'expo-router'
-import type { GestureResponderEvent } from 'react-native'
 import { 
   Wind, 
   Target, 
@@ -39,10 +38,10 @@ export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const routes = [
-    { path: '/', label: 'Weather', icon: Cloud },
-    { path: '/shot-calculator', label: 'Shot Calc', icon: Target },
-    { path: '/wind-calc', label: 'Wind Calc', icon: Wind },
-    { path: '/settings', label: 'Settings', icon: Settings },
+    { path: '/(tabs)', label: 'Weather', icon: Cloud },
+    { path: '/(tabs)/calculator', label: 'Shot Calc', icon: Target },
+    { path: '/(tabs)/wind', label: 'Wind Calc', icon: Wind },
+    { path: '/(tabs)/settings', label: 'Settings', icon: Settings },
   ]
 
   return (
@@ -59,7 +58,7 @@ export default function Navigation() {
             backgroundColor: 'rgba(0,0,0,0.5)',
             zIndex: 40,
           },
-          !isMenuOpen && { opacity: 0, pointerEvents: 'none' }
+          !isMenuOpen && { display: 'none' }
         ]}
         onPress={() => setIsMenuOpen(false)}
       />
@@ -131,7 +130,8 @@ export default function Navigation() {
         backgroundColor: '#111827',
         borderTopWidth: 1,
         borderTopColor: '#1F2937',
-        zIndex: 40
+        zIndex: 40,
+        paddingBottom: 16 // Add padding for safe area
       }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingHorizontal: 8, paddingVertical: 8 }}>
           {/* Menu Button */}

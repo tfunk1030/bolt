@@ -1,34 +1,35 @@
-'use client'
+import { useCallback, useEffect, useState } from 'react'
+import { View, ScrollView, StyleSheet, TextInput, Text, TouchableOpacity } from 'react-native'
+import { useRouter } from 'expo-router'
+import { usePremium } from '@/src/features/settings/context/premium'
+import { useShotCalc } from '@/src/core/context/shot-calc'
+import { useEnvironmental } from '@/src/hooks/useEnvironmental'
+import { useClubSettings } from '@/src/features/settings/context/clubs'
+import { YardageModelEnhanced, SkillLevel } from '@/src/core/models/YardageModel'
+import WindDirectionCompass from '@/src/features/wind/components/compass'
+import { normalizeClubName } from '@/src/features/settings/utils/club-mapping'
 
-import { usePremium } from '@/src/contexts/premium-context'
-import { useRouter } from 'next/navigation'
-import { useEffect, useState, useCallback } from 'react'
-import { useShotCalc } from '@/lib/shot-calc-context'
-import { useEnvironmental } from '@/lib/hooks/use-environmental'
-import { useClubSettings } from '@/src/contexts/club-settings-context'
-import { YardageModelEnhanced, SkillLevel } from '@/src/models/YardageModel'
-import WindDirectionCompass from '@/components/wind-direction-compass'
-import { normalizeClubName } from '@/src/utils/club-mapping'
+interface WindCalcResult {
+  environmentalEffect: number
+  windEffect: number
+  lateralEffect: number
+  totalDistance: number
+  recommendedClub: string
+}
 
-export default function WindCalcPage() {
+export default function WindCalcScreen() {
   const { isPremium } = usePremium()
   const router = useRouter()
   const { shotCalcData } = useShotCalc()
   const { conditions } = useEnvironmental()
   const { getRecommendedClub } = useClubSettings()
+  
   const [windDirection, setWindDirection] = useState(0)
   const [windSpeed, setWindSpeed] = useState(10)
   const [targetYardage, setTargetYardage] = useState(150)
-  const [result, setResult] = useState<{ 
-    environmentalEffect: number
-    windEffect: number
-    lateralEffect: number
-    totalDistance: number
-    recommendedClub: string
-  } | null>(null)
+  const [result, setResult] = useState<WindCalcResult | null>(null)
   const [yardageModel] = useState(() => new YardageModelEnhanced())
 
-  // Update target yardage when shot calc data changes
   useEffect(() => {
     if (shotCalcData.targetYardage) {
       setTargetYardage(shotCalcData.targetYardage)
@@ -37,7 +38,7 @@ export default function WindCalcPage() {
 
   useEffect(() => {
     if (!isPremium) {
-      router.push('/')
+      router.replace('/(tabs)')
     }
   }, [isPremium, router])
 
@@ -58,31 +59,26 @@ export default function WindCalcPage() {
       console.log('YardageModel initialized:', !!yardageModel);
       console.log('YardageModel methods:', Object.keys(yardageModel));
       
-      // Replace the old club mapping with the new utility
       const clubKey = normalizeClubName(recommendedClub.name);
       console.log('Mapped Club Key:', clubKey);
 
-      // Validate recommended club against model
       if (!yardageModel.clubExists(clubKey)) {
         console.error('Club not supported:', clubKey);
         return;
       }
 
-      // Verify model initialization
       if (!yardageModel.set_ball_model) {
         console.error('Model not properly initialized');
         return;
       }
 
-      // Set ball model with enhanced features
       yardageModel.set_ball_model("tour_premium");
 
-      // First calculate environmental effects without wind
       yardageModel.set_conditions(
         conditions.temperature,
         conditions.altitude,
-        0,  // No wind
-        0,  // No wind direction
+        0,
+        0,
         conditions.pressure,
         conditions.humidity
       )
@@ -98,7 +94,6 @@ export default function WindCalcPage() {
         return;
       }
 
-      // Then calculate with wind added
       yardageModel.set_conditions(
         conditions.temperature,
         conditions.altitude,
@@ -126,7 +121,6 @@ export default function WindCalcPage() {
         windResult
       });
 
-      // Calculate effects
       const envEffect = -(envResult.carry_distance - targetYardage)
       const windEffect = -(windResult.carry_distance - envResult.carry_distance)
       const lateralEffect = windResult.lateral_movement
@@ -141,11 +135,6 @@ export default function WindCalcPage() {
     } catch (error) {
       console.error('Error calculating wind effect:', error);
     }
-
-    // Scroll to results
-    setTimeout(() => {
-      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
-    }, 100)
   }, [conditions, targetYardage, windSpeed, windDirection])
 
   if (!isPremium) {
@@ -153,135 +142,270 @@ export default function WindCalcPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <title>Wind Calculator - Bolt Golf</title>
-      <h1 className="text-3xl font-bold mb-8">Wind Calculator</h1>
+    <ScrollView style={styles.container}>
+      <View style={styles.content}>
+        <Text style={styles.title}>Wind Calculator</Text>
 
-      <div className="max-w-xl mx-auto space-y-6 bg-gray-800/50 backdrop-blur-sm p-6 rounded-lg border border-gray-700/50 shadow-xl">
-        {/* Wind Direction Compass */}
-        <div className="flex flex-col items-center">
-          <div className="text-sm font-medium text-gray-400 mb-2 bg-gray-900/50 px-4 py-2 rounded-full">
-            <span>
-              <span className="inline-block w-3 h-3 bg-blue-500 rounded-full mr-1 shadow-lg shadow-blue-500/50" aria-hidden="true"></span>
-              Wind: {windDirection}°
-            </span>
-          </div>
-          <div className="text-sm text-gray-400 mb-4 opacity-75" id="compass-instructions">
-            Drag the blue handle to set wind direction
-          </div>
-          <div className="relative">
-            <div className="absolute inset-0 bg-blue-500/5 rounded-full blur-2xl" aria-hidden="true"></div>
-            <WindDirectionCompass
-              windDirection={windDirection}
-              shotDirection={0}
-              onChange={(type, degrees) => {
-                if (type === 'wind') {
-                  setWindDirection(degrees)
-                }
-              }}
-              size={280}
-              lockShot={true}
-              aria-label="Wind direction compass"
-              aria-describedby="compass-instructions"
+        <View style={styles.card}>
+          <View style={styles.compassContainer}>
+            <View style={styles.windLabel}>
+              <View style={styles.windDot} />
+              <Text style={styles.windText}>Wind: {windDirection}°</Text>
+            </View>
+            <Text style={styles.instructions}>
+              Drag the blue handle to set wind direction
+            </Text>
+            <View style={styles.compassWrapper}>
+              <WindDirectionCompass
+                windDirection={windDirection}
+                shotDirection={0}
+                onChange={(type, degrees) => {
+                  if (type === 'wind') {
+                    setWindDirection(degrees)
+                  }
+                }}
+                size={280}
+                lockShot={true}
+              />
+            </View>
+          </View>
+
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Wind Speed: {windSpeed} mph</Text>
+            <TextInput
+              style={styles.input}
+              keyboardType="numeric"
+              value={String(windSpeed)}
+              onChangeText={(value) => setWindSpeed(Number(value))}
+              placeholder="Wind Speed"
             />
-          </div>
-        </div>
+          </View>
 
-        {/* Wind Speed Input */}
-        <div className="bg-gray-900/30 p-4 rounded-lg border border-gray-700/50">
-          <label htmlFor="wind-speed" className="flex justify-between mb-1">
-            <span className="text-sm font-medium text-gray-400">Wind Speed</span>
-            <span className="text-sm font-medium text-blue-400">{windSpeed} mph</span>
-          </label>
-          <input
-            id="wind-speed"
-            type="range"
-            min="0"
-            max="30"
-            value={windSpeed}
-            onChange={(e) => setWindSpeed(Number(e.target.value))}
-            className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
-            aria-label="Wind speed in miles per hour"
-          />
-        </div>
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Target Yardage</Text>
+            <TextInput
+              style={styles.input}
+              keyboardType="numeric"
+              value={String(targetYardage)}
+              onChangeText={(value) => setTargetYardage(Number(value))}
+              placeholder="Target Yardage"
+            />
+          </View>
 
-        {/* Target Yardage Input */}
-        <div className="bg-gray-900/30 p-4 rounded-lg border border-gray-700/50">
-          <label htmlFor="target-yardage" className="block text-sm font-medium text-gray-400 mb-1">
-            Target Yardage
-          </label>
-          <input
-            id="target-yardage"
-            type="number"
-            min="50"
-            max="300"
-            value={targetYardage}
-            onChange={(e) => setTargetYardage(Number(e.target.value))}
-            className="w-full px-3 py-2 bg-gray-800/50 rounded text-white border border-gray-700/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-            aria-label="Target distance in yards"
-          />
-        </div>
+          <TouchableOpacity 
+            style={styles.button}
+            onPress={calculateWindEffect}
+          >
+            <Text style={styles.buttonText}>Calculate Wind Effect</Text>
+          </TouchableOpacity>
+        </View>
 
-        {/* Calculate Button */}
-        <button
-          onClick={calculateWindEffect}
-          className="w-full py-3 bg-blue-500 hover:bg-blue-600 rounded-lg text-white font-medium transition-all shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 active:transform active:scale-[0.98]"
-          aria-label="Calculate wind effect"
-        >
-          Calculate Wind Effect
-        </button>
-      </div>
-
-      {/* Results Panel */}
-      {result && (
-        <div className="max-w-xl mx-auto mt-6 bg-gray-800/50 backdrop-blur-sm p-6 rounded-lg border border-gray-700/50 shadow-xl">
-          <div className="space-y-4">
-            <div className="text-xl text-gray-400">
+        {result && (
+          <View style={styles.resultCard}>
+            <Text style={styles.resultTitle}>
               Play this shot{' '}
-              <span className="text-2xl font-bold text-blue-400">
+              <Text style={styles.resultHighlight}>
                 {Math.round(result.totalDistance)} yards
-              </span>
-            </div>
+              </Text>
+            </Text>
             
             {result.lateralEffect !== 0 && (
-              <div className="text-xl text-gray-400">
+              <Text style={styles.resultTitle}>
                 Aim{' '}
-                <span className="text-2xl font-bold text-emerald-400">
+                <Text style={[styles.resultHighlight, styles.lateralHighlight]}>
                   {Math.abs(result.lateralEffect)} yards {result.lateralEffect > 0 ? 'left' : 'right'}
-                </span>
-              </div>
+                </Text>
+              </Text>
             )}
-          </div>
 
-          {/* Detailed Effects */}
-          <div className="grid grid-cols-2 gap-4 mt-6">
-            <div className="bg-gray-900/30 p-4 rounded-lg border border-gray-700/50">
-              <div className="font-medium mb-2 text-gray-400">Weather Effect</div>
-              <div className={`font-semibold ${result.environmentalEffect < 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                {result.environmentalEffect > 0 ? '+' : ''}{Math.round(result.environmentalEffect)} yards
-              </div>
-            </div>
-            <div className="bg-gray-900/30 p-4 rounded-lg border border-gray-700/50">
-              <div className="font-medium mb-2 text-gray-400">Wind Effect</div>
-              <div className={`font-semibold ${result.windEffect < 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                {result.windEffect > 0 ? '+' : ''}{Math.round(result.windEffect)} yards
-              </div>
-            </div>
-            <div className="bg-gray-900/30 p-4 rounded-lg border border-gray-700/50">
-              <div className="font-medium mb-2 text-gray-400">Total Effect</div>
-              <div className={`font-semibold ${(result.environmentalEffect + result.windEffect) < 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                {(result.environmentalEffect + result.windEffect) > 0 ? '+' : ''}{Math.round(result.environmentalEffect + result.windEffect)} yards
-              </div>
-            </div>
-            <div className="bg-gray-900/30 p-4 rounded-lg border border-gray-700/50">
-              <div className="font-medium mb-2 text-gray-400">Lateral Effect</div>
-              <div className={`font-semibold ${Math.abs(result.lateralEffect) < 5 ? 'text-emerald-400' : 'text-yellow-400'}`}>
-                {Math.abs(result.lateralEffect)} yards
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+            <View style={styles.effectsGrid}>
+              <View style={styles.effectBox}>
+                <Text style={styles.effectLabel}>Weather Effect</Text>
+                <Text style={[
+                  styles.effectValue,
+                  result.environmentalEffect < 0 ? styles.positiveEffect : styles.negativeEffect
+                ]}>
+                  {result.environmentalEffect > 0 ? '+' : ''}{Math.round(result.environmentalEffect)} yards
+                </Text>
+              </View>
+
+              <View style={styles.effectBox}>
+                <Text style={styles.effectLabel}>Wind Effect</Text>
+                <Text style={[
+                  styles.effectValue,
+                  result.windEffect < 0 ? styles.positiveEffect : styles.negativeEffect
+                ]}>
+                  {result.windEffect > 0 ? '+' : ''}{Math.round(result.windEffect)} yards
+                </Text>
+              </View>
+
+              <View style={styles.effectBox}>
+                <Text style={styles.effectLabel}>Total Effect</Text>
+                <Text style={[
+                  styles.effectValue,
+                  (result.environmentalEffect + result.windEffect) < 0 ? styles.positiveEffect : styles.negativeEffect
+                ]}>
+                  {(result.environmentalEffect + result.windEffect) > 0 ? '+' : ''}
+                  {Math.round(result.environmentalEffect + result.windEffect)} yards
+                </Text>
+              </View>
+
+              <View style={styles.effectBox}>
+                <Text style={styles.effectLabel}>Lateral Effect</Text>
+                <Text style={[
+                  styles.effectValue,
+                  Math.abs(result.lateralEffect) < 5 ? styles.positiveEffect : styles.warningEffect
+                ]}>
+                  {Math.abs(result.lateralEffect)} yards
+                </Text>
+              </View>
+            </View>
+          </View>
+        )}
+      </View>
+    </ScrollView>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#1a1a1a',
+  },
+  content: {
+    padding: 16,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    marginBottom: 24,
+  },
+  card: {
+    backgroundColor: 'rgba(31, 41, 55, 0.5)',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(75, 85, 99, 0.5)',
+  },
+  compassContainer: {
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  windLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(17, 24, 39, 0.5)',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    marginBottom: 8,
+  },
+  windDot: {
+    width: 8,
+    height: 8,
+    backgroundColor: '#3b82f6',
+    borderRadius: 4,
+    marginRight: 8,
+  },
+  windText: {
+    color: '#9ca3af',
+    fontSize: 14,
+  },
+  instructions: {
+    color: '#9ca3af',
+    fontSize: 14,
+    marginBottom: 16,
+    opacity: 0.75,
+  },
+  compassWrapper: {
+    position: 'relative',
+  },
+  inputContainer: {
+    backgroundColor: 'rgba(17, 24, 39, 0.3)',
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(75, 85, 99, 0.5)',
+  },
+  label: {
+    color: '#9ca3af',
+    fontSize: 14,
+    marginBottom: 4,
+  },
+  input: {
+    backgroundColor: 'rgba(31, 41, 55, 0.5)',
+    color: '#ffffff',
+    padding: 8,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(75, 85, 99, 0.5)',
+  },
+  button: {
+    backgroundColor: '#3b82f6',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  resultCard: {
+    backgroundColor: 'rgba(31, 41, 55, 0.5)',
+    borderRadius: 12,
+    padding: 16,
+    marginTop: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(75, 85, 99, 0.5)',
+  },
+  resultTitle: {
+    fontSize: 18,
+    color: '#9ca3af',
+    marginBottom: 8,
+  },
+  resultHighlight: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#3b82f6',
+  },
+  lateralHighlight: {
+    color: '#10b981',
+  },
+  effectsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 16,
+  },
+  effectBox: {
+    width: '48%',
+    backgroundColor: 'rgba(17, 24, 39, 0.3)',
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 8,
+    marginRight: '2%',
+    borderWidth: 1,
+    borderColor: 'rgba(75, 85, 99, 0.5)',
+  },
+  effectLabel: {
+    color: '#9ca3af',
+    fontSize: 14,
+    marginBottom: 8,
+  },
+  effectValue: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  positiveEffect: {
+    color: '#10b981',
+  },
+  negativeEffect: {
+    color: '#ef4444',
+  },
+  warningEffect: {
+    color: '#f59e0b',
+  },
+})

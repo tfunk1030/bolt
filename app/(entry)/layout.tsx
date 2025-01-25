@@ -1,21 +1,16 @@
-'use client'
-
-import './globals.css'
-import Navigation from '@/components/navigation'
-import { ThemeProvider } from '@/src/contexts/theme-context'
-import { WebGLProvider } from '@/src/contexts/webgl-context'
-import { PremiumProvider } from '@/src/contexts/premium-context'
-import { ClubSettingsProvider } from '@/src/contexts/club-settings-context'
-import { SettingsProvider } from '@/src/contexts/settings-context'
-import { ThemeToggle } from '@/components/ui/theme-toggle'
-import { UpgradeModal } from '@/components/ui/upgrade-modal'
-import { EnvironmentalService } from '@/lib/environmental-service'
-import { ShotCalcProvider } from '@/lib/shot-calc-context'
+import { View } from 'react-native'
+import { Stack } from 'expo-router'
+import Navigation from '@/src/navigation/stack/root-navigator'
+import { ThemeProvider } from '@/src/core/context/theme-context'
+import { ClubSettingsProvider } from '@/src/features/settings/context/clubs'
+import { SettingsProvider } from '@/src/core/context/settings'
+import { UpgradeModal } from '@/src/core/components/ui/upgrade-modal'
+import { EnvironmentalService } from '@/src/services/environmental-service'
+import { ShotCalcProvider } from '@/src/core/context/shot-calc'
+import { PremiumProvider } from '@/src/features/settings/context/premium'
 
 // Initialize the environmental service
-if (typeof window !== 'undefined') {
-  EnvironmentalService.getInstance().startMonitoring();
-}
+EnvironmentalService.getInstance().startMonitoring();
 
 export default function RootLayout({
   children,
@@ -23,27 +18,26 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="bg-gray-900 text-gray-100 transition-colors">
-        <ThemeProvider>
-          <WebGLProvider>
-            <PremiumProvider>
-              <SettingsProvider>
-                <ClubSettingsProvider>
-                  <ShotCalcProvider>
-                    <main className="pb-20">
-                      {children}
-                    </main>
-                    <Navigation />
-                    <ThemeToggle />
-                    <UpgradeModal />
-                  </ShotCalcProvider>
-                </ClubSettingsProvider>
-              </SettingsProvider>
-            </PremiumProvider>
-          </WebGLProvider>
-        </ThemeProvider>
-      </body>
-    </html>
+    <ThemeProvider>
+      <PremiumProvider>
+        <SettingsProvider>
+          <ClubSettingsProvider>
+            <ShotCalcProvider>
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                  contentStyle: { backgroundColor: '#111827' }
+                }}
+              />
+              <View style={{ flex: 1, paddingBottom: 20 }}>
+                {children}
+              </View>
+              <Navigation />
+              <UpgradeModal />
+            </ShotCalcProvider>
+          </ClubSettingsProvider>
+        </SettingsProvider>
+      </PremiumProvider>
+    </ThemeProvider>
   )
 }
