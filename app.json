@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "AiCaddyPro",
+    "slug": "aicaddypro",
+    "scheme": "aicaddypro",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "sdkVersion": "52.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "icon": "./assets/ios/icon.png"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/android/adaptive-icon-foreground.png",
+        "backgroundImage": "./assets/android/adaptive-icon-background.png"
+      }
+    },
+    "plugins": [
+      "expo-router"
+    ]
+  }
+}
