@@ -1,6 +1,6 @@
-import { YardageModelEnhanced as LatestYardageModel } from '@/lib/latetso1model';
-import { SkillLevel } from '@/lib/yardage_modelds';
-import { normalizeClubName } from '@/lib/utils/club-mapping';
+import { YardageModelEnhanced as LatestYardageModel } from '@/src/models/YardageModel';
+import { SkillLevel } from '@/src/models/yardage_modelds';
+import { normalizeClubName } from '@/src/utils/club-mapping';
 
 // Test parameters
 const YARDAGES = Array.from({ length: 12 }, (_, i) => 80 + i * 20); // 80-300 in 20 yard increments

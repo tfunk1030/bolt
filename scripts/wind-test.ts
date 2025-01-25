@@ -1,7 +1,7 @@
-import { YardageModelEnhanced as YardageModelRevised } from '@/lib/revised-yardage-model';
-import { YardageModelEnhanced as YardageModelLegacy } from '@/lib/yardage-model';
-import { SkillLevel } from '@/lib/yardage_modelds';
-import { normalizeClubName } from '@/lib/utils/club-mapping';
+import { YardageModelEnhanced as YardageModelRevised } from '@/src/models/revised-yardage-model';
+import { YardageModelEnhanced as YardageModelLegacy } from '@/src/models/yardage-model';
+import { SkillLevel } from '@/src/models/yardage_modelds';
+import { normalizeClubName } from '@/src/utils/club-mapping';
 
 // Get inputs from command line arguments
 const targetYardage = parseFloat(process.argv[2]);
