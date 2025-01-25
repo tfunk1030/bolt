@@ -1,0 +1,29 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+packages:
+  - 'apps/*'
+  - 'packages/*'
+packages:
+  - 'apps/*'
+  - 'packages/*'
+packages:
+  - 'apps/*'
+  - 'packages/*'
+packages:
+  - 'apps/*'
+  - 'packages/*'
+  - 'components'
+packages:
+  - 'apps/*'
+  - 'packages/*'
+packages:
+  - 'apps/**'
+  - 'packages/**'
+packages:
+  - 'apps/*'
+  - 'packages/*'
+  - 'components'
+packages:
+  - 'apps/**'
+  - 'packages/**'

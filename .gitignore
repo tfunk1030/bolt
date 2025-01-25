@@ -1,35 +1,65 @@
 # dependencies
+node_modules
+**/node_modules
+**/node_modules/**
 /node_modules
 /.pnp
 .pnp.js
 
 # testing
-/coverage
+coverage
 
 # next.js
-/.next/
-/out/
+.next
+out
 
 # production
-/build
+build
+dist
 
 # misc
 .DS_Store
 *.pem
+.env*
+!.env.example
 
 # debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+*.log*
 
-# local env files
-.env*.local
+# expo
+.expo
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+web-build
+ios/Pods
+android/.gradle
+android/app/build
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# cache
+.turbo
+.cache
+.eslintcache
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts
 
-# history
-.history/
-.lh/
+# temp
+*.tmp
+Thumbs.db
+.history
+.lh
 .vercel
+
+# old files
+*_old
+*.bak
