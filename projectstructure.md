@@ -1,83 +1,23 @@
 ```
 └── 📁project
     └── 📁.expo
-        └── COMMIT_EDITMSG
-        └── config
-        └── description
-        └── FETCH_HEAD
-        └── HEAD
-        └── 📁hooks
-            └── applypatch-msg.sample
-            └── commit-msg.sample
-            └── fsmonitor-watchman.sample
-            └── post-update.sample
-            └── pre-applypatch.sample
-            └── pre-commit.sample
-            └── pre-merge-commit.sample
-            └── pre-push.sample
-            └── pre-rebase.sample
-            └── pre-receive.sample
-            └── prepare-commit-msg.sample
-            └── push-to-checkout.sample
-            └── sendemail-validate.sample
-            └── update.sample
-        └── index
-        └── 📁info
-            └── exclude
-            └── refs
-        └── 📁logs
-            └── HEAD
-            └── 📁refs
-                └── 📁heads
-                    └── cline
-                    └── expo
-                    └── main
-                    └── mobile2try
-                    └── mobileapp
-                    └── o1model
-                    └── test-branch
-                    └── wind
-                └── 📁remotes
-                    └── 📁origin
-                        └── cline
-                        └── expo
-                        └── main
-                        └── mobile2try
-                        └── mobileapp
-                        └── o1model
-                        └── test-branch
-                        └── wind
-                └── stash
-        └── ORIG_HEAD
-        └── 📁refs
-            └── 📁heads
-                └── cline
-                └── expo
-                └── main
-                └── mobile2try
-                └── mobileapp
-                └── o1model
-                └── test-branch
-                └── wind
-            └── 📁remotes
-                └── 📁origin
-                    └── cline
-                    └── expo
-                    └── main
-                    └── mobile2try
-                    └── mobileapp
-                    └── o1model
-                    └── test-branch
-                    └── wind
-            └── stash
-            └── 📁tags
-        └── 📁snyk
     └── 📁.vscode
         └── extensions.json
         └── settings.json
+    └── 📁.well-known
+        └── apple-app-site-association
+        └── assetlinks.json
+    └── 📁app
+        └── 📁(entry)
+            └── _layout.tsx
+            └── layout.tsx
     └── 📁assets
         └── 📁fonts
+            └── inter-variable.ttf
         └── 📁images
+            └── adaptive-icon.png
+    └── 📁config
+        └── eas.build.json
     └── 📁lib
         └── api-keys.ts
         └── default-presets.ts
@@ -94,18 +34,20 @@
         └── wind-test.ts
     └── 📁src
         └── 📁components
-            └── 📁clubselection
-                └── club-selection.tsx
+            └── 📁ClubSelection
+                └── ClubSelection.tsx
             └── 📁dashboard
-                └── dashboard-grid.tsx
                 └── widget-config-modal.tsx
-                └── widget-manager.tsx
                 └── widget-size-overlay.tsx
+                └── WidgetManager.tsx
                 └── 📁widgets
                     └── compass-widget.tsx
+                    └── DashboardGrid.tsx
                     └── environmental-conditions.tsx
                     └── round-tracker.tsx
                     └── wind-widget.tsx
+            └── 📁layout
+                └── app-header.tsx
             └── 📁shot-calculator
                 └── page.tsx
             └── 📁shotanalysis
@@ -113,6 +55,7 @@
                 └── shot-analysis.tsx
             └── 📁shotvisualization
                 └── shot-visualization.tsx
+            └── 📁system
             └── 📁ui
                 └── button.tsx
                 └── card.tsx
@@ -146,17 +89,25 @@
             └── widget-config-context.tsx
             └── widget-context.tsx
         └── 📁hooks
-            └── use-environmental.ts
             └── use-round-data.ts
             └── use-shots.ts
             └── use-widget-size.ts
+            └── useEnvironmental.ts
         └── 📁models
             └── YardageModel.ts
         └── 📁navigation
-            └── navigation.tsx
+            └── MainNavigator.tsx
+            └── 📁stack
+                └── root-navigator.tsx
+        └── 📁providers
         └── 📁screens
-            └── clubselectionscreen.tsx
+            └── ClubSelectionScreen.tsx
             └── dashboardscreen.tsx
+            └── 📁features
+                └── 📁calculator
+                └── 📁home
+                └── 📁settings
+                └── 📁weather
             └── homescreen.tsx
             └── layout.tsx
             └── metadata.ts
@@ -168,6 +119,7 @@
         └── 📁services
             └── api.ts
             └── data-adapter.ts
+            └── environmental-calculations.ts
             └── environmental-service.ts
         └── 📁utils
             └── club-mapping.ts
@@ -175,6 +127,7 @@
         └── globals.css
     └── 📁types
         └── three-types.d.ts
+    └── .babelrc.json
     └── .clinerules
     └── .cursorrules
     └── .env
@@ -183,4 +136,5 @@
     └── projectstructure.md
     └── tsconfig.json
     └── wind-effects-output.md
+    └── yarn.lock
 ```

@@ -10,33 +10,23 @@
     "build": "eas build",
     "postinstall": "npx patch-package && expo-doctor"
   },
-  "dependencies": {
-    "@react-navigation/native": "^6.1.9",
-    "@react-navigation/stack": "^6.3.19",
-    "@react-three/drei": "^9.92.7",
-    "@react-three/fiber": "^8.15.12",
-    "@use-gesture/react": "^10.3.1",
-    "expo": "^51.0.8",
-    "expo-gl": "15.0.4",
-    "expo-three": "^8.0.0",
-    "lucide-react-native": "^0.303.0",
-    "nativewind": "^4.0.1",
-    "react": "^18.2.0",
-    "react-native": "0.74.1",
-    "react-native-gesture-handler": "~2.14.0",
-    "react-native-reanimated": "~3.8.0",
-    "react-native-safe-area-context": "4.8.2",
-    "three": "^0.159.0",
-    "three-mesh-bvh": "^0.8.0"
-  },
-  "devDependencies": {
-    "@types/react-native": "0.73.0",
-    "expo-font": "~12.0.0",
-    "typescript": "^5.3.3",
-    "tsconfig-paths": "^4.2.0",
-    "patch-package": "^7.0.0",
-    "expo-doctor": "^1.0.2"
-  },
+  {
+    "dependencies": {
+      "expo": "^52.0.27",
+      "react": "^19.0.0",
+      "react-native": "0.77.0",
+      "react-native-ui-lib": "^7.9.0",
+      "nativewind": "^4.1.23",
+      "react-native-reanimated": "~3.16.7",
+      "react-native-gesture-handler": "~2.22.1",
+      "lucide-react-native": "^0.474.0"
+    },
+    "devDependencies": {
+      "@types/react-native": "0.77.0",
+      "typescript": "^5.7.3",
+      "expo-doctor": "^1.12.5"
+    }
+  } 
   "resolutions": {
     "glob": "^9.0.0",
     "rimraf": "^4.0.0",

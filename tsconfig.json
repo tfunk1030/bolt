@@ -12,16 +12,13 @@
     "isolatedModules": true,
     "jsx": "react-native",
     "incremental": true,
-    "paths": {
-      "@/*": ["./src/*"],
-      "@components/*": ["./src/components/*"],
-      "@screens/*": ["./src/screens/*"]
-    },
     "baseUrl": ".",
-    "typeRoots": [
-      "./node_modules/@types",
-      "./src/types"
-    ]
+    "paths": {
+      "@components/*": ["./components/*"],
+      "@app/*": ["./app/*"]
+    },
+    "types": ["react-native", "react-native-ui-lib"],
+    "jsx": "react-jsx"
   },
   "include": [
     "**/*.ts",
