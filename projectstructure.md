@@ -1,5 +1,6 @@
 ```
 └── 📁project
+    └── 📁.expo
         └── COMMIT_EDITMSG
         └── config
         └── description
@@ -71,88 +72,19 @@
             └── stash
             └── 📁tags
         └── 📁snyk
-    └── 📁components
-        └── club-selection.tsx
-        └── 📁dashboard
-            └── dashboard-grid.tsx
-            └── widget-config-modal.tsx
-            └── widget-manager.tsx
-            └── widget-size-overlay.tsx
-            └── 📁widgets
-                └── compass-widget.tsx
-                └── environmental-conditions.tsx
-                └── round-tracker.tsx
-                └── wind-widget.tsx
-        └── navigation.tsx
-        └── 📁shot-analysis
-        └── shot-analysis.tsx
-            └── analysis-view.tsx
-        └── 📁shot-calculator
-            └── page.tsx
-        └── shot-visualization.tsx
-        └── simple-weather-display.tsx
-        └── 📁ui
-            └── button.tsx
-            └── card.tsx
-            └── dialog.tsx
-            └── input.tsx
-            └── label.tsx
-            └── preset-selector.tsx
-            └── select.tsx
-            └── separator.tsx
-            └── slider.tsx
-            └── theme-toggle.tsx
-            └── upgrade-modal.tsx
-        └── wind-direction-compass.tsx
-        └── wind-model-comparison.tsx
-        └── wind-profile-viz.tsx
+    └── 📁.vscode
+        └── extensions.json
+        └── settings.json
+    └── 📁assets
+        └── 📁fonts
+        └── 📁images
     └── 📁lib
         └── api-keys.ts
-        └── club-data.ts
-        └── club-settings-context.tsx
-        └── dashboard-context.tsx
         └── default-presets.ts
         └── environmental-calculations.ts
-        └── environmental-service.ts
-        └── 📁hooks
-            └── use-environmental.ts
-            └── use-shots.ts
-        └── latest-yardage-model.ts
-        └── latetso1model.ts
-        └── premium-context.tsx
-        └── preset-context.tsx
-        └── revised-yardage-model.ts
-        └── settings-context.tsx
         └── shot-analysis.ts
-        └── shot-calc-context.tsx
-        └── theme-context.tsx
         └── types.ts
-        └── use-round-data.ts
-        └── use-widget-size.ts
-        └── 📁utils
         └── utils.ts
-            └── club-mapping.ts
-        └── webgl-context.tsx
-        └── widget-config-context.tsx
-        └── widget-context.tsx
-        └── widget-sizes.ts
-        └── yardage_modelds.ts
-        └── yardage-model.ts
-    └── 📁screens
-        └── clubselectionscreen.tsx
-        └── dashboardscreen.tsx
-        └── globals.css
-        └── homescreen.tsx
-        └── layout.tsx
-        └── metadata.ts
-        └── not-found.tsx
-        └── settingsscreen.tsx
-        └── shotanalysisscreen.tsx
-        └── shotcalculatorscreen.tsx
-        └── shotvisualizationscreen.tsx
-        └── weatherscreen.tsx
-        └── windcalculatorscreen.tsx
-        └── windprofilescreen.tsx
     └── 📁scripts
         └── reset-config.js
         └── reset-dashboard.js
@@ -160,9 +92,85 @@
         └── wind-effect-matrix.ts
         └── wind-test.js
         └── wind-test.ts
-    └── 📁services
-        └── api.ts
-        └── data-adapter.ts
+    └── 📁src
+        └── 📁components
+            └── 📁clubselection
+                └── club-selection.tsx
+            └── 📁dashboard
+                └── dashboard-grid.tsx
+                └── widget-config-modal.tsx
+                └── widget-manager.tsx
+                └── widget-size-overlay.tsx
+                └── 📁widgets
+                    └── compass-widget.tsx
+                    └── environmental-conditions.tsx
+                    └── round-tracker.tsx
+                    └── wind-widget.tsx
+            └── 📁shot-calculator
+                └── page.tsx
+            └── 📁shotanalysis
+                └── analysis-view.tsx
+                └── shot-analysis.tsx
+            └── 📁shotvisualization
+                └── shot-visualization.tsx
+            └── 📁ui
+                └── button.tsx
+                └── card.tsx
+                └── dialog.tsx
+                └── input.tsx
+                └── label.tsx
+                └── preset-selector.tsx
+                └── select.tsx
+                └── separator.tsx
+                └── slider.tsx
+                └── theme-toggle.tsx
+                └── upgrade-modal.tsx
+            └── 📁weather
+                └── simple-weather-display.tsx
+            └── 📁wind
+                └── wind-direction-compass.tsx
+                └── wind-model-comparison.tsx
+                └── wind-profile-viz.tsx
+        └── 📁Constants
+            └── club-data.ts
+            └── widget-sizes.ts
+        └── 📁contexts
+            └── club-settings-context.tsx
+            └── dashboard-context.tsx
+            └── premium-context.tsx
+            └── preset-context.tsx
+            └── settings-context.tsx
+            └── shot-calc-context.tsx
+            └── theme-context.tsx
+            └── webgl-context.tsx
+            └── widget-config-context.tsx
+            └── widget-context.tsx
+        └── 📁hooks
+            └── use-environmental.ts
+            └── use-round-data.ts
+            └── use-shots.ts
+            └── use-widget-size.ts
+        └── 📁models
+            └── YardageModel.ts
+        └── 📁navigation
+            └── navigation.tsx
+        └── 📁screens
+            └── clubselectionscreen.tsx
+            └── dashboardscreen.tsx
+            └── homescreen.tsx
+            └── layout.tsx
+            └── metadata.ts
+            └── not-found.tsx
+            └── settingsscreen.tsx
+            └── shotcalculatorscreen.tsx
+            └── weatherscreen.tsx
+            └── windcalculatorscreen.tsx
+        └── 📁services
+            └── api.ts
+            └── data-adapter.ts
+            └── environmental-service.ts
+        └── 📁utils
+            └── club-mapping.ts
     └── 📁styles
         └── globals.css
     └── 📁types
@@ -171,44 +179,8 @@
     └── .cursorrules
     └── .env
     └── .gitignore
-    └── .windsurfrules
-    └── advanced-wind-calculations.js
-    └── appstructure.md
-    └── ball-flight-physics.js
-    └── basic-calculator.tsx
-    └── club-selection.tsx
-    └── completed-code.txt
-    └── componentstructure.md
-    └── coversion.md
-    └── ENHANCEMENTS.md
-    └── environmental-calculations.js
-    └── environmental-tests.js
-    └── folder-structure.tsx
-    └── libstructure.md
-    └── next.config.js
-    └── package-lock.json
     └── package.json
-    └── pga-averages.md
-    └── postcss.config.js
-    └── pro-wind-calculator.tsx
-    └── README.md
-    └── screensstructure.md
-    └── server.js
-    └── shot-analysis-system-yards.tsx
-    └── shot-analysis.tsx
-    └── shot-visualization.tsx
-    └── simple-weather-display.tsx
-    └── tailwind.config.js
-    └── test-suite.js
-    └── trajectory-component.tsx
+    └── projectstructure.md
     └── tsconfig.json
-    └── tsconfig.node.json
-    └── ui-components.tsx
-    └── ultra-realistic-shot.tsx
-    └── validation-cases.js
-    └── weather-display.tsx
     └── wind-effects-output.md
-    └── wind-effects-output.txt
-    └── wind-profile-viz.tsx
-    └── yarn.lock
 ```
