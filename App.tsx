@@ -1,2 +1,3 @@
-﻿import "expo-router/entry";
-// This file exists purely for Expo's native entry point
+﻿// Ensure single entry point
+import 'expo-router/entry';
+// Remove any other imports here

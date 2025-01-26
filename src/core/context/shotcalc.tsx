@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useMemo } from 'react'
-import { YardageModelEnhanced, SkillLevel, ShotResult } from '@/src/core/models/YardageModel'
+import * as React from 'react'
+import { YardageModelEnhanced, SkillLevel, ShotResult } from '../models/YardageModel'
 
 interface ShotCalcData {
   targetYardage: number | null
@@ -23,7 +23,7 @@ interface ShotCalcContextType {
 
 const yardageModel = new YardageModelEnhanced()
 
-const ShotCalcContext = createContext<ShotCalcContextType>({
+const ShotCalcContext = React.createContext<ShotCalcContextType>({
   shotCalcData: {
     targetYardage: 150,
     adjustedDistance: 157,
@@ -42,7 +42,7 @@ interface ShotCalcProviderProps {
 }
 
 export function ShotCalcProvider({ children }: ShotCalcProviderProps) {
-  const [shotCalcData, setShotCalcData] = useState<ShotCalcData>({
+  const [shotCalcData, setShotCalcData] = React.useState<ShotCalcData>({
     targetYardage: 150,
     adjustedDistance: 157,
     lateralMovement: 0,
@@ -82,7 +82,7 @@ export function ShotCalcProvider({ children }: ShotCalcProviderProps) {
     )
   }
 
-  const contextValue = useMemo(() => ({
+  const contextValue = React.useMemo(() => ({
     shotCalcData,
     setShotCalcData: updateShotCalcData,
     calculateShot
@@ -96,7 +96,7 @@ export function ShotCalcProvider({ children }: ShotCalcProviderProps) {
 }
 
 export function useShotCalc() {
-  const context = useContext(ShotCalcContext)
+  const context = React.useContext(ShotCalcContext)
   if (!context) {
     throw new Error('useShotCalc must be used within a ShotCalcProvider')
   }
