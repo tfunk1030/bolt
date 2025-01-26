@@ -1,0 +1,1 @@
+i have been converting my web app to mobile and finally have it somewhat working. however I lost some of the functionality and UI. I will send you the file versions of the web code and the mobile code. fix the mobile code to perfectly match the web code. same ui/ux, same api calls, same calculations. I want a perfect match. just optimized for mobile. 

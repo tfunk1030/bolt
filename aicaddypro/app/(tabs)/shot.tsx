@@ -1,5 +1,6 @@
+// shot.tsx (mobile)
 import * as React from 'react'
-import { View, Text, StyleSheet, AppState } from 'react-native'
+import { View, ScrollView, Text, StyleSheet, AppState, Alert } from 'react-native'
 import { useEnvironmental } from '@/src/hooks/useEnvironmental'
 import { useClubSettings } from '@/src/features/settings/context/clubs'
 import { useSettings } from '@/src/core/context/settings'
@@ -132,12 +133,32 @@ export default function ShotCalculatorScreen() {
   React.useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {
       if (nextAppState === 'active') {
-        // Your error handling logic here
+        // Handle app state changes if needed
       }
     });
 
     return () => {
       subscription.remove();
+    };
+  }, []);
+
+  React.useEffect(() => {
+    const handleError = (error: Error) => {
+      console.error('Shot calculator error:', error);
+      Alert.alert('Error', error.message);
+    };
+
+    const handleErrorEvent = (event: ErrorEvent) => {
+      console.error('Shot calculator error:', event.error);
+      Alert.alert('Error', event.error?.message || 'An error occurred');
+    };
+
+    // Note: React Native handles errors differently than web
+    // This is a basic error handling implementation
+    // You might want to use a more robust error boundary solution
+
+    return () => {
+      // Cleanup
     };
   }, []);
 
@@ -174,8 +195,9 @@ export default function ShotCalculatorScreen() {
           <ConditionIcon icon={Droplets} label="Humidity" value={`${conditions.humidity.toFixed(0)}%`} />
         </View>
       </Card>
+
       <Card style={styles.sliderCard}>
-        <Text>Target Distance</Text>
+        <Text style={styles.sliderLabel}>Target Distance</Text>
         <View style={styles.sliderContainer}>
           <Slider
             minimumValue={settings.distanceUnit === 'yards' ? 50 : 45}
@@ -192,7 +214,94 @@ export default function ShotCalculatorScreen() {
         </View>
       </Card>
 
-      {/* Remaining components converted similarly */}
+      {shotData && (
+        <Card style={styles.adjustmentCard}>
+          <Text style={styles.sectionTitle}>Shot Adjustment</Text>
+          <View style={styles.adjustmentContent}>
+            <View style={styles.adjustmentRow}>
+              <Text>Environmental Effect</Text>
+              <Text style={[
+                styles.adjustmentValue,
+                targetYardage >= shotData.result.carry_distance 
+                  ? styles.adjustmentNegative 
+                  : styles.adjustmentPositive
+              ]}>
+                {formatAdjustment(targetYardage - shotData.result.carry_distance)}
+              </Text>
+            </View>
+            <View style={styles.adjustmentRow}>
+              <Text>Plays Like</Text>
+              <Text style={styles.adjustmentValue}>
+                {formatDistance(targetYardage * (targetYardage / shotData.result.carry_distance))}
+              </Text>
+            </View>
+          </View>
+        </Card>
+      )}
+
+      {shotData?.recommendedClub && (
+        <Card style={styles.clubCard}>
+          <Text style={styles.sectionTitle}>Recommended Clubs</Text>
+          <View style={styles.clubContent}>
+            {(() => {
+              const playsLikeDistance = targetYardage * (targetYardage / shotData.result.carry_distance)
+              const exactClub = getRecommendedClub(playsLikeDistance)
+              const isExactMatch = exactClub?.yardage === Math.round(playsLikeDistance)
+
+              if (isExactMatch) {
+                return (
+                  <View style={styles.exactMatch}>
+                    <View style={styles.clubRow}>
+                      <Text style={styles.clubLabel}>Perfect Club</Text>
+                      <Text style={styles.clubValue}>{exactClub.name}</Text>
+                    </View>
+                    <View style={styles.clubRow}>
+                      <Text style={styles.clubLabel}>Normal Carry</Text>
+                      <Text style={styles.clubValue}>{formatDistance(exactClub.yardage)}</Text>
+                    </View>
+                  </View>
+                )
+              }
+
+              return (
+                <View style={styles.alternativeClubs}>
+                  <View style={styles.clubSection}>
+                    <Text style={styles.clubTitle}>Longer Option</Text>
+                    <View style={styles.clubRow}>
+                      <Text style={styles.clubLabel}>Club</Text>
+                      <Text style={styles.clubValue}>
+                        {getRecommendedClub(playsLikeDistance + 7)?.name || shotData.recommendedClub.name}
+                      </Text>
+                    </View>
+                    <View style={styles.clubRow}>
+                      <Text style={styles.clubLabel}>Normal Carry</Text>
+                      <Text style={styles.clubValue}>
+                        {formatDistance(getRecommendedClub(playsLikeDistance + 7)?.yardage || shotData.recommendedClub.yardage)}
+                      </Text>
+                    </View>
+                  </View>
+                  <View style={styles.divider} />
+                  <View style={styles.clubSection}>
+                    <Text style={styles.clubTitle}>Shorter Option</Text>
+                    <View style={styles.clubRow}>
+                      <Text style={styles.clubLabel}>Club</Text>
+                      <Text style={styles.clubValue}>
+                        {getRecommendedClub(playsLikeDistance)?.name || shotData.recommendedClub.name}
+                      </Text>
+                    </View>
+                    <View style={styles.clubRow}>
+                      <Text style={styles.clubLabel}>Normal Carry</Text>
+                      <Text style={styles.clubValue}>
+                        {formatDistance(getRecommendedClub(playsLikeDistance)?.yardage || shotData.recommendedClub.yardage)}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              )
+            })()}
+          </View>
+        </Card>
+      )}
     </View>
   )
 }
@@ -215,56 +324,94 @@ const styles = StyleSheet.create({
   },
   environmentRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
   conditionItem: {
-    alignItems: 'center'
+    alignItems: 'center',
   },
   iconContainer: {
     width: 32,
     height: 32,
-    borderRadius: 16,
     backgroundColor: 'rgba(96, 165, 250, 0.2)',
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 4
+    marginBottom: 4,
   },
   conditionLabel: {
     color: '#9CA3AF',
-    fontSize: 12
+    fontSize: 12,
   },
   conditionValue: {
-    color: 'white',
-    fontSize: 14
+    color: '#F9FAFB',
+    fontSize: 14,
+    fontWeight: '500',
   },
   sliderCard: {
+    marginBottom: 16,
     padding: 16,
-    marginBottom: 16
+  },
+  cardTitle: {
+    color: '#F9FAFB',
+    fontSize: 16,
+    fontWeight: '500',
+    marginBottom: 12,
   },
   sliderContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16
-  },
-  slider: {
-    flex: 1
+    marginTop: 8,
   },
   distanceValue: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
-    width: 100,
-    textAlign: 'right'
+    color: '#F9FAFB',
+    fontSize: 16,
+    fontWeight: '500',
+    textAlign: 'center',
+    marginTop: 8,
   },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: '#111827',
-    padding: 32
+  resultsCard: {
+    padding: 16,
   },
-  loadingPulse: {
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#F9FAFB',
+    marginBottom: 16,
+  },
+  clubContent: {
     backgroundColor: '#1F2937',
     borderRadius: 8,
-    marginBottom: 16,
-    height: 32
-  }
-})
+    overflow: 'hidden',
+  },
+  exactMatch: {
+    padding: 16,
+  },
+  alternativeClubs: {
+    flexDirection: 'column',
+  },
+  clubSection: {
+    padding: 16,
+  },
+  clubTitle: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#9CA3AF',
+    marginBottom: 12,
+  },
+  clubRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  clubLabel: {
+    color: '#9CA3AF',
+    fontSize: 14,
+  },
+  clubValue: {
+    color: '#F9FAFB',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#374151',
+  },
+});
