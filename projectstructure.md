@@ -70,17 +70,12 @@
             └── icon.png
     └── 📁config
         └── eas.build.json
-    └── 📁lib
-        └── api-keys.ts
-        └── types.ts
-        └── utils.ts
     └── 📁src
         └── 📁core
             └── 📁components
                 └── 📁ui
                     └── button.tsx
                     └── card.tsx
-                    └── dialog.tsx
                     └── input.tsx
                     └── slider.tsx
                     └── upgrade-modal.tsx
@@ -112,7 +107,10 @@
             └── use-shots.ts
             └── useEnvironmental.ts
         └── 📁lib
+            └── api-keys.ts
             └── env.ts
+            └── types.ts
+            └── utils.ts
         └── 📁navigation
             └── 📁stack
                 └── root-navigator.tsx

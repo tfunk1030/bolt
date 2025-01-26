@@ -1,104 +1,109 @@
-'use client'
-
-import React from 'react'
-import { View, Text, StyleSheet, Linking } from 'react-native'
-import { usePremium } from '@/src/features/settings/context/premium'
-import { Button } from './button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from './dialog'
+import React from 'react';
+import { View, Text, StyleSheet, Linking, Modal } from 'react-native';
+import { usePremium } from '@/src/features/settings/context/premium';
+import { Button } from './button';
 
 export function UpgradeModal() {
-  const { showUpgradeModal, setShowUpgradeModal } = usePremium()
-
-  if (!showUpgradeModal) return null
+  const { showUpgradeModal, setShowUpgradeModal } = usePremium();
 
   const handleUpgrade = async () => {
     try {
-      await Linking.openURL('https://example.com/upgrade')
+      await Linking.openURL('https://example.com/upgrade');
     } catch (error) {
-      console.error('Failed to open upgrade URL:', error)
+      console.error('Failed to open upgrade URL:', error);
     }
-  }
+  };
 
   return (
-    <Dialog 
-      open={showUpgradeModal} 
-      onOpenChange={setShowUpgradeModal}
+    <Modal
+      visible={showUpgradeModal}
+      animationType="slide"
+      transparent={true}
+      onRequestClose={() => setShowUpgradeModal(false)}
     >
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Upgrade to Premium</DialogTitle>
-        </DialogHeader>
+      <View style={styles.overlay}>
         <View style={styles.container}>
+          <Text style={styles.title}>Upgrade to Premium</Text>
           <Text style={styles.description}>
             Get access to advanced features and analytics with our premium plan.
           </Text>
+          
           <View style={styles.featuresContainer}>
             <Text style={styles.featuresTitle}>Premium Features:</Text>
-            <View style={styles.featuresList}>
-              <Text style={styles.featureItem}>• Advanced shot analysis</Text>
-              <Text style={styles.featureItem}>• Club comparison tools</Text>
-              <Text style={styles.featureItem}>• Detailed statistics</Text>
-              <Text style={styles.featureItem}>• Custom club settings</Text>
-              <Text style={styles.featureItem}>• Shot pattern visualization</Text>
-            </View>
+            <Text style={styles.feature}>• Advanced shot analysis</Text>
+            <Text style={styles.feature}>• Club comparison tools</Text>
+            <Text style={styles.feature}>• Detailed statistics</Text>
+            <Text style={styles.feature}>• Custom club settings</Text>
+            <Text style={styles.feature}>• Shot pattern visualization</Text>
           </View>
+
           <View style={styles.buttonContainer}>
-            <View style={styles.buttonWrapper}>
-              <Button 
-                variant="outline" 
-                onPress={() => setShowUpgradeModal(false)}
-              >
-                Maybe Later
-              </Button>
-            </View>
-            <View style={styles.buttonWrapper}>
-              <Button 
-                variant="default"
-                onPress={handleUpgrade}
-              >
-                Upgrade Now
-              </Button>
-            </View>
+            <Button
+              variant="outline"
+              style={styles.button}
+              onPress={() => setShowUpgradeModal(false)}
+            >
+              Maybe Later
+            </Button>
+            <Button
+              variant="default"
+              style={styles.button}
+              onPress={handleUpgrade}
+            >
+              Upgrade Now
+            </Button>
           </View>
         </View>
-      </DialogContent>
-    </Dialog>
-  )
+      </View>
+    </Modal>
+  );
 }
 
 const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   container: {
-    gap: 16,
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: 24,
+    width: '80%',
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: '600',
+    marginBottom: 12,
+    color: '#111827',
   },
   description: {
-    color: '#6B7280',
     fontSize: 16,
-    lineHeight: 24,
+    color: '#6B7280',
+    marginBottom: 16,
   },
   featuresContainer: {
-    gap: 8,
+    marginBottom: 24,
   },
   featuresTitle: {
     fontSize: 16,
     fontWeight: '500',
+    marginBottom: 8,
     color: '#111827',
-    marginBottom: 4,
   },
-  featuresList: {
-    gap: 8,
-  },
-  featureItem: {
+  feature: {
+    fontSize: 14,
     color: '#6B7280',
-    fontSize: 16,
-    lineHeight: 24,
+    marginLeft: 8,
+    marginBottom: 4,
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
     gap: 8,
-    marginTop: 8,
   },
-  buttonWrapper: {
-    flex: 0,
+  button: {
+    flex: 1,
   },
-})
+});

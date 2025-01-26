@@ -1,43 +1,26 @@
-import { View } from 'react-native'
-import { Stack } from 'expo-router'
-import Navigation from '@/src/navigation/stack/root-navigator'
-import { ThemeProvider } from '@/src/core/context/theme-context'
-import { ClubSettingsProvider } from '@/src/features/settings/context/clubs'
-import { SettingsProvider } from '@/src/core/context/settings'
-import { UpgradeModal } from '@/src/core/components/ui/upgrade-modal'
-import { EnvironmentalService } from '@/src/services/environmental-service'
-import { ShotCalcProvider } from '@/src/core/context/shot-calc'
-import { PremiumProvider } from '@/src/features/settings/context/premium'
+import { Slot } from 'expo-router';
+import { ThemeProvider } from '@/src/core/context/theme-context';
+import { ClubSettingsProvider } from '@/src/features/settings/context/clubs';
+import { SettingsProvider } from '@/src/core/context/settings';
+import { EnvironmentalService } from '@/src/services/environmental-service';
+import { ShotCalcProvider } from '@/src/core/context/shot-calc';
+import { PremiumProvider } from '@/src/features/settings/context/premium';
 
-// Initialize the environmental service
+// Initialize environmental monitoring
 EnvironmentalService.getInstance().startMonitoring();
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout() {
   return (
     <ThemeProvider>
       <PremiumProvider>
         <SettingsProvider>
           <ClubSettingsProvider>
             <ShotCalcProvider>
-              <Stack
-                screenOptions={{
-                  headerShown: false,
-                  contentStyle: { backgroundColor: '#111827' }
-                }}
-              />
-              <View style={{ flex: 1, paddingBottom: 20 }}>
-                {children}
-              </View>
-              <Navigation />
-              <UpgradeModal />
+              <Slot />
             </ShotCalcProvider>
           </ClubSettingsProvider>
         </SettingsProvider>
       </PremiumProvider>
     </ThemeProvider>
-  )
+  );
 }

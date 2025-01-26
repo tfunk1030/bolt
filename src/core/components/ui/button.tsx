@@ -1,75 +1,83 @@
-import React from 'react'
-import { Pressable, Text, StyleSheet, PressableProps, ViewStyle, TextStyle } from 'react-native'
+import React from 'react';
+import { Pressable, Text, StyleSheet, PressableProps, ViewStyle, TextStyle } from 'react-native';
 
-type ButtonVariant = 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link'
-type ButtonSize = 'default' | 'sm' | 'lg' | 'icon'
+type ButtonVariant = 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
+type ButtonSize = 'default' | 'sm' | 'lg' | 'icon';
 
 export interface ButtonProps extends Omit<PressableProps, 'style'> {
-  variant?: ButtonVariant
-  size?: ButtonSize
-  children?: React.ReactNode
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  children?: React.ReactNode;
 }
 
-interface ButtonStyles {
-  base: ViewStyle
-  default: ViewStyle
-  destructive: ViewStyle
-  outline: ViewStyle
-  secondary: ViewStyle
-  ghost: ViewStyle
-  link: ViewStyle
-  sizeSm: ViewStyle
-  sizeDefault: ViewStyle
-  sizeLg: ViewStyle
-  sizeIcon: ViewStyle
-  text: TextStyle
-  defaultText: TextStyle
-  destructiveText: TextStyle
-  outlineText: TextStyle
-  secondaryText: TextStyle
-  ghostText: TextStyle
-  linkText: TextStyle
-  disabled: ViewStyle
-}
-
-export function Button({ 
+const Button = ({ 
   variant = 'default', 
   size = 'default',
   children,
   ...props 
-}: ButtonProps) {
-  const sizeStyle = `size${size.charAt(0).toUpperCase()}${size.slice(1)}` as keyof ButtonStyles
+}: ButtonProps) => {
+  const getSizeStyle = () => {
+    switch (size) {
+      case 'sm': return styles.sizeSm;
+      case 'lg': return styles.sizeLg;
+      case 'icon': return styles.sizeIcon;
+      default: return styles.sizeDefault;
+    }
+  };
+
+  const getVariantStyle = () => {
+    switch (variant) {
+      case 'destructive': return styles.destructive;
+      case 'outline': return styles.outline;
+      case 'secondary': return styles.secondary;
+      case 'ghost': return styles.ghost;
+      case 'link': return styles.link;
+      default: return styles.default;
+    }
+  };
+
+  const getTextStyle = () => {
+    switch (variant) {
+      case 'destructive': return styles.destructiveText;
+      case 'outline': return styles.outlineText;
+      case 'secondary': return styles.secondaryText;
+      case 'ghost': return styles.ghostText;
+      case 'link': return styles.linkText;
+      default: return styles.defaultText;
+    }
+  };
 
   return (
     <Pressable
       {...props}
-      style={[
+      style={({ pressed }) => [
         styles.base,
-        styles[variant],
-        styles[sizeStyle],
-        props.disabled && styles.disabled
+        getSizeStyle(),
+        getVariantStyle(),
+        props.disabled && styles.disabled,
+        pressed && styles.pressed
       ]}
     >
-      <Text style={[
-        styles.text,
-        styles[`${variant}Text` as keyof ButtonStyles]
-      ]}>
+      <Text style={[styles.text, getTextStyle()]}>
         {children}
       </Text>
     </Pressable>
-  )
-}
+  );
+};
 
-const styles = StyleSheet.create<ButtonStyles>({
+const styles = StyleSheet.create({
   base: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 6,
   },
+  pressed: {
+    opacity: 0.8,
+  },
   // Variant styles
   default: {
-    backgroundColor: '#0284C7', // primary color
+    backgroundColor: '#0284C7',
   },
   destructive: {
     backgroundColor: '#EF4444',
@@ -105,6 +113,8 @@ const styles = StyleSheet.create<ButtonStyles>({
     width: 36,
     height: 36,
     padding: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   // Text styles
   text: {
@@ -134,4 +144,6 @@ const styles = StyleSheet.create<ButtonStyles>({
   disabled: {
     opacity: 0.5,
   },
-})
+});
+
+export { Button };
