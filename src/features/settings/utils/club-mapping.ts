@@ -1,8 +1,6 @@
 export function normalizeClubName(clubName: string): string {
-  // Convert to lowercase and trim spaces
   const input = clubName.trim();
-  
-  const clubMappings: Record<string, string> = {
+  const mappings: Record<string, string> = {
     // Driver variants
     'driver': 'driver',
     'drv': 'driver',
@@ -175,17 +173,15 @@ export function normalizeClubName(clubName: string): string {
   };
 
   // Try exact match first
-  if (clubMappings[input.toLowerCase()]) {
-    return clubMappings[input.toLowerCase()];
+  if (mappings[input.toLowerCase()]) {
+    return mappings[input.toLowerCase()];
   }
 
-  // Remove all spaces and special characters
   const normalized = input.toLowerCase().replace(/[^a-z0-9]/g, '');
-  if (clubMappings[normalized]) {
-    return clubMappings[normalized];
+  if (mappings[normalized]) {
+    return mappings[normalized];
   }
 
-  // Try to match patterns if no direct mapping found
   const patterns = [
     { regex: /^(\d+)(?:iron|i)$/i, replace: '$1-iron' },
     { regex: /^(\d+)(?:wood|w)$/i, replace: '$1-wood' },
@@ -195,11 +191,11 @@ export function normalizeClubName(clubName: string): string {
   for (const { regex, replace } of patterns) {
     if (regex.test(normalized)) {
       const mapped = normalized.replace(regex, replace);
-      if (clubMappings[mapped]) {
-        return clubMappings[mapped];
+      if (mappings[mapped]) {
+        return mappings[mapped];
       }
     }
   }
 
   return input.toLowerCase();
-} 
+}

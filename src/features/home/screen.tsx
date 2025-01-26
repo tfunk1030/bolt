@@ -1,111 +1,148 @@
-'use client'
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { useEnvironmental } from '@/src/hooks/useEnvironmental';
+import { useSettings } from '@/src/contexts/settings-context';
+import { Thermometer, Droplets, Mountain, Gauge, Wind } from 'lucide-react-native';
 
-import { useEnvironmental } from '@/lib/hooks/use-environmental'
-import { useSettings } from '@/src/contexts/settings-context'
-import { 
-  Thermometer, 
-  Droplets, 
-  Mountain, 
-  Gauge, 
-  ArrowUp,
-  Wind
-} from 'lucide-react'
-import { useState, useEffect } from 'react'
+export default function WeatherScreen() {
+  const { conditions } = useEnvironmental();
+  const { formatTemperature, formatAltitude } = useSettings();
+  const [isLoaded, setIsLoaded] = useState(false);
 
-export default function WeatherPage() {
-  const { conditions } = useEnvironmental()
-  const { formatTemperature, formatAltitude } = useSettings()
-
-  // Use client-side only rendering to avoid hydration mismatch
-  const [isClient, setIsClient] = useState(false)
   useEffect(() => {
-    setIsClient(true)
-  }, [])
+    setIsLoaded(true);
+  }, []);
 
-  if (!isClient || !conditions) {
+  if (!isLoaded || !conditions) {
     return (
-      <div className="p-4 max-w-2xl mx-auto">
-        <h1 className="text-2xl font-bold mb-6">Loading conditions...</h1>
-      </div>
-    )
+      <View style={styles.container}>
+        <Text style={styles.title}>Loading conditions...</Text>
+      </View>
+    );
   }
 
   return (
-    <div className="flex flex-col p-4 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Current Conditions</h1>
+    <View style={styles.container}>
+      <Text style={styles.title}>Current Conditions</Text>
 
-      {/* Main Weather Card */}
-      <div className="bg-gray-800 rounded-xl p-6 mb-4">
-        <div className="flex items-center justify-between">
-          <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center">
-            <Thermometer className="w-6 h-6 text-blue-400" />
-          </div>
-          <div className="text-center flex-1">
-            <div className="text-4xl font-bold">
-              {formatTemperature(conditions?.temperature ?? 0)}
-            </div>
-            <div className="text-gray-400 text-sm">
-              Temperature
-            </div>
-            </div>
-          </div>
-          <div className="w-12"></div> {/* Spacer for centering */}
-        </div>
+      <View style={styles.mainCard}>
+        <View style={styles.temperatureContainer}>
+          <View style={styles.iconWrapper}>
+            <Thermometer size={24} color="#60a5fa" />
+          </View>
+          <Text style={styles.temperatureText}>
+            {formatTemperature(conditions.temperature)}
+          </Text>
+        </View>
+      </View>
 
-      {/* Detailed Conditions */}
-      <div className="grid grid-cols-2 gap-4">
-        {/* Humidity */}
-        <div className="bg-gray-800 rounded-xl p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center">
-              <Droplets className="w-4 h-4 text-blue-400" />
-            </div>
-            <div className="text-sm text-gray-400">Humidity</div>
-          </div>
-          <div className="mt-2 ml-11 text-lg font-medium">
-            {conditions?.humidity?.toFixed(0)}%
-          </div>
-        </div>
+      <View style={styles.gridContainer}>
+        <View style={styles.gridRow}>
+          <ConditionItem
+            icon={<Droplets size={20} color="#60a5fa" />}
+            label="Humidity"
+            value={`${conditions.humidity.toFixed(0)}%`}
+          />
+          <ConditionItem
+            icon={<Mountain size={20} color="#60a5fa" />}
+            label="Altitude"
+            value={formatAltitude(conditions.altitude)}
+          />
+        </View>
 
-        {/* Altitude */}
-        <div className="bg-gray-800 rounded-xl p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center">
-              <Mountain className="w-4 h-4 text-blue-400" />
-            </div>
-            <div className="text-sm text-gray-400">Altitude</div>
-          </div>
-          <div className="mt-2 ml-11 text-lg font-medium">
-            {formatAltitude(conditions?.altitude ?? 0)}
-          </div>
-        </div>
-
-        {/* Pressure */}
-        <div className="bg-gray-800 rounded-xl p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center">
-              <Gauge className="w-4 h-4 text-blue-400" />
-            </div>
-            <div className="text-sm text-gray-400">Pressure</div>
-          </div>
-          <div className="mt-2 ml-11 text-lg font-medium">
-            {conditions?.pressure?.toFixed(0)} hPa
-          </div>
-        </div>
-
-        {/* Air Density */}
-        <div className="bg-gray-800 rounded-xl p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center">
-              <Wind className="w-4 h-4 text-blue-400" />
-            </div>
-            <div className="text-sm text-gray-400">Air Density</div>
-          </div>
-          <div className="mt-2 ml-11 text-lg font-medium">
-            {conditions?.density?.toFixed(3)} kg/m³
-          </div>
-        </div>
-      </div>
-    </div>
-  )
+        <View style={styles.gridRow}>
+          <ConditionItem
+            icon={<Gauge size={20} color="#60a5fa" />}
+            label="Pressure"
+            value={`${conditions.pressure.toFixed(0)} hPa`}
+          />
+          <ConditionItem
+            icon={<Wind size={20} color="#60a5fa" />}
+            label="Air Density"
+            value={`${conditions.density?.toFixed(3)} kg/m³`}
+          />
+        </View>
+      </View>
+    </View>
+  );
 }
+
+const ConditionItem = ({ icon, label, value }: { icon: React.ReactNode, label: string, value: string }) => (
+  <View style={styles.conditionCard}>
+    <View style={styles.conditionHeader}>
+      <View style={styles.iconWrapper}>{icon}</View>
+      <Text style={styles.conditionLabel}>{label}</Text>
+    </View>
+    <Text style={styles.conditionValue}>{value}</Text>
+  </View>
+);
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: '#1f2937',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    marginBottom: 24,
+  },
+  mainCard: {
+    backgroundColor: '#374151',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+  },
+  temperatureContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconWrapper: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(96, 165, 250, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  temperatureText: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#ffffff',
+  },
+  gridContainer: {
+    flexDirection: 'column',
+    gap: 16,
+  },
+  gridRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 16,
+  },
+  conditionCard: {
+    flex: 1,
+    backgroundColor: '#374151',
+    borderRadius: 12,
+    padding: 16,
+  },
+  conditionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  conditionLabel: {
+    color: '#9ca3af',
+    fontSize: 14,
+    marginLeft: 8,
+  },
+  conditionValue: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: '600',
+    marginLeft: 8,
+  },
+});

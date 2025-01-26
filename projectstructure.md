@@ -1,37 +1,86 @@
 ```
-└── 📁project
-    └── 📁.expo
-    └── 📁.vscode
-        └── 📁.react
-        └── extensions.json
-        └── settings.json
+└── 📁bolt
     └── 📁.well-known
         └── apple-app-site-association
         └── assetlinks.json
+    └── 📁AICaddyPro-6794863c9c677
+        └── 📁android
+            └── ic_launcher-web.png
+            └── 📁mipmap-anydpi-v26
+                └── ic_launcher_round.xml
+                └── ic_launcher.xml
+            └── 📁mipmap-hdpi
+                └── ic_launcher_foreground.png
+                └── ic_launcher_round.png
+                └── ic_launcher.png
+            └── 📁mipmap-ldpi
+                └── ic_launcher.png
+            └── 📁mipmap-mdpi
+                └── ic_launcher_foreground.png
+                └── ic_launcher_round.png
+                └── ic_launcher.png
+            └── 📁mipmap-xhdpi
+                └── ic_launcher_foreground.png
+                └── ic_launcher_round.png
+                └── ic_launcher.png
+            └── 📁mipmap-xxhdpi
+                └── ic_launcher_foreground.png
+                └── ic_launcher_round.png
+                └── ic_launcher.png
+            └── 📁mipmap-xxxhdpi
+                └── ic_launcher_foreground.png
+                └── ic_launcher_round.png
+                └── ic_launcher.png
+            └── playstore-icon.png
+            └── 📁values
+                └── ic_launcher_background.xml
+        └── 📁ios
+            └── 📁AppIcon.appiconset
+                └── Contents.json
+                └── Icon-App-20x20@1x.png
+                └── Icon-App-20x20@2x.png
+                └── Icon-App-20x20@3x.png
+                └── Icon-App-29x29@1x.png
+                └── Icon-App-29x29@2x.png
+                └── Icon-App-29x29@3x.png
+                └── Icon-App-40x40@1x.png
+                └── Icon-App-40x40@2x.png
+                └── Icon-App-40x40@3x.png
+                └── Icon-App-60x60@2x.png
+                └── Icon-App-60x60@3x.png
+                └── Icon-App-76x76@1x.png
+                └── Icon-App-76x76@2x.png
+                └── Icon-App-83.5x83.5@2x.png
+                └── ItunesArtwork@2x.png
+            └── iTunesArtwork@1x.png
+            └── iTunesArtwork@2x.png
+            └── iTunesArtwork@3x.png
     └── 📁app
         └── 📁(entry)
             └── layout.tsx
+        └── androidmanifest.xml
     └── 📁assets
+        └── 📁android
+            └── adaptive-icon-background.png
+            └── adaptive-icon-foreground.png
         └── 📁fonts
             └── inter-variable.ttf
-        └── 📁images
-            └── adaptive-icon.png
+        └── icon.png
+        └── 📁ios
+            └── icon.png
     └── 📁config
         └── eas.build.json
     └── 📁lib
         └── api-keys.ts
-        └── environmental-calculations.ts
         └── types.ts
         └── utils.ts
-    └── 📁scripts
-        └── tsconfig.json
-        └── wind-effect-matrix.ts
     └── 📁src
         └── 📁core
             └── 📁components
                 └── 📁ui
                     └── button.tsx
                     └── card.tsx
+                    └── dialog.tsx
                     └── input.tsx
                     └── slider.tsx
                     └── upgrade-modal.tsx
@@ -62,22 +111,24 @@
         └── 📁hooks
             └── use-shots.ts
             └── useEnvironmental.ts
+        └── 📁lib
+            └── env.ts
         └── 📁navigation
             └── 📁stack
                 └── root-navigator.tsx
+            └── types.ts
         └── 📁services
             └── api.ts
             └── environmental-calculations.ts
             └── environmental-service.ts
-        └── 📁types
     └── .babelrc.json
-    └── .clinerules
-    └── .cursorrules
     └── .env
     └── .gitignore
+    └── app.json
+    └── App.tsx
+    └── next-env.d.ts
     └── package.json
     └── projectstructure.md
     └── tsconfig.json
-    └── wind-effects-output.md
     └── yarn.lock
 ```

@@ -1,55 +1,48 @@
 export interface Location {
   lat: number;
   lng: number;
-  elevation?: number;  // Optional elevation in feet
+  elevation?: number;
 }
 
 export interface EnvironmentalConditions {
-  temperature: number;      // in Fahrenheit
-  humidity: number;        // percentage
-  pressure: number;        // in hPa
-  altitude: number;        // in feet
-  windSpeed: number;       // in mph
-  windDirection: number;   // in degrees (0-360)
-  density?: number;        // in kg/m³ (optional for input)
-  elevation?: number;      // in feet (from elevation API)
+  temperature: number;
+  humidity: number;
+  pressure: number;
+  altitude: number;
+  windSpeed: number;
+  windDirection: number;
+  density?: number;
+  elevation?: number;
 }
 
 export interface ShotAdjustments {
-  distanceAdjustment: number;  // percentage
-  trajectoryShift: number;     // in yards
-  spinAdjustment: number;      // percentage
-  launchAngleAdjustment: number; // in degrees
+  distanceAdjustment: number;
+  trajectoryShift: number;
+  spinAdjustment: number;
+  launchAngleAdjustment: number;
 }
 
 export class EnvironmentalCalculator {
-  private static readonly STANDARD_TEMP = 59;  // °F
-  private static readonly STANDARD_PRESSURE = 1013.25;  // hPa
-  private static readonly STANDARD_DENSITY = 1.225;  // kg/m³
+  private static readonly STANDARD_TEMP = 70;
+  private static readonly STANDARD_PRESSURE = 1013.25;
+  private static readonly STANDARD_DENSITY = 1.225;
 
   static calculateAirDensity(conditions: Partial<EnvironmentalConditions>): number {
     const tempC = (conditions.temperature! - 32) * 5/9;
     const vaporPressure = this.calculateVaporPressure(conditions.temperature!, conditions.humidity!);
     const dryPressure = conditions.pressure! - vaporPressure;
     
-    // Using the ideal gas law with corrections for humidity
-    const density = (dryPressure * 100) / (287.05 * (tempC + 273.15)) +
-                   (vaporPressure * 100) / (461.495 * (tempC + 273.15));
-    
-    return density;
+    return (dryPressure * 100) / (287.05 * (tempC + 273.15)) +
+           (vaporPressure * 100) / (461.495 * (tempC + 273.15));
   }
 
   static calculateVaporPressure(tempF: number, humidity: number): number {
     const tempC = (tempF - 32) * 5/9;
-    // Magnus formula for saturation vapor pressure
     const saturationPressure = 6.1078 * Math.exp((17.27 * tempC) / (tempC + 237.3));
     return (humidity / 100) * saturationPressure;
   }
 
-  static calculateWindEffect(windSpeed: number, windDirection: number, shotDirection: number): {
-    headwind: number;
-    crosswind: number;
-  } {
+  static calculateWindEffect(windSpeed: number, windDirection: number, shotDirection: number) {
     const relativeAngle = (windDirection - shotDirection) * Math.PI / 180;
     return {
       headwind: windSpeed * Math.cos(relativeAngle),
@@ -57,45 +50,28 @@ export class EnvironmentalCalculator {
     };
   }
 
-  static calculateShotAdjustments(
-    conditions: EnvironmentalConditions,
-    shotDirection: number = 0
-  ): ShotAdjustments {
-    // If density is not provided, calculate it from other conditions
+  static calculateShotAdjustments(conditions: EnvironmentalConditions, shotDirection: number = 0): ShotAdjustments {
     const density = conditions.density ?? this.calculateAirDensity(conditions);
     const densityRatio = density / this.STANDARD_DENSITY;
     const wind = this.calculateWindEffect(conditions.windSpeed, conditions.windDirection, shotDirection);
     
-    // Calculate distance adjustment based on air density and wind
-    const densityEffect = (1 - densityRatio) * 100; // Percentage change
-    const windEffect = -wind.headwind * 1.5; // Approximate 1.5% per mph headwind
+    const densityEffect = (1 - densityRatio) * 100;
+    const windEffect = -wind.headwind * 1.5;
     const distanceAdjustment = densityEffect + windEffect;
+    const trajectoryShift = wind.crosswind * 2;
+    const spinAdjustment = (densityRatio - 1) * -50;
+    const launchAngleAdjustment = wind.headwind * 0.1;
 
-    // Calculate trajectory shift from crosswind
-    const trajectoryShift = wind.crosswind * 2; // Approximate 2 yards per mph crosswind
-
-    // Spin adjustment based on air density
-    const spinAdjustment = (densityRatio - 1) * -50; // Less spin in thinner air
-
-    // Launch angle adjustment for wind conditions
-    const launchAngleAdjustment = wind.headwind * 0.1; // Slight adjustment for wind
-
-    return {
-      distanceAdjustment,
-      trajectoryShift,
-      spinAdjustment,
-      launchAngleAdjustment
-    };
+    return { distanceAdjustment, trajectoryShift, spinAdjustment, launchAngleAdjustment };
   }
 
   static calculateAltitudeEffect(altitude: number): number {
-    // Approximately 2% increase in distance per 1000ft of elevation
     return (altitude / 1000) * 2;
   }
+
   static getFlightTimeAdjustment(conditions: EnvironmentalConditions): number {
     const density = conditions.density ?? this.calculateAirDensity(conditions);
     const densityRatio = density / this.STANDARD_DENSITY;
-    // Flight time increases in thinner air
     return 1 + ((1 - densityRatio) * 0.1);
   }
 

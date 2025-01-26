@@ -1,115 +1,104 @@
-'use client'
-
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Settings {
-  distanceUnit: 'yards' | 'meters'
-  temperatureUnit: 'celsius' | 'fahrenheit'
-  altitudeUnit: 'feet' | 'meters'
+  distanceUnit: 'yards' | 'meters';
+  temperatureUnit: 'celsius' | 'fahrenheit';
+  altitudeUnit: 'feet' | 'meters';
 }
 
 interface SettingsContextType {
-  settings: Settings
-  updateSettings: (newSettings: Partial<Settings>) => void
-  convertDistance: (distance: number, to?: 'yards' | 'meters') => number
-  convertTemperature: (temp: number, to?: 'celsius' | 'fahrenheit') => number
-  convertAltitude: (altitude: number, to?: 'feet' | 'meters') => number
-  formatDistance: (distance: number) => string
-  formatTemperature: (temp: number) => string
-  formatAltitude: (altitude: number) => string
+  settings: Settings;
+  updateSettings: (newSettings: Partial<Settings>) => Promise<void>;
+  convertDistance: (distance: number, to?: 'yards' | 'meters') => number;
+  convertTemperature: (temp: number, to?: 'celsius' | 'fahrenheit') => number;
+  convertAltitude: (altitude: number, to?: 'feet' | 'meters') => number;
+  formatDistance: (distance: number) => string;
+  formatTemperature: (temp: number) => string;
+  formatAltitude: (altitude: number) => string;
 }
 
 const defaultSettings: Settings = {
   distanceUnit: 'yards',
   temperatureUnit: 'fahrenheit',
   altitudeUnit: 'feet'
-}
+};
 
-const SettingsContext = createContext<SettingsContextType | undefined>(undefined)
+const SettingsContext = createContext<SettingsContextType>({
+  settings: defaultSettings,
+  updateSettings: async () => {},
+  convertDistance: () => 0,
+  convertTemperature: () => 0,
+  convertAltitude: () => 0,
+  formatDistance: () => '',
+  formatTemperature: () => '',
+  formatAltitude: () => ''
+});
 
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
-  const [settings, setSettings] = useState<Settings>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('userSettings')
-      return saved ? JSON.parse(saved) : defaultSettings
-    }
-    return defaultSettings
-  })
+  const [settings, setSettings] = useState<Settings>(defaultSettings);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('userSettings', JSON.stringify(settings))
+    const loadSettings = async () => {
+      try {
+        const saved = await AsyncStorage.getItem('userSettings');
+        if (saved) setSettings(JSON.parse(saved));
+      } catch (error) {
+        console.error('Failed to load settings:', error);
+      }
+    };
+    loadSettings();
+  }, []);
+
+  const updateSettings = async (newSettings: Partial<Settings>) => {
+    const updated = { ...settings, ...newSettings };
+    setSettings(updated);
+    try {
+      await AsyncStorage.setItem('userSettings', JSON.stringify(updated));
+    } catch (error) {
+      console.error('Failed to save settings:', error);
     }
-  }, [settings])
+  };
 
-  const updateSettings = (newSettings: Partial<Settings>) => {
-    setSettings(prev => ({ ...prev, ...newSettings }))
-  }
-
+  // Conversion functions remain unchanged
   const convertDistance = (distance: number, to?: 'yards' | 'meters') => {
-    const unit = to || settings.distanceUnit
-    if (unit === 'meters') {
-      return distance * 0.9144 // yards to meters
-    } else {
-      return distance / 0.9144 // meters to yards
-    }
-  }
+    const unit = to || settings.distanceUnit;
+    return unit === 'meters' ? distance * 0.9144 : distance / 0.9144;
+  };
 
   const convertTemperature = (temp: number, to?: 'celsius' | 'fahrenheit') => {
-    const unit = to || settings.temperatureUnit
-    if (unit === 'fahrenheit') {
-      return (temp * 9/5) + 32 // celsius to fahrenheit
-    } else {
-      return (temp - 32) * 5/9 // fahrenheit to celsius
-    }
-  }
+    const unit = to || settings.temperatureUnit;
+    return unit === 'fahrenheit' ? (temp * 9/5) + 32 : (temp - 32) * 5/9;
+  };
 
   const convertAltitude = (altitude: number, to?: 'feet' | 'meters') => {
-    const unit = to || settings.altitudeUnit
-    if (unit === 'feet') {
-      return altitude * 3.28084 // meters to feet
-    } else {
-      return altitude / 3.28084 // feet to meters
-    }
-  }
+    const unit = to || settings.altitudeUnit;
+    return unit === 'feet' ? altitude * 3.28084 : altitude / 3.28084;
+  };
 
-  const formatDistance = (distance: number) => {
-    const value = Math.round(distance)
-    return `${value} ${settings.distanceUnit === 'yards' ? 'yds' : 'm'}`
-  }
+  const formatDistance = (distance: number) => 
+    `${Math.round(distance)} ${settings.distanceUnit === 'yards' ? 'yds' : 'm'}`;
 
-  const formatTemperature = (temp: number) => {
-    const value = Math.round(temp * 10) / 10
-    return `${value}°${settings.temperatureUnit === 'celsius' ? 'C' : 'F'}`
-  }
+  const formatTemperature = (temp: number) => 
+    `${(Math.round(temp * 10) / 10).toFixed(1)}°${settings.temperatureUnit[0].toUpperCase()}`;
 
-  const formatAltitude = (altitude: number) => {
-    const value = Math.round(altitude)
-    return `${value} ${settings.altitudeUnit === 'feet' ? 'ft' : 'm'}`
-  }
+  const formatAltitude = (altitude: number) => 
+    `${Math.round(altitude)} ${settings.altitudeUnit === 'feet' ? 'ft' : 'm'}`;
 
   return (
-    <SettingsContext.Provider 
-      value={{ 
-        settings, 
-        updateSettings,
-        convertDistance,
-        convertTemperature,
-        convertAltitude,
-        formatDistance,
-        formatTemperature,
-        formatAltitude
-      }}
-    >
+    <SettingsContext.Provider value={{
+      settings,
+      updateSettings,
+      convertDistance,
+      convertTemperature,
+      convertAltitude,
+      formatDistance,
+      formatTemperature,
+      formatAltitude
+    }}>
       {children}
     </SettingsContext.Provider>
-  )
+  );
 }
 
-export function useSettings() {
-  const context = useContext(SettingsContext)
-  if (context === undefined) {
-    throw new Error('useSettings must be used within a SettingsProvider')
-  }
-  return context
-}
+export const useSettings = () => useContext(SettingsContext);

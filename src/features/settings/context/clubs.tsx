@@ -1,14 +1,13 @@
-'use client'
-
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
-import { ClubData } from '@/lib/types'
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ClubData } from '@/src/core/models/YardageModel';
 
 interface ClubSettingsContextType {
-  clubs: ClubData[]
-  addClub: (club: ClubData) => void
-  updateClub: (index: number, club: ClubData) => void
-  removeClub: (index: number) => void
-  getRecommendedClub: (targetYardage: number) => ClubData | null
+  clubs: ClubData[];
+  addClub: (club: ClubData) => Promise<void>;
+  updateClub: (index: number, club: ClubData) => Promise<void>;
+  removeClub: (index: number) => Promise<void>;
+  getRecommendedClub: (targetYardage: number) => ClubData | null;
 }
 
 const DEFAULT_CLUBS: ClubData[] = [
@@ -27,108 +26,111 @@ const DEFAULT_CLUBS: ClubData[] = [
   { name: "GW", normalYardage: 130, loft: 50 },
   { name: "SW", normalYardage: 118, loft: 54 },
   { name: "LW", normalYardage: 106, loft: 58 }
-]
+];
 
-export const ClubSettingsContext = createContext<ClubSettingsContextType | null>(null);
+const ClubSettingsContext = createContext<ClubSettingsContextType>({
+  clubs: DEFAULT_CLUBS,
+  addClub: async () => {},
+  updateClub: async () => {},
+  removeClub: async () => {},
+  getRecommendedClub: () => null
+});
 
 export function ClubSettingsProvider({ children }: { children: React.ReactNode }) {
-  const [clubs, setClubs] = useState<ClubData[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('clubSettings')
-      if (saved) {
-        try {
-          const parsedClubs = JSON.parse(saved)
-          // Ensure all clubs have loft property
-          return parsedClubs.map((club: Partial<ClubData>) => ({
-            name: club.name || '',
-            normalYardage: club.normalYardage || 0,
-            loft: club.loft || getDefaultLoft(club.name || '') || 0
-          }))
-        } catch (e) {
-          console.error('Error parsing saved club settings:', e)
-          return DEFAULT_CLUBS
-        }
-      }
-    }
-    return DEFAULT_CLUBS
-  })
+  const [clubs, setClubs] = useState<ClubData[]>(DEFAULT_CLUBS);
 
-  // Helper function to get default loft based on club name
-  function getDefaultLoft(clubName: string): number {
-    const defaultClub = DEFAULT_CLUBS.find(club => club.name === clubName)
-    return defaultClub?.loft || 0
-  }
+  // Load saved clubs on mount
+  useEffect(() => {
+    const loadSavedClubs = async () => {
+      try {
+        const savedClubs = await AsyncStorage.getItem('clubSettings');
+        if (savedClubs) {
+          const parsedClubs = JSON.parse(savedClubs);
+          const validatedClubs = parsedClubs.map((club: Partial<ClubData>) => ({
+            name: club.name || 'Unknown Club',
+            normalYardage: club.normalYardage || 0,
+            loft: club.loft || getDefaultLoft(club.name || 'Unknown Club')
+          }));
+          setClubs(sortClubs(validatedClubs));
+        }
+      } catch (error) {
+        console.error('Failed to load club settings:', error);
+      }
+    };
+
+    loadSavedClubs();
+  }, []);
+
+  const getDefaultLoft = (clubName: string): number => {
+    return DEFAULT_CLUBS.find(c => c.name === clubName)?.loft || 0;
+  };
 
   const sortClubs = (clubs: ClubData[]): ClubData[] => {
-    return [...clubs].sort((a, b) => b.normalYardage - a.normalYardage)
-  }
+    return [...clubs].sort((a, b) => b.normalYardage - a.normalYardage);
+  };
 
-  const addClub = useCallback((club: ClubData) => {
-    setClubs(prev => {
-      const newClubs = sortClubs([...prev, club])
-      localStorage.setItem('clubSettings', JSON.stringify(newClubs))
-      return newClubs
-    })
-  }, [])
+  const saveClubs = async (clubsToSave: ClubData[]) => {
+    try {
+      await AsyncStorage.setItem('clubSettings', JSON.stringify(clubsToSave));
+    } catch (error) {
+      console.error('Failed to save club settings:', error);
+    }
+  };
 
-  const updateClub = useCallback((index: number, club: ClubData) => {
+  const addClub = useCallback(async (club: ClubData) => {
     setClubs(prev => {
-      const newClubs = [...prev]
-      newClubs[index] = club
-      const sortedClubs = sortClubs(newClubs)
-      localStorage.setItem('clubSettings', JSON.stringify(sortedClubs))
-      return sortedClubs
-    })
-  }, [])
+      const newClubs = sortClubs([...prev, club]);
+      saveClubs(newClubs);
+      return newClubs;
+    });
+  }, []);
 
-  const removeClub = useCallback((index: number) => {
+  const updateClub = useCallback(async (index: number, club: ClubData) => {
     setClubs(prev => {
-      const newClubs = prev.filter((_, i) => i !== index)
-      localStorage.setItem('clubSettings', JSON.stringify(newClubs))
-      return newClubs
-    })
-  }, [])
+      const newClubs = [...prev];
+      newClubs[index] = club;
+      const sortedClubs = sortClubs(newClubs);
+      saveClubs(sortedClubs);
+      return sortedClubs;
+    });
+  }, []);
+
+  const removeClub = useCallback(async (index: number) => {
+    setClubs(prev => {
+      const newClubs = prev.filter((_, i) => i !== index);
+      saveClubs(newClubs);
+      return newClubs;
+    });
+  }, []);
 
   const getRecommendedClub = useCallback((targetYardage: number): ClubData | null => {
-    if (!clubs.length) return null
+    if (!clubs.length) return null;
 
-    let closestClub = clubs[0]
-    let minDiff = Math.abs(clubs[0].normalYardage - targetYardage)
-
-    for (const club of clubs) {
-      const diff = Math.abs(club.normalYardage - targetYardage)
-      if (diff < minDiff) {
-        minDiff = diff
-        closestClub = club
-      }
-    }
-
-    return {
-      name: closestClub.name,
-      normalYardage: closestClub.normalYardage,
-      loft: closestClub.loft
-    }
-  }, [clubs])
-
-  const value: ClubSettingsContextType = {
-    clubs,
-    addClub,
-    updateClub,
-    removeClub,
-    getRecommendedClub
-  }
+    return clubs.reduce((closest, current) => 
+      Math.abs(current.normalYardage - targetYardage) < 
+      Math.abs(closest.normalYardage - targetYardage) 
+        ? current 
+        : closest
+    );
+  }, [clubs]);
 
   return (
-    <ClubSettingsContext.Provider value={value}>
+    <ClubSettingsContext.Provider value={{ 
+      clubs,
+      addClub,
+      updateClub,
+      removeClub,
+      getRecommendedClub
+    }}>
       {children}
     </ClubSettingsContext.Provider>
-  )
+  );
 }
 
-export function useClubSettings() {
-  const context = useContext(ClubSettingsContext)
+export const useClubSettings = () => {
+  const context = useContext(ClubSettingsContext);
   if (!context) {
-    throw new Error('useClubSettings must be used within a ClubSettingsProvider')
+    throw new Error('useClubSettings must be used within ClubSettingsProvider');
   }
-  return context
-}
+  return context;
+};

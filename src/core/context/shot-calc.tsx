@@ -1,7 +1,5 @@
-'use client'
-
 import React, { createContext, useContext, useState, useMemo } from 'react'
-import { YardageModelEnhanced, SkillLevel, ShotResult } from './latetso1model'
+import { YardageModelEnhanced, SkillLevel, ShotResult } from '@/src/core/models/YardageModel'
 
 interface ShotCalcData {
   targetYardage: number | null

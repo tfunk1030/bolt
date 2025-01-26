@@ -1,10 +1,10 @@
 // PGA Tour averages from Trackman
 export interface ClubData {
   name: string;
-  ballSpeed: number;  // mph
-  launchAngle: number;  // degrees
-  spinRate: number;  // rpm
-  carry: number;  // yards
+  ballSpeed: number;
+  launchAngle: number;
+  spinRate: number;
+  carry: number;
 }
 
 export const clubData: ClubData[] = [

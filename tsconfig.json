@@ -12,7 +12,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
-      "@/lib/*": ["./lib/*"],
+      "@/lib/*": ["src/lib/*"],
       "@/components/*": ["./src/core/components/*"],
       "@/src/*": ["./src/*"],
       "@/features/*": ["./src/features/*"],

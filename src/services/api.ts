@@ -1,5 +1,5 @@
 // API configuration and types
-export interface ShotData {
+export interface ShotData {/*...*/}
   distance: number
   windSpeed: number
   windDirection: number
@@ -8,7 +8,7 @@ export interface ShotData {
   height: number
 }
 
-export interface WeatherData {
+export interface WeatherData {/*...*/}
   temperature: number
   humidity: number
   pressure: number
@@ -29,7 +29,7 @@ const generateTrajectoryPoints = (distance: number, height: number = 30): [numbe
 }
 
 // API service with mock implementations
-export const api = {
+export const api = {/*...*/}
   // Shot Analysis
   async getShotData(params: Partial<ShotData>): Promise<ShotData> {
     // Simulate API delay

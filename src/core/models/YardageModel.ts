@@ -1,4 +1,4 @@
-import { normalizeClubName } from '@/src/utils/club-mapping';
+import { normalizeClubName } from '@/src/features/settings/utils/club-mapping'
 
 export enum SkillLevel {
   BEGINNER = "beginner",      
