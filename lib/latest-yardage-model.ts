@@ -269,9 +269,9 @@ export class YardageModelEnhanced {
     // Apply environmental effects
     if (this.temperature !== null) {
       const currentDensity = this._calculate_air_density(
-        this.temperature,
-        this.pressure ?? 1013.25,
-        this.humidity ?? 50
+        this.temperature ?? 70,  // temp in °F
+        this.pressure ?? 1013.25, // pressure in mb
+        this.humidity ?? 50      // humidity %
       );
       const densityRatio = currentDensity / 1.193;
       const densityEffect = -(densityRatio - 1);

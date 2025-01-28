@@ -43,6 +43,7 @@ export class YardageModelEnhanced {
   private static readonly AIR_DENSITY_SEA_LEVEL: number = 1.225; // kg/m³
   private static readonly REFERENCE_VELOCITY: number = 50; // m/s for spin decay // J/(kg·K)
   private static readonly ALTITUDE_PRESSURE_RATIO = 0.190284;
+  private static readonly DENSITY_EXPONENT: number = 0.7; // Tuned for viscosity compensation (was 0.65)
   private static readonly MAGNUS_A = 6.1121;
   private static readonly MAGNUS_B = 17.502;
   private static readonly MAGNUS_C = 240.97;
@@ -356,20 +357,19 @@ export class YardageModelEnhanced {
   // Enhanced air density calculation with humidity consideration
   private _calculate_air_density(temp_f: number, pressure_mb: number, humidity: number): number {
     const temp_c = (temp_f - 32) * 5/9;
-    const pressure_pa = pressure_mb * 100;
-    
-    // Correct saturation pressure calculation using defined constants
+    const pressure_pa = pressure_mb * 100; // Convert mb to Pa
+
+    // Improved psychrometric calculation (no separate wet bulb needed)
     const sat_vapor_pressure = YardageModelEnhanced.MAGNUS_A * 
         Math.exp((YardageModelEnhanced.MAGNUS_B * temp_c)/(temp_c + YardageModelEnhanced.MAGNUS_C));
     
     const vapor_pressure = (humidity / 100) * sat_vapor_pressure;
-    const dry_pressure = pressure_pa - (vapor_pressure * 100);  // Convert hPa to Pa
-    
-    const temp_k = temp_c + 273.15;
-    return (dry_pressure / (YardageModelEnhanced.GAS_CONSTANT_DRY * temp_k)) + 
-           (vapor_pressure * 100 / (YardageModelEnhanced.GAS_CONSTANT_VAPOR * temp_k));
-}
+    const dry_pressure = pressure_pa - (vapor_pressure * 100); // hPa to Pa
 
+    const temp_k = temp_c + 273.15;
+    return (dry_pressure / (287.058 * temp_k)) + 
+           (vapor_pressure * 100 / (461.495 * temp_k));
+  }
 
   // Enhanced altitude effect calculation
   private _calculate_altitude_effect(altitude_ft: number): number {
@@ -436,23 +436,25 @@ export class YardageModelEnhanced {
 
     // Apply environmental effects
     if (this.temperature !== null) {
-      const currentDensity = this._calculate_air_density(this.temperature, this.pressure ?? 1013.25, this.humidity ?? 50);
-      const densityRatio = currentDensity / YardageModelEnhanced.AIR_DENSITY_SEA_LEVEL;
-      const densityEffect = 1 / Math.pow(densityRatio, 0.65); // Non-linear correction
-      const tempEffect = (this.temperature - 70) * 0.0015 * ball.temp_sensitivity * (ball.compression / 100);
-      const viscosityEffect = 1 - Math.max(0, (70 - this.temperature) * 0.0005);
-      //const dimpleEffect = ball.dimple_pattern === 'hexagonal' ? 
-      //1.01 - (densityRatio - 1) * 0.1 : 1.0;
+      const current_density = this._calculate_air_density(
+        this.temperature ?? 70,
+        this.pressure ?? 1013.25,
+        this.humidity ?? 50
+      );
 
-      adjusted_yardage *= (1 + tempEffect) * densityEffect * viscosityEffect;
-}
+      // Single source of truth for environmental effects
+      const density_ratio = current_density / YardageModelEnhanced.AIR_DENSITY_SEA_LEVEL;
+      const environmental_factor = Math.pow(density_ratio, -YardageModelEnhanced.DENSITY_EXPONENT);
 
-if (this.temperature !== null && this.humidity !== null) {
-  if (this.temperature < 40 && this.humidity > 80) {
-    const frostSeverity = Math.min(1, (40 - this.temperature) / 10);
-    adjusted_yardage *= 1 - (0.03 + frostSeverity * 0.05); // 3-8% penalty
-  }
-}
+      adjusted_yardage = target_yardage * ball.speed_factor * environmental_factor;
+    }
+
+    if (this.temperature !== null && this.humidity !== null) {
+      if (this.temperature < 40 && this.humidity > 80) {
+        const frostSeverity = Math.min(1, (40 - this.temperature) / 10);
+        adjusted_yardage *= 1 - (0.03 + frostSeverity * 0.05); // 3-8% penalty
+      }
+    }
 
 
     const skillMultipliers = {

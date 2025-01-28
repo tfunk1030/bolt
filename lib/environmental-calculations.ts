@@ -23,7 +23,7 @@ export interface ShotAdjustments {
 }
 
 export class EnvironmentalCalculator {
-  private static readonly STANDARD_TEMP = 59;  // °F
+  private static readonly STANDARD_TEMP = 70;  // °F
   private static readonly STANDARD_PRESSURE = 1013.25;  // hPa
   private static readonly STANDARD_DENSITY = 1.225;  // kg/m³
 

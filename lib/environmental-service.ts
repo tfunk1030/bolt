@@ -448,31 +448,29 @@ export class EnvironmentalService {
     // Ensure we're working with numbers
     const temperature = Number(data.temperature);
     const humidity = Number(data.humidity);
-    const pressure = Number(data.pressure);
+    const pressureInHg = Number(data.pressureSurfaceLevel ?? 29.92);
+    // Convert inHg to millibars (1 inHg = 33.8639 mb)
+    const pressure = pressureInHg * 33.8639;
     const windSpeed = Number(data.windSpeed);
     const windDirection = Number(data.windDirection);
     
-    // Get elevation from location data if available
     const altitude = locationData?.elevation ?? 0;
     
-    console.log('Using elevation:', altitude, 'ft');
-    
-    // Calculate density first
+    // Calculate density using the converted pressure in millibars
     const density = this.calculateAirDensity({
       temperature,
       humidity,
-      pressure,
+      pressure,  // Now in millibars
       altitude,
       windSpeed,
       windDirection,
-      density: 0 // Temporary value, not used in calculation
+      density: 0
     });
-    
-    // Return the complete conditions object
+
     return {
       temperature,
       humidity,
-      pressure,
+      pressure,  // Sending millibars to the model
       altitude,
       windSpeed,
       windDirection,
