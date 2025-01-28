@@ -450,8 +450,7 @@ export class EnvironmentalService {
     const temperature = Number(data.temperature);
     const humidity = Number(data.humidity);
     const pressureInHg = Number(data.pressure ?? 29.92); // FIXED REFERENCE
-  
-  const pressure = pressureInHg * 33.8639; // inHg to mb
+    const pressure = pressureInHg * 33.8639; // inHg to mb
     const windSpeed = Number(data.windSpeed);
     const windDirection = Number(data.windDirection);
     
