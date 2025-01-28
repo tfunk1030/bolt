@@ -331,9 +331,11 @@ export class EnvironmentalService {
 
       // Extract and validate each field with fallbacks
       const weatherData = {
-        temperature: typeof values.temperature === 'number' ? values.temperature : 75,
-        humidity: typeof values.humidity === 'number' ? values.humidity : 70,
-        pressure: typeof values.pressureSeaLevel === 'number' ? values.pressureSeaLevel : 1013.25,
+        temperature: typeof values.temperature === 'number' ? values.temperature : 70,
+        humidity: typeof values.humidity === 'number' ? values.humidity : 60,
+        pressure: typeof values.pressureSurfaceLevel === 'number' 
+          ? values.pressureSurfaceLevel * 33.8639 // Convert inHg → mb
+          : 1013.25,
         windSpeed: typeof values.windSpeed === 'number' ? values.windSpeed : 8,
         windDirection: typeof values.windDirection === 'number' ? values.windDirection : 90
       };
@@ -448,9 +450,7 @@ export class EnvironmentalService {
     // Ensure we're working with numbers
     const temperature = Number(data.temperature);
     const humidity = Number(data.humidity);
-    const pressureInHg = Number(data.pressureSurfaceLevel ?? 29.92);
-    // Convert inHg to millibars (1 inHg = 33.8639 mb)
-    const pressure = pressureInHg * 33.8639;
+    const pressure = Number(data.pressureSurfaceLevel);
     const windSpeed = Number(data.windSpeed);
     const windDirection = Number(data.windDirection);
     
