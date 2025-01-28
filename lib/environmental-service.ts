@@ -389,7 +389,7 @@ export class EnvironmentalService {
         return this.transformWeatherData({
           temperature: weatherData.main.temp,
           humidity: weatherData.main.humidity,
-          pressure: weatherData.main.pressure, // Convert hPa to inHg
+          pressure: weatherData.main.pressureInHg, // Convert hPa to inHg
           windSpeed: weatherData.wind.speed,
           windDirection: weatherData.wind.deg
         }, location);
