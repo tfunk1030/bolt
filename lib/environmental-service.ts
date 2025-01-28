@@ -333,7 +333,7 @@ export class EnvironmentalService {
       const weatherData = {
         temperature: typeof values.temperature === 'number' ? values.temperature : 75,
         humidity: typeof values.humidity === 'number' ? values.humidity : 70,
-        pressure: typeof values.pressureSurfaceLevel === 'number' ? values.pressureSurfaceLevel : 1013.25, // FIXED FIELD
+        pressure: typeof values.pressureSeaLevel === 'number' ? values.pressureSeaLevel : 1013.25,
         windSpeed: typeof values.windSpeed === 'number' ? values.windSpeed : 8,
         windDirection: typeof values.windDirection === 'number' ? values.windDirection : 90
       };
@@ -389,7 +389,7 @@ export class EnvironmentalService {
         return this.transformWeatherData({
           temperature: weatherData.main.temp,
           humidity: weatherData.main.humidity,
-          pressure: weatherData.main.pressureInHg, // Convert hPa to inHg
+          pressure: weatherData.main.pressure, // Convert hPa to inHg
           windSpeed: weatherData.wind.speed,
           windDirection: weatherData.wind.deg
         }, location);
@@ -445,32 +445,34 @@ export class EnvironmentalService {
   }
 
   private transformWeatherData(data: any, locationData?: Location): EnvironmentalConditions {
-    // BEFORE: Number(data.pressureSurfaceLevel ?? 29.92)
     // Ensure we're working with numbers
     const temperature = Number(data.temperature);
     const humidity = Number(data.humidity);
-    const pressureInHg = Number(data.pressure ?? 29.92); // FIXED REFERENCE
-    const pressure = pressureInHg * 33.8639; // inHg to mb
+    const pressure = Number(data.pressure);
     const windSpeed = Number(data.windSpeed);
     const windDirection = Number(data.windDirection);
     
+    // Get elevation from location data if available
     const altitude = locationData?.elevation ?? 0;
     
-    // Calculate density using the converted pressure in millibars
+    console.log('Using elevation:', altitude, 'ft');
+    
+    // Calculate density first
     const density = this.calculateAirDensity({
       temperature,
       humidity,
-      pressure,  // Now in millibars
+      pressure,
       altitude,
       windSpeed,
       windDirection,
-      density: 0
+      density: 0 // Temporary value, not used in calculation
     });
-
+    
+    // Return the complete conditions object
     return {
       temperature,
       humidity,
-      pressure,  // Sending millibars to the model
+      pressure,
       altitude,
       windSpeed,
       windDirection,
